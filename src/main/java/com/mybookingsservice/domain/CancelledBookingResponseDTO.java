@@ -7,11 +7,8 @@ import java.time.LocalDateTime;
 import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.exceptions.StatusHandler;
 
+public class CancelledBookingResponseDTO {
 
-
-
-public class CustomerBookingResponseDTO {
-	
 	private long bookingId;
 	private String status;
 	private LocalDateTime BOOKING_DATE; 
