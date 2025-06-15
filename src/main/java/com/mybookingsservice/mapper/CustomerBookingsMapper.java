@@ -5,8 +5,9 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.mybookingsservice.domain.CancelledBookingResponseDTO;
+import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.VendorCancelledBookingResponse;
 import com.mybookingsservice.entity.MyBookings;
 
 
@@ -19,9 +20,11 @@ public interface CustomerBookingsMapper {
 	CustomerBookingResponseDTO toCustomerBookingDTO(MyBookings booking);
 	
 	@Mapping( source = "bookingId", target = "bookingId")
-	public List<CancelledBookingResponseDTO> toCancelBookingDTOs(List<MyBookings> bookings);
+	public List<CustCancelledBookingResponseDTO> toCustCancelBookingDTOs(List<MyBookings> bookings);
 	
 	@Mapping(source = "bookingId", target = "bookingId")
 	public List<CustomerBookingResponseDTO> toCustomerBookingDTOs(List<MyBookings> bookings);
+	
+	
 	
 }

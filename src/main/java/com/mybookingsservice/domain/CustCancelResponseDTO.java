@@ -2,7 +2,7 @@ package com.mybookingsservice.domain;
 
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class CancelResponseDTO {
+public class CustCancelResponseDTO {
 
 	private long custId;
 	private long bookingId;
@@ -35,7 +35,7 @@ public class CancelResponseDTO {
 	}
 	
 	
-	public CancelResponseDTO() {
+	public CustCancelResponseDTO() {
 		super();
 	}
 	

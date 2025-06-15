@@ -2,15 +2,14 @@ package com.mybookingsservice.domain;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.entity.VendorDetails;
+import com.mybookingsservice.exceptions.StatusHandler;
 
 
 
-public class MyBookingsDTO {
+public class VendorBookingResponseDTO {
 	
 	private long bookingId;
 	private String status;
@@ -31,14 +30,23 @@ public class MyBookingsDTO {
 	private String VEHICLE_NUMBER; 
 	private String TRACKING_URL;
 	private String OTP_FOR_DELIVERY;  
-	private Timestamp CREATED_AT;  
+	private String CREATED_AT;  
 	private String CREATED_BY; 
-	private Timestamp UPDATED_AT;  
+	private String UPDATED_AT;  
 	private String UPDATED_BY;
 	
-	private CustomerDetails customerDetails;
-	
 	private VendorDetails vendorDetails;
+	
+	private StatusHandler statusHandler;
+	
+	
+	public StatusHandler getStatusHandler() {
+		return statusHandler;
+	}
+
+	public void setStatusHandler(StatusHandler statusHandler) {
+		this.statusHandler = statusHandler;
+	}
 
 	public long getBookingId() {
 		return bookingId;
@@ -192,20 +200,12 @@ public class MyBookingsDTO {
 		OTP_FOR_DELIVERY = oTP_FOR_DELIVERY;
 	}
 
-	public Timestamp getCREATED_AT() {
+	public String getCREATED_AT() {
 		return CREATED_AT;
 	}
 
-	public void setCREATED_AT(Timestamp cREATED_AT) {
+	public void setCREATED_AT(String cREATED_AT) {
 		CREATED_AT = cREATED_AT;
-	}
-
-	public Timestamp getUPDATED_AT() {
-		return UPDATED_AT;
-	}
-
-	public void setUPDATED_AT(Timestamp uPDATED_AT) {
-		UPDATED_AT = uPDATED_AT;
 	}
 
 	public String getCREATED_BY() {
@@ -216,7 +216,13 @@ public class MyBookingsDTO {
 		CREATED_BY = cREATED_BY;
 	}
 
-	
+	public String getUPDATED_AT() {
+		return UPDATED_AT;
+	}
+
+	public void setUPDATED_AT(String uPDATED_AT) {
+		UPDATED_AT = uPDATED_AT;
+	}
 
 	public String getUPDATED_BY() {
 		return UPDATED_BY;
@@ -224,14 +230,6 @@ public class MyBookingsDTO {
 
 	public void setUPDATED_BY(String uPDATED_BY) {
 		UPDATED_BY = uPDATED_BY;
-	}
-
-	public CustomerDetails getCustomerDetails() {
-		return customerDetails;
-	}
-
-	public void setCustomerDetails(CustomerDetails customerDetails) {
-		this.customerDetails = customerDetails;
 	}
 
 	public VendorDetails getVendorDetails() {
@@ -242,63 +240,5 @@ public class MyBookingsDTO {
 		this.vendorDetails = vendorDetails;
 	}
 
-	
-	
-	public MyBookingsDTO() {
-		
-	}
 
-	public MyBookingsDTO(long bookingId, String status, LocalDateTime bOOKING_DATE, String sCHEDULED_DATE,
-			String pICKUP_TIME_SLOT, String dELIVERY_DATE, String sERVICE_TYPE, BigInteger iTEM_COUNT,
-			BigDecimal eSTIMATED_WEIGHT, BigDecimal eSTIMATED_COST, BigDecimal dISCOUNT_AMOUNT, BigDecimal fINAL_COST,
-			String pAYMENT_STATUS, String pAYMENT_MODE, String tRANSACTION_ID, String bOOKING_STATUS,
-			String vEHICLE_NUMBER, String tRACKING_URL, String oTP_FOR_DELIVERY, Timestamp cREATED_AT,
-			String cREATED_BY, Timestamp uPDATED_AT, String uPDATED_BY, CustomerDetails customerDetails,
-			VendorDetails vendorDetails) {
-		super();
-		this.bookingId = bookingId;
-		this.status = status;
-		BOOKING_DATE = bOOKING_DATE;
-		SCHEDULED_DATE = sCHEDULED_DATE;
-		PICKUP_TIME_SLOT = pICKUP_TIME_SLOT;
-		DELIVERY_DATE = dELIVERY_DATE;
-		SERVICE_TYPE = sERVICE_TYPE;
-		ITEM_COUNT = iTEM_COUNT;
-		ESTIMATED_WEIGHT = eSTIMATED_WEIGHT;
-		ESTIMATED_COST = eSTIMATED_COST;
-		DISCOUNT_AMOUNT = dISCOUNT_AMOUNT;
-		FINAL_COST = fINAL_COST;
-		PAYMENT_STATUS = pAYMENT_STATUS;
-		PAYMENT_MODE = pAYMENT_MODE;
-		TRANSACTION_ID = tRANSACTION_ID;
-		BOOKING_STATUS = bOOKING_STATUS;
-		VEHICLE_NUMBER = vEHICLE_NUMBER;
-		TRACKING_URL = tRACKING_URL;
-		OTP_FOR_DELIVERY = oTP_FOR_DELIVERY;
-		CREATED_AT = cREATED_AT;
-		CREATED_BY = cREATED_BY;
-		UPDATED_AT = uPDATED_AT;
-		UPDATED_BY = uPDATED_BY;
-		this.customerDetails = customerDetails;
-		this.vendorDetails = vendorDetails;
-	}
-
-	@Override
-	public String toString() {
-		return "MyBookingsDTO [bookingId=" + bookingId + ", status=" + status + ", BOOKING_DATE=" + BOOKING_DATE
-				+ ", SCHEDULED_DATE=" + SCHEDULED_DATE + ", PICKUP_TIME_SLOT=" + PICKUP_TIME_SLOT + ", DELIVERY_DATE="
-				+ DELIVERY_DATE + ", SERVICE_TYPE=" + SERVICE_TYPE + ", ITEM_COUNT=" + ITEM_COUNT
-				+ ", ESTIMATED_WEIGHT=" + ESTIMATED_WEIGHT + ", ESTIMATED_COST=" + ESTIMATED_COST + ", DISCOUNT_AMOUNT="
-				+ DISCOUNT_AMOUNT + ", FINAL_COST=" + FINAL_COST + ", PAYMENT_STATUS=" + PAYMENT_STATUS
-				+ ", PAYMENT_MODE=" + PAYMENT_MODE + ", TRANSACTION_ID=" + TRANSACTION_ID + ", BOOKING_STATUS="
-				+ BOOKING_STATUS + ", VEHICLE_NUMBER=" + VEHICLE_NUMBER + ", TRACKING_URL=" + TRACKING_URL
-				+ ", OTP_FOR_DELIVERY=" + OTP_FOR_DELIVERY + ", CREATED_AT=" + CREATED_AT + ", CREATED_BY=" + CREATED_BY
-				+ ", UPDATED_AT=" + UPDATED_AT + ", UPDATED_BY=" + UPDATED_BY + ", customerDetails=" + customerDetails
-				+ ", vendorDetails=" + vendorDetails + "]";
-	}
-
-	
-
-	
-	
 }

@@ -5,9 +5,10 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import com.mybookingsservice.entity.CustomerDetails;
+import com.mybookingsservice.entity.VendorDetails;
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class CancelledBookingResponseDTO {
+public class VendorCancelledBookingResponse {
 
 	private long bookingId;
 	private String status;
@@ -33,11 +34,19 @@ public class CancelledBookingResponseDTO {
 	private String UPDATED_AT;  
 	private String UPDATED_BY;
 	
-	private CustomerDetails customerDetails;
+	private VendorDetails vendorDetails;
 	
 	private StatusHandler statusHandler;
 	
 	
+	public VendorDetails getVendorDetails() {
+		return vendorDetails;
+	}
+
+	public void setVendorDetails(VendorDetails vendorDetails) {
+		this.vendorDetails = vendorDetails;
+	}
+
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
 	}
@@ -229,15 +238,5 @@ public class CancelledBookingResponseDTO {
 	public void setUPDATED_BY(String uPDATED_BY) {
 		UPDATED_BY = uPDATED_BY;
 	}
-
-	public CustomerDetails getCustomerDetails() {
-		return customerDetails;
-	}
-
-	public void setCustomerDetails(CustomerDetails customerDetails) {
-		this.customerDetails = customerDetails;
-	}
-
-	
 
 }

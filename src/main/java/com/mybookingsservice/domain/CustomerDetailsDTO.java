@@ -1,8 +1,5 @@
 package com.mybookingsservice.domain;
 
-import java.util.List;
-import java.util.Set;
-
 public class CustomerDetailsDTO {
 
 	private String custid;
