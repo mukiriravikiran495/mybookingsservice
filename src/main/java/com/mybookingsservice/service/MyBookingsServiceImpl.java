@@ -2,6 +2,7 @@ package com.mybookingsservice.service;
 
 import java.lang.invoke.MethodHandles;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,19 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mybookingsservice.constants.AppConstants;
-import com.mybookingsservice.domain.CustCancelResponseDTO;
-import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
+import com.mybookingsservice.domain.CustCancelledBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorCancelResponseDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.entity.HouseholdItems;
 import com.mybookingsservice.entity.MyBookings;
-import com.mybookingsservice.entity.VendorDetails;
+import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.mapper.CustomerBookingsMapper;
 import com.mybookingsservice.mapper.MyBookingsMapper;
 import com.mybookingsservice.mapper.VendorBookingsMapper;
+import com.mybookingsservice.repository.HouseholdRepository;
 import com.mybookingsservice.repository.MyBookingsRepository;
 
 @Service("MyBookingsService")
@@ -32,6 +34,9 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	
 	@Autowired
 	MyBookingsRepository repository;
+	
+	@Autowired
+	HouseholdRepository houseRepository;
 	
 	@Autowired
 	MyBookingsMapper mapper;
@@ -69,6 +74,18 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		logger.info("Start : Cancel Booking by Id Service : "+custId+" "+bookingId);
 		
 		MyBookings bookings = repository.findByBookingAndCustomer(custId, bookingId);
+		try {
+			if( null == bookings) {
+				throw new InvalidRequestException(AppConstants.NOT_FOUND);
+			}
+		}catch(InvalidRequestException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(AppConstants.NOT_FOUND);
+			cancelResponse.setStatusHandler(statusHandler);
+			cancelResponse.setStatus(AppConstants.CANCEL_FAILED);
+			return cancelResponse;
+		}
+		
 		bookings.setStatus(AppConstants.CANCELLED);
 		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
 		
@@ -78,18 +95,20 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public List<CustomerBookingResponseDTO> getBookingsByCustomerId(Long custId) {
 		logger.info("Start : get all bookings service fro custId : "+custId);
         List<MyBookings> bookings = repository.findByCustomerDetails_CustId(custId);
+        
+        
         logger.info("End : get all bookings service fro custId : "+custId);
         return customerMapper.toCustomerBookingDTOs(bookings);
     }
 
 	@Override
-	public List<CustCancelledBookingResponseDTO> getAllCancelledBookings(Long custId, String status,
-			CustCancelledBookingResponseDTO cancelledBookings, StatusHandler statusHandler) {
+	public CustCancelledBookingResponse getAllCancelledBookings(Long custId, String status,
+			CustCancelledBookingResponse cancelledBookings, StatusHandler statusHandler) {
 		logger.info("Start : get all cancelled bookings service for custId : "+custId);
 		List<MyBookings> bookings = repository.findByBookingAndCustomerAndStatus(custId, status);
 		
 		logger.info("END : get all cancelled bookings service for custId : "+custId);
-		return customerMapper.toCustCancelBookingDTOs(bookings);
+		return customerMapper.toCustCancelBookingMapper(bookings, statusHandler);
 	}
 
 	@Override
@@ -127,13 +146,13 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 
 
 	@Override
-	public List<VendorCancelledBookingResponse> getVendorCancelledBookings(Long vendorId, String status,
+	public VendorCancelledBookingResponse getVendorCancelledBookings(Long vendorId, String status,
 			VendorCancelledBookingResponse cancelledBookings, StatusHandler statusHandler) {
 		logger.info("Start : Get all Vendor Cancelled Bookings : "+vendorId);
 		List<MyBookings> bookings = repository.findByBookingAndVendorAndStatus(vendorId, status);
 		
 		logger.info("End : Get all Vendor Cancelled Bookings : "+vendorId);
-		return vendorMapper.toVendorCancelBookingDTOs(bookings);
+		return vendorMapper.toVendorCancelBookingMapper(bookings, statusHandler);
 	}
 
 
@@ -147,6 +166,22 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
 		logger.info("End : Accept Bookings Service : "+vendorId+" "+bookingId);
 		return vendorMapper.toVendorBookingDTO(bookings);
+	}
+
+
+	@Override
+	public HouseholdItemsResponse  getHouseHoldItems(String estCategory, HouseholdItemsResponse itemResponse,
+			StatusHandler statusHandler) {
+		logger.info("Start : Get Household Items : "+estCategory);
+		
+		List<String> categories = Arrays.asList("ONEBHK", "None");
+        
+		
+		List<HouseholdItems> items =  houseRepository.findByEstCategoryIn(Arrays.asList("ONEBHK", "None"));
+		System.out.println(items.toString());
+		
+		logger.info("END : Get Household Items : "+estCategory);
+		return customerMapper.toResponse(items, statusHandler);
 	}
 
 

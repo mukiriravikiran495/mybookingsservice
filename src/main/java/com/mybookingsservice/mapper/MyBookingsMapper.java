@@ -8,11 +8,13 @@ import org.mapstruct.Mapping;
 import com.mybookingsservice.domain.CustAddressDTO;
 import com.mybookingsservice.domain.CustomerDetailsDTO;
 import com.mybookingsservice.domain.MyBookingsDTO;
+import com.mybookingsservice.domain.SelectedItemsDTO;
 import com.mybookingsservice.domain.VendorAddressDTO;
 import com.mybookingsservice.domain.VendorDetailsDTO;
 import com.mybookingsservice.entity.CustAddress;
 import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.entity.MyBookings;
+import com.mybookingsservice.entity.SelectedItems;
 import com.mybookingsservice.entity.VendorAddress;
 import com.mybookingsservice.entity.VendorDetails;
 
@@ -20,8 +22,8 @@ import com.mybookingsservice.entity.VendorDetails;
 public interface MyBookingsMapper {
 
 	
-	@Mapping(target = "customerDetails.bookings", ignore = true) // Add this
-    @Mapping(target = "vendorDetails.bookings", ignore = true)   // Add this
+//	@Mapping(target = "customerDetails.bookings", ignore = true) // Add this
+//    @Mapping(target = "vendorDetails.bookings", ignore = true)   // Add this
 	MyBookingsDTO toDto(MyBookings booking);
 
 	List<MyBookingsDTO> toDtoList(List<MyBookings> bookings);
@@ -31,6 +33,9 @@ public interface MyBookingsMapper {
 
 	@Mapping(target = "vendorAddress", source = "vendorAddress")
 	VendorDetailsDTO toDto(VendorDetails entity);
+	
+	@Mapping(source = "itemId", target = "itemId")
+	SelectedItemsDTO toDto(SelectedItems entity);
 
 	@Mapping(source = "c_address_id", target = "c_address_Id")
 	CustAddressDTO toCustAddressDTO(CustAddress custAddress);

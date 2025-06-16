@@ -3,6 +3,7 @@ package com.mybookingsservice.domain;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.exceptions.StatusHandler;
@@ -35,16 +36,18 @@ public class CustCancelledBookingResponseDTO {
 	
 	private CustomerDetails customerDetails;
 	
-	private StatusHandler statusHandler;
 	
 	
-	public StatusHandler getStatusHandler() {
-		return statusHandler;
+	private List<SelectedItemsDTO> selectedItemsDTO;
+	
+	public List<SelectedItemsDTO> getSelectedItemsDTO() {
+		return selectedItemsDTO;
 	}
 
-	public void setStatusHandler(StatusHandler statusHandler) {
-		this.statusHandler = statusHandler;
+	public void setSelectedItemsDTO(List<SelectedItemsDTO> selectedItemsDTO) {
+		this.selectedItemsDTO = selectedItemsDTO;
 	}
+	
 
 	public long getBookingId() {
 		return bookingId;

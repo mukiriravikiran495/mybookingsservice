@@ -2,15 +2,14 @@ package com.mybookingsservice.domain;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.mybookingsservice.entity.MyBookings;
+import com.mybookingsservice.entity.VendorDetails;
+import com.mybookingsservice.exceptions.StatusHandler;
 
-
-
-
-public class MyBookingsDTO {
+public class VendorCancelledBookingDTO {
 	
 	private long bookingId;
 	private String status;
@@ -31,34 +30,33 @@ public class MyBookingsDTO {
 	private String VEHICLE_NUMBER; 
 	private String TRACKING_URL;
 	private String OTP_FOR_DELIVERY;  
-	private Timestamp CREATED_AT;  
+	private String CREATED_AT;  
 	private String CREATED_BY; 
-	private Timestamp UPDATED_AT;  
+	private String UPDATED_AT;  
 	private String UPDATED_BY;
 	
-	private CustomerDetailsDTO customerDetails;
+	private VendorDetails vendorDetails;
 	
-	private VendorDetailsDTO vendorDetails;
+private List<SelectedItemsDTO> selectedItemsDTO;
 	
-	private List<SelectedItemsDTO> selectedItems;
-
-	
-
-	public List<SelectedItemsDTO> getSelectedItems() {
-		return selectedItems;
+	public List<SelectedItemsDTO> getSelectedItemsDTO() {
+		return selectedItemsDTO;
 	}
 
-	public void setSelectedItems(List<SelectedItemsDTO> selectedItems) {
-		this.selectedItems = selectedItems;
+	public void setSelectedItemsDTO(List<SelectedItemsDTO> selectedItemsDTO) {
+		this.selectedItemsDTO = selectedItemsDTO;
+	}
+	
+	
+	public VendorDetails getVendorDetails() {
+		return vendorDetails;
 	}
 
-	public void setCustomerDetails(CustomerDetailsDTO customerDetails) {
-		this.customerDetails = customerDetails;
-	}
-
-	public void setVendorDetails(VendorDetailsDTO vendorDetails) {
+	public void setVendorDetails(VendorDetails vendorDetails) {
 		this.vendorDetails = vendorDetails;
 	}
+
+	
 
 	public long getBookingId() {
 		return bookingId;
@@ -212,20 +210,12 @@ public class MyBookingsDTO {
 		OTP_FOR_DELIVERY = oTP_FOR_DELIVERY;
 	}
 
-	public Timestamp getCREATED_AT() {
+	public String getCREATED_AT() {
 		return CREATED_AT;
 	}
 
-	public void setCREATED_AT(Timestamp cREATED_AT) {
+	public void setCREATED_AT(String cREATED_AT) {
 		CREATED_AT = cREATED_AT;
-	}
-
-	public Timestamp getUPDATED_AT() {
-		return UPDATED_AT;
-	}
-
-	public void setUPDATED_AT(Timestamp uPDATED_AT) {
-		UPDATED_AT = uPDATED_AT;
 	}
 
 	public String getCREATED_BY() {
@@ -236,7 +226,13 @@ public class MyBookingsDTO {
 		CREATED_BY = cREATED_BY;
 	}
 
-	
+	public String getUPDATED_AT() {
+		return UPDATED_AT;
+	}
+
+	public void setUPDATED_AT(String uPDATED_AT) {
+		UPDATED_AT = uPDATED_AT;
+	}
 
 	public String getUPDATED_BY() {
 		return UPDATED_BY;
@@ -246,28 +242,4 @@ public class MyBookingsDTO {
 		UPDATED_BY = uPDATED_BY;
 	}
 
-	
-	public MyBookingsDTO() {
-		
-	}
-
-
-	@Override
-	public String toString() {
-		return "MyBookingsDTO [bookingId=" + bookingId + ", status=" + status + ", BOOKING_DATE=" + BOOKING_DATE
-				+ ", SCHEDULED_DATE=" + SCHEDULED_DATE + ", PICKUP_TIME_SLOT=" + PICKUP_TIME_SLOT + ", DELIVERY_DATE="
-				+ DELIVERY_DATE + ", SERVICE_TYPE=" + SERVICE_TYPE + ", ITEM_COUNT=" + ITEM_COUNT
-				+ ", ESTIMATED_WEIGHT=" + ESTIMATED_WEIGHT + ", ESTIMATED_COST=" + ESTIMATED_COST + ", DISCOUNT_AMOUNT="
-				+ DISCOUNT_AMOUNT + ", FINAL_COST=" + FINAL_COST + ", PAYMENT_STATUS=" + PAYMENT_STATUS
-				+ ", PAYMENT_MODE=" + PAYMENT_MODE + ", TRANSACTION_ID=" + TRANSACTION_ID + ", BOOKING_STATUS="
-				+ BOOKING_STATUS + ", VEHICLE_NUMBER=" + VEHICLE_NUMBER + ", TRACKING_URL=" + TRACKING_URL
-				+ ", OTP_FOR_DELIVERY=" + OTP_FOR_DELIVERY + ", CREATED_AT=" + CREATED_AT + ", CREATED_BY=" + CREATED_BY
-				+ ", UPDATED_AT=" + UPDATED_AT + ", UPDATED_BY=" + UPDATED_BY + ", customerDetails=" + customerDetails
-				+ ", vendorDetails=" + vendorDetails + "]";
-	}
-
-	
-
-	
-	
 }

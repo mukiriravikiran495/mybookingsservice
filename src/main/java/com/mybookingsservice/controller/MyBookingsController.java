@@ -1,10 +1,9 @@
 package com.mybookingsservice.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +15,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.mybookingsservice.constants.AppConstants;
+import com.mybookingsservice.domain.CustCancelledBookingResponse;
 import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
-import com.mybookingsservice.domain.VendorCancelledBookingResponse;
-import com.mybookingsservice.domain.CustCancelResponseDTO;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.HouseholdItemsDTO;
+import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorCancelResponseDTO;
+import com.mybookingsservice.domain.VendorCancelledBookingDTO;
+import com.mybookingsservice.domain.VendorCancelledBookingResponse;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.service.MyBookingsService;
@@ -110,28 +110,39 @@ public class MyBookingsController {
 			throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 		}
         List<CustomerBookingResponseDTO> bookings = service.getBookingsByCustomerId(custId);
+        
         logger.info("END : Customer Bookings Controller : ");
         return ResponseEntity.ok(bookings);
     }
 	
 	
 	@GetMapping( value = "/customer/cancel/getall")
-	public ResponseEntity<List<CustCancelledBookingResponseDTO>> getCustCancelledBookings( @RequestParam Long custId, 
+	public ResponseEntity<CustCancelledBookingResponse> getCustCancelledBookings( @RequestParam Long custId, 
 																	 @RequestParam String status) throws InvalidRequestException{
 		logger.info("Start : Get all Cancelled Bookings controller for custId : "+custId);
 		StatusHandler statusHandler = new StatusHandler();
-		CustCancelledBookingResponseDTO cancelledBookings = new CustCancelledBookingResponseDTO();
-		
-		if( null == custId ||  status.isEmpty() || null == status) {
-			throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+		CustCancelledBookingResponse cancelledBookings = new CustCancelledBookingResponse();
+		try {
+			if( null == custId ||  status.isEmpty() || null == status) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			
+			cancelledBookings = service.getAllCancelledBookings(custId, status, cancelledBookings, statusHandler);
+			
+		}catch(InvalidRequestException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			cancelledBookings.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			cancelledBookings.setStatusHandler(statusHandler);
 		}
-		
-		List<CustCancelledBookingResponseDTO> response = service.getAllCancelledBookings(custId, status, cancelledBookings, statusHandler);
-		
-		
-		
+		statusHandler.setErrorCode("200");
+		statusHandler.setMessage(AppConstants.SUCCESS);
+		cancelledBookings.setStatusHandler(statusHandler);
 		logger.info("END : Get all Cancelled Bookings controller for custId :"+custId);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(cancelledBookings);
 	}
 	
 	/*
@@ -163,6 +174,15 @@ public class MyBookingsController {
 		}
 		
 		vendorbooking = service.getBookingByVendorIdbookingId(vendorId, bookingId, vendorbooking, statusHandler);
+		if(null == vendorbooking ) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(AppConstants.FAILED);
+			vendorbooking.setStatusHandler(statusHandler);
+		}else {
+			statusHandler.setStatusCode("200");
+			statusHandler.setMessage(AppConstants.SUCCESS);
+			vendorbooking.setStatusHandler(statusHandler);
+		}
 		ResponseEntity<VendorBookingResponseDTO> response = new ResponseEntity<>(vendorbooking, HttpStatus.OK);
 		
 		logger.info("End : get booking details by vendorId and bookingId controller : "+vendorId+" "+bookingId);
@@ -179,13 +199,24 @@ public class MyBookingsController {
 		}
 		
 		vendorResponse = service.cancelVendorBooking(vendorId, bookingId, vendorResponse, statusHandler);
+		
+		if( null == vendorResponse) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(AppConstants.FAILED);
+			vendorResponse.setStatusHandler(statusHandler);
+		}else {
+			statusHandler.setStatusCode("200");
+			statusHandler.setMessage(AppConstants.SUCCESS);
+			vendorResponse.setStatusHandler(statusHandler);
+		}
+		
 		ResponseEntity<VendorBookingResponseDTO> response = new ResponseEntity<>(vendorResponse, HttpStatus.OK);
 		logger.info("End : Cancel vendor Booking Controller :  "+vendorId+" "+bookingId);
 		return response;
 	}
 	
 	@GetMapping( value = "/vendor/cancel/getall")
-	public ResponseEntity<List<VendorCancelledBookingResponse>> getVendorCancelledBookings( @RequestParam Long vendorId, 
+	public ResponseEntity<VendorCancelledBookingResponse> getVendorCancelledBookings( @RequestParam Long vendorId, 
 																	 @RequestParam String status) throws InvalidRequestException{
 		logger.info("Start : Get all Cancelled Bookings controller for custId : "+vendorId);
 		StatusHandler statusHandler = new StatusHandler();
@@ -195,12 +226,14 @@ public class MyBookingsController {
 			throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 		}
 		
-		List<VendorCancelledBookingResponse> response = service.getVendorCancelledBookings(vendorId, status, cancelledBookings, statusHandler);
+		cancelledBookings = service.getVendorCancelledBookings(vendorId, status, cancelledBookings, statusHandler);
 		
-		
+		statusHandler.setStatusCode("200");
+		statusHandler.setMessage(AppConstants.SUCCESS);
+		cancelledBookings.setStatusHandler(statusHandler);
 		
 		logger.info("END : Get all Cancelled Bookings controller for custId :"+vendorId);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(cancelledBookings);
 	}
 	
 	@PostMapping( value = "/vendor/accept/{vendorId}/{bookingId}")
@@ -212,6 +245,18 @@ public class MyBookingsController {
 			throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 		}
 		vendorBookings =  service.acceptBpooking(vendorId, bookingId, vendorBookings, statusHandler);
+		
+		if( null == vendorBookings ) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(AppConstants.FAILED);
+			vendorBookings.setStatusHandler(statusHandler);
+			
+		}else {
+			statusHandler.setStatusCode("200");
+			statusHandler.setMessage(AppConstants.SUCCESS);
+			vendorBookings.setStatusHandler(statusHandler);
+		}
+		
 		ResponseEntity<VendorBookingResponseDTO> response = new ResponseEntity<>(vendorBookings, HttpStatus.OK);
 		
 		logger.info("End : Accept Booking Controller : "+vendorId+" "+bookingId);
@@ -219,6 +264,35 @@ public class MyBookingsController {
 	}
 	
 	
+	
+	@GetMapping( value = "/items/{estCategory}")
+	public ResponseEntity<HouseholdItemsResponse> getHouseHoldItems(@PathVariable String estCategory){
+		logger.info("Start : get ONE BHK Household Items : "+estCategory);
+		StatusHandler statusHandler = new StatusHandler();
+		HouseholdItemsResponse itemResponse = new HouseholdItemsResponse();
+		ResponseEntity<HouseholdItemsResponse> response = null;
+		try {
+			if( null == estCategory || estCategory.isEmpty()) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			
+			itemResponse = service.getHouseHoldItems(estCategory, itemResponse, statusHandler);
+			response = new ResponseEntity<>(itemResponse, HttpStatus.OK);
+		}catch(InvalidRequestException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			itemResponse.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(AppConstants.INTERNAL_SERVER_ERROR);
+			itemResponse.setStatusHandler(statusHandler);
+		}
+		statusHandler.setStatusCode("200");
+		statusHandler.setMessage(AppConstants.SUCCESS);
+		itemResponse.setStatusHandler(statusHandler);
+		logger.info("END : get ONE BHK Household Items "+estCategory);
+		return response;
+	}
 	
 }
 

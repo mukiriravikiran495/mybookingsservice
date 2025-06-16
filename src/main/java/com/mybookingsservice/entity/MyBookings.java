@@ -5,13 +5,19 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -52,6 +58,18 @@ public class MyBookings implements Serializable{
     @ManyToOne
     @JoinColumn(name = "vendorId")
     private VendorDetails vendorDetails;
+    
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<SelectedItems> selectedItems;
+
+	public List<SelectedItems> getSelectedItems() {
+		return selectedItems;
+	}
+
+	public void setSelectedItems(List<SelectedItems> selectedItems) {
+		this.selectedItems = selectedItems;
+	}
 
 	public long getBookingId() {
 		return bookingId;

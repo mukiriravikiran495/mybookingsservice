@@ -2,13 +2,13 @@ package com.mybookingsservice.service;
 
 import java.util.List;
 
-import com.mybookingsservice.domain.CustCancelResponseDTO;
-import com.mybookingsservice.domain.VendorCancelResponseDTO;
-import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.domain.CustCancelledBookingResponse;
 import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
+import com.mybookingsservice.domain.VendorCancelledBookingResponse;
 import com.mybookingsservice.exceptions.StatusHandler;
 
 public interface MyBookingsService {
@@ -26,8 +26,8 @@ public interface MyBookingsService {
 			CustomerBookingResponseDTO cancelResponse, StatusHandler statusHandler);
 
 
-	List<CustCancelledBookingResponseDTO> getAllCancelledBookings(Long custId, String status,
-			CustCancelledBookingResponseDTO cancelledBookings, StatusHandler statusHandler);
+	CustCancelledBookingResponse getAllCancelledBookings(Long custId, String status,
+			CustCancelledBookingResponse cancelledBookings, StatusHandler statusHandler);
 	
 	List<VendorBookingResponseDTO> getBookingByVendorId(long vendorId);
 
@@ -40,11 +40,15 @@ public interface MyBookingsService {
 			StatusHandler statusHandler);
 
 
-	List<VendorCancelledBookingResponse> getVendorCancelledBookings(Long vendorId, String status,
+	VendorCancelledBookingResponse getVendorCancelledBookings(Long vendorId, String status,
 			VendorCancelledBookingResponse cancelledBookings, StatusHandler statusHandler);
 
 
 	VendorBookingResponseDTO acceptBpooking(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBookings,
+			StatusHandler statusHandler);
+
+
+	HouseholdItemsResponse getHouseHoldItems(String estcategory, HouseholdItemsResponse itemResponse,
 			StatusHandler statusHandler);
 
 }

@@ -3,6 +3,7 @@ package com.mybookingsservice.domain;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.mybookingsservice.entity.VendorDetails;
 import com.mybookingsservice.exceptions.StatusHandler;
@@ -35,11 +36,22 @@ public class VendorBookingResponseDTO {
 	private String UPDATED_AT;  
 	private String UPDATED_BY;
 	
+	private List<SelectedItemsDTO> selectedItems;
+	
 	private VendorDetails vendorDetails;
 	
 	private StatusHandler statusHandler;
 	
 	
+
+	public List<SelectedItemsDTO> getSelectedItems() {
+		return selectedItems;
+	}
+
+	public void setSelectedItems(List<SelectedItemsDTO> selectedItems) {
+		this.selectedItems = selectedItems;
+	}
+
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
 	}

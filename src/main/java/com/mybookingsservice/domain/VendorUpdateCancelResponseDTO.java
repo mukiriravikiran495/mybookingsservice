@@ -2,7 +2,7 @@ package com.mybookingsservice.domain;
 
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class VendorCancelResponseDTO {
+public class VendorUpdateCancelResponseDTO {
 
 	private long vendorId;
 	private long bookingId;
@@ -30,7 +30,7 @@ public class VendorCancelResponseDTO {
 	}
 	
 	
-	public VendorCancelResponseDTO() {
+	public VendorUpdateCancelResponseDTO() {
 		super();
 	}
 	public long getVendorId() {

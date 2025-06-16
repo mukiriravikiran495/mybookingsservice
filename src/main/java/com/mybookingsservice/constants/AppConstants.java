@@ -16,5 +16,8 @@ public class AppConstants {
 	public static final String CANCELLED = "CANCELLED";
 	public static final String ACCEPTED = "ACCEPTED";
 	public static final String UPDATE_QUERY_FAILED = "UPDATE_QUERY_FAILED";
+	public static final String NOT_FOUND = "NOT_FOUND";
+	public static final String SUCCESS = "SUCCESS";
+	public static final String FAILED = "FAILED";
 
 }
