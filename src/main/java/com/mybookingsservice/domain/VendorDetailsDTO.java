@@ -1,6 +1,6 @@
 package com.mybookingsservice.domain;
 
-
+import java.util.List;
 
 public class VendorDetailsDTO {
 
@@ -42,6 +42,8 @@ public class VendorDetailsDTO {
 	public void setV_email(String v_email) {
 		this.v_email = v_email;
 	}
+	
+	
 	public VendorAddressDTO getVendorAddress() {
 		return vendorAddress;
 	}

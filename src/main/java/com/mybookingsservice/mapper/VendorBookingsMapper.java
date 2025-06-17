@@ -4,19 +4,26 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import com.mybookingsservice.domain.HouseholdItemsDTO;
-import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
-import com.mybookingsservice.entity.HouseholdItems;
+import com.mybookingsservice.domain.VendorDTO;
 import com.mybookingsservice.entity.MyBookings;
+import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.StatusHandler;
 
 
 @Mapper(componentModel = "spring")
 public interface VendorBookingsMapper {
+	
+	
+	VendorBookingsMapper INSTANCE = Mappers.getMapper(VendorBookingsMapper.class);
+
+    VendorDTO toDTO(Vendor vendor);
+    List<VendorDTO> toDTOs(List<Vendor> vendors);
+	
 
 	@Mapping(source = "bookingId", target = "bookingId")
 	VendorBookingResponseDTO toVendorBookingDTO(MyBookings booking);
@@ -36,5 +43,8 @@ public interface VendorBookingsMapper {
 	
 	VendorCancelledBookingDTO toDto(MyBookings entity);
     List<VendorCancelledBookingDTO> toDtoList(List<MyBookings> entities);
+    
+    
+    
 	
 }

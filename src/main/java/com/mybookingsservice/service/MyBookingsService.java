@@ -9,6 +9,9 @@ import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.domain.VendorEstimateRequest;
+import com.mybookingsservice.domain.VendorEstimateResponse;
+import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.StatusHandler;
 
 public interface MyBookingsService {
@@ -50,5 +53,12 @@ public interface MyBookingsService {
 
 	HouseholdItemsResponse getHouseHoldItems(String estcategory, HouseholdItemsResponse itemResponse,
 			StatusHandler statusHandler);
+
+
+	Vendor getvendorProfile(long vendorId);
+
+
+	VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request,
+			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler);
 
 }

@@ -45,6 +45,6 @@ public interface MyBookingsMapper {
 	@Mapping(source = "v_address_id", target = "v_address_Id")
 	VendorAddressDTO toVendorAddressDTO(VendorAddress vendorAddress);
 
-	List<VendorAddressDTO> toVendorAddressDTOList(List<VendorAddress> addresses);
+	List<VendorAddressDTO> toVendorAddressDTOList(List<VendorAddressDTO> addresses);
 
 }

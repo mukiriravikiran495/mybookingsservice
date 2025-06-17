@@ -1,9 +1,10 @@
 package com.mybookingsservice.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +13,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.mybookingsservice.constants.AppConstants;
 import com.mybookingsservice.domain.CustCancelledBookingResponse;
-import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
-import com.mybookingsservice.domain.HouseholdItemsDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorCancelledBookingDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.domain.VendorEstimateRequest;
+import com.mybookingsservice.domain.VendorEstimateResponse;
+import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.service.MyBookingsService;
@@ -144,6 +147,10 @@ public class MyBookingsController {
 		logger.info("END : Get all Cancelled Bookings controller for custId :"+custId);
 		return ResponseEntity.ok(cancelledBookings);
 	}
+	
+	
+	
+	
 	
 	/*
 	 * Below All API's are related to Customer Bookings
@@ -291,6 +298,24 @@ public class MyBookingsController {
 		statusHandler.setMessage(AppConstants.SUCCESS);
 		itemResponse.setStatusHandler(statusHandler);
 		logger.info("END : get ONE BHK Household Items "+estCategory);
+		return response;
+	}
+	
+	
+	@GetMapping( value = "/vendorprofile/{vendorId}")
+	public Vendor getVendorProfile(@PathVariable long vendorId) {
+		Vendor vendor = service.getvendorProfile(vendorId);
+		return vendor;
+	}
+	
+	@GetMapping( value = "/vendor/vendorestimates")
+	public ResponseEntity<VendorEstimateResponse> getVendorEstimates( @RequestBody VendorEstimateRequest request) {
+		logger.info("Start : Get Vendor Estimates : "+request);
+		StatusHandler statusHandler = new StatusHandler();
+		VendorEstimateResponse vendorEstimatesResponse = new VendorEstimateResponse();
+		vendorEstimatesResponse = service.getvendorEstimates(request, vendorEstimatesResponse, statusHandler);
+		ResponseEntity<VendorEstimateResponse> response = new ResponseEntity<>(vendorEstimatesResponse, HttpStatus.OK);
+		logger.info("END : Get Vendor Estimates : ");
 		return response;
 	}
 	

@@ -42,7 +42,7 @@ List<MyBookings> findByCustomerDetails_CustId(Long custId);
     List<MyBookings> findByVendorDetails_VendorId(Long vendorId);
 
     @Query("SELECT m FROM MyBookings m WHERE m.bookingId = :bookingId AND m.vendorDetails.vendorId = :vendorId")
-	MyBookings findByBookingAndVendor(Long vendorId, Long bookingId);
+    MyBookings findByBookingAndVendor(Long vendorId, Long bookingId);
 
     @Modifying
     @Transactional

@@ -1,6 +1,5 @@
 package com.mybookingsservice.domain;
 
-import com.mybookingsservice.exceptions.StatusHandler;
 
 public class HouseholdItemsDTO {
 

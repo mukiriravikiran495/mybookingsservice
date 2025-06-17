@@ -29,6 +29,15 @@ public class MyBookings implements Serializable{
 	private long bookingId;
 	
 	private String status;
+	
+	private String pickup_address;
+    private double pickup_latitude;
+    private double pickup_longitude;
+    private String pickup_zipcode;
+    private String drop_address;
+    private double drop_latitude;
+    private double drop_longitude;
+    private String drop_zipcode;
 	private LocalDateTime BOOKING_DATE; 
 	private String SCHEDULED_DATE;
 	private String PICKUP_TIME_SLOT; 
@@ -62,6 +71,70 @@ public class MyBookings implements Serializable{
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<SelectedItems> selectedItems;
+    
+	public String getPickup_address() {
+		return pickup_address;
+	}
+
+	public void setPickup_address(String pickup_address) {
+		this.pickup_address = pickup_address;
+	}
+
+	public double getPickup_latitude() {
+		return pickup_latitude;
+	}
+
+	public void setPickup_latitude(double pickup_latitude) {
+		this.pickup_latitude = pickup_latitude;
+	}
+
+	public double getPickup_longitude() {
+		return pickup_longitude;
+	}
+
+	public void setPickup_longitude(double pickup_longitude) {
+		this.pickup_longitude = pickup_longitude;
+	}
+
+	public String getPickup_zipcode() {
+		return pickup_zipcode;
+	}
+
+	public void setPickup_zipcode(String pickup_zipcode) {
+		this.pickup_zipcode = pickup_zipcode;
+	}
+
+	public String getDrop_address() {
+		return drop_address;
+	}
+
+	public void setDrop_address(String drop_address) {
+		this.drop_address = drop_address;
+	}
+
+	public double getDrop_latitude() {
+		return drop_latitude;
+	}
+
+	public void setDrop_latitude(double drop_latitude) {
+		this.drop_latitude = drop_latitude;
+	}
+
+	public double getDrop_longitude() {
+		return drop_longitude;
+	}
+
+	public void setDrop_longitude(double drop_longitude) {
+		this.drop_longitude = drop_longitude;
+	}
+
+	public String getDrop_zipcode() {
+		return drop_zipcode;
+	}
+
+	public void setDrop_zipcode(String drop_zipcode) {
+		this.drop_zipcode = drop_zipcode;
+	}
 
 	public List<SelectedItems> getSelectedItems() {
 		return selectedItems;

@@ -38,7 +38,7 @@ public class VendorBookingResponseDTO {
 	
 	private List<SelectedItemsDTO> selectedItems;
 	
-	private VendorDetails vendorDetails;
+	private VendorDetailsDTO vendorDetails;
 	
 	private StatusHandler statusHandler;
 	
@@ -244,13 +244,15 @@ public class VendorBookingResponseDTO {
 		UPDATED_BY = uPDATED_BY;
 	}
 
-	public VendorDetails getVendorDetails() {
+	public VendorDetailsDTO getVendorDetails() {
 		return vendorDetails;
 	}
 
-	public void setVendorDetails(VendorDetails vendorDetails) {
+	public void setVendorDetails(VendorDetailsDTO vendorDetails) {
 		this.vendorDetails = vendorDetails;
 	}
+
+	
 
 
 }

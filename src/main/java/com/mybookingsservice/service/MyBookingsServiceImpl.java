@@ -2,8 +2,12 @@ package com.mybookingsservice.service;
 
 import java.lang.invoke.MethodHandles;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +21,13 @@ import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.domain.VendorDTO;
+import com.mybookingsservice.domain.VendorEstimateRequest;
+import com.mybookingsservice.domain.VendorEstimateResponse;
+import com.mybookingsservice.domain.VendorServiceAreaDTO;
 import com.mybookingsservice.entity.HouseholdItems;
 import com.mybookingsservice.entity.MyBookings;
+import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.mapper.CustomerBookingsMapper;
@@ -26,6 +35,7 @@ import com.mybookingsservice.mapper.MyBookingsMapper;
 import com.mybookingsservice.mapper.VendorBookingsMapper;
 import com.mybookingsservice.repository.HouseholdRepository;
 import com.mybookingsservice.repository.MyBookingsRepository;
+import com.mybookingsservice.repository.VendorRepository;
 
 @Service("MyBookingsService")
 public class MyBookingsServiceImpl implements MyBookingsService{
@@ -47,7 +57,8 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	@Autowired
 	VendorBookingsMapper vendorMapper;
 	
-	
+	@Autowired
+	VendorRepository vendorRepository;
 	
 	@Override
 	public List<MyBookingsDTO> getall() {
@@ -184,5 +195,73 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		return customerMapper.toResponse(items, statusHandler);
 	}
 
+
+	@Override
+	public Vendor getvendorProfile(long vendorId) {
+		Vendor vendor = vendorRepository.findByVendorId(vendorId);
+		return vendor;
+	}
+
+
+	@Override
+	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request,
+			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler) {
+		List<VendorNativeResult> flatResult = vendorRepository.findVendorsByZipcodeNative(request.getPickup_zipcode());
+
+		// Calculate estimate (dummy logic)
+        double estimatedPrice = 15 * 10; // Example
+        Timestamp estimatedDeliveryDate = Timestamp.valueOf(LocalDateTime.now().plusDays(2));
+        
+        Map<Long, VendorDTO> vendorMap = new LinkedHashMap<>();
+
+        for (VendorNativeResult row : flatResult) {
+            VendorDTO vendorDTO = vendorMap.computeIfAbsent(row.getVendorId(), id -> {
+                VendorDTO dto = new VendorDTO();
+                dto.setVendorId(row.getVendorId());
+                dto.setV_firstname(row.getV_firstname());
+                dto.setV_lastname(row.getV_lastname());
+                dto.setV_mobile(row.getV_mobile());
+                dto.setV_email(row.getV_email());
+                dto.setVendorServiceAreaDTO(new ArrayList<>());
+                return dto;
+            });
+
+            VendorServiceAreaDTO areaDTO = new VendorServiceAreaDTO();
+            areaDTO.setV_service_id(row.getV_service_id());
+            areaDTO.setV_zipcode(row.getV_zipcode());
+            areaDTO.setBasePricePerKm(row.getBasePricePerKm());
+            areaDTO.setPricePerKg(row.getPricePerKg());
+            areaDTO.setAvgDeliveryTimeInDays(row.getAvgDeliveryTimeInDays());
+            areaDTO.setEstimatedPrice(estimatedPrice);
+            areaDTO.setEstimatedDeliveryDate(estimatedDeliveryDate);
+            vendorDTO.getVendorServiceAreaDTO().add(areaDTO);
+        }
+
+        
+
+        VendorEstimateResponse response = new VendorEstimateResponse();
+        response.setBOOKING_DATE(LocalDateTime.now());
+        response.setSCHEDULED_DATE(request.getScheduled_date());
+        response.setSERVICE_TYPE(request.getService_type());
+
+        response.setPickupAddress(request.getPickup_address());
+        response.setPickupLatitude(request.getPickup_latitude());
+        response.setPickupLongitude(request.getPickup_longitude());
+
+        response.setDropAddress(request.getDrop_address());
+        response.setDropLatitude(request.getDrop_latitude());
+        response.setDropLongitude(request.getDrop_longitude());
+        
+        response.setVendorDTO(new ArrayList<>(vendorMap.values()));
+
+        StatusHandler status = new StatusHandler();
+        status.setStatusCode("200");
+        status.setMessage("Estimate success");
+        response.setStatusHandler(status);
+
+        return response;
+	}
+
+	
 
 }
