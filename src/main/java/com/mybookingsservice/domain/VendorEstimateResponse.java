@@ -8,40 +8,23 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class VendorEstimateResponse {
 
+	
 	private LocalDateTime BOOKING_DATE; 
-	private String SCHEDULED_DATE;
+	private LocalDateTime SCHEDULED_DATE;
 	private String SERVICE_TYPE;
 	private String pickupAddress;
-    private double pickupLatitude;
-    private double pickupLongitude;
+    private Double pickupLatitude;
+    private Double pickupLongitude;
     private String pickup_zipcode;
     private String drop_zipcode;
     private String dropAddress;
-    private double dropLatitude;
-    private double dropLongitude;
+    private Double dropLatitude;
+    private Double dropLongitude;
     
    
     private List<VendorDTO> vendorDTO;
     
     private StatusHandler statusHandler;
-
-	public String getPickup_zipcode() {
-		return pickup_zipcode;
-	}
-
-	public void setPickup_zipcode(String pickup_zipcode) {
-		this.pickup_zipcode = pickup_zipcode;
-	}
-
-	public String getDrop_zipcode() {
-		return drop_zipcode;
-	}
-
-	public void setDrop_zipcode(String drop_zipcode) {
-		this.drop_zipcode = drop_zipcode;
-	}
-
-	
 
 	public LocalDateTime getBOOKING_DATE() {
 		return BOOKING_DATE;
@@ -51,11 +34,12 @@ public class VendorEstimateResponse {
 		BOOKING_DATE = bOOKING_DATE;
 	}
 
-	public String getSCHEDULED_DATE() {
+
+	public LocalDateTime getSCHEDULED_DATE() {
 		return SCHEDULED_DATE;
 	}
 
-	public void setSCHEDULED_DATE(String sCHEDULED_DATE) {
+	public void setSCHEDULED_DATE(LocalDateTime sCHEDULED_DATE) {
 		SCHEDULED_DATE = sCHEDULED_DATE;
 	}
 
@@ -75,20 +59,36 @@ public class VendorEstimateResponse {
 		this.pickupAddress = pickupAddress;
 	}
 
-	public double getPickupLatitude() {
+	public Double getPickupLatitude() {
 		return pickupLatitude;
 	}
 
-	public void setPickupLatitude(double pickupLatitude) {
+	public void setPickupLatitude(Double pickupLatitude) {
 		this.pickupLatitude = pickupLatitude;
 	}
 
-	public double getPickupLongitude() {
+	public Double getPickupLongitude() {
 		return pickupLongitude;
 	}
 
-	public void setPickupLongitude(double pickupLongitude) {
+	public void setPickupLongitude(Double pickupLongitude) {
 		this.pickupLongitude = pickupLongitude;
+	}
+
+	public String getPickup_zipcode() {
+		return pickup_zipcode;
+	}
+
+	public void setPickup_zipcode(String pickup_zipcode) {
+		this.pickup_zipcode = pickup_zipcode;
+	}
+
+	public String getDrop_zipcode() {
+		return drop_zipcode;
+	}
+
+	public void setDrop_zipcode(String drop_zipcode) {
+		this.drop_zipcode = drop_zipcode;
 	}
 
 	public String getDropAddress() {
@@ -99,19 +99,19 @@ public class VendorEstimateResponse {
 		this.dropAddress = dropAddress;
 	}
 
-	public double getDropLatitude() {
+	public Double getDropLatitude() {
 		return dropLatitude;
 	}
 
-	public void setDropLatitude(double dropLatitude) {
+	public void setDropLatitude(Double dropLatitude) {
 		this.dropLatitude = dropLatitude;
 	}
 
-	public double getDropLongitude() {
+	public Double getDropLongitude() {
 		return dropLongitude;
 	}
 
-	public void setDropLongitude(double dropLongitude) {
+	public void setDropLongitude(Double dropLongitude) {
 		this.dropLongitude = dropLongitude;
 	}
 
@@ -131,6 +131,5 @@ public class VendorEstimateResponse {
 		this.statusHandler = statusHandler;
 	}
 
-	
     
 }

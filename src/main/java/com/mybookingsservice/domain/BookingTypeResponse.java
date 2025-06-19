@@ -1,19 +1,18 @@
 package com.mybookingsservice.domain;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class HouseholdItemsResponse {
-	
-	
+public class BookingTypeResponse {
+
 	private Long bookingId;
 	private Long custId;
 	private String status;
-	
+	private Long createBy;
 	private String pickupAddress;
     private Double pickupLatitude;
     private Double pickupLongitude;
@@ -22,7 +21,7 @@ public class HouseholdItemsResponse {
     private Double dropLatitude;
     private Double dropLongitude;
     private String dropZipcode;
-    private String cMobile;
+    
     @JsonProperty("bookingDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
 	private LocalDateTime bookingDate; 
@@ -31,10 +30,18 @@ public class HouseholdItemsResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
 	private LocalDateTime scheduledDate;
     
-    private List<HouseholdItemsDTO> householdItemsDTO;
+	private String serviceType;
 	private StatusHandler statusHandler;
-    
-    private String serviceType;
+	
+	
+
+	public Long getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(Long createBy) {
+		this.createBy = createBy;
+	}
 
 	public Long getBookingId() {
 		return bookingId;
@@ -50,6 +57,14 @@ public class HouseholdItemsResponse {
 
 	public void setCustId(Long custId) {
 		this.custId = custId;
+	}
+
+	public StatusHandler getStatusHandler() {
+		return statusHandler;
+	}
+
+	public void setStatusHandler(StatusHandler statusHandler) {
+		this.statusHandler = statusHandler;
 	}
 
 	public String getStatus() {
@@ -124,14 +139,6 @@ public class HouseholdItemsResponse {
 		this.dropZipcode = dropZipcode;
 	}
 
-	public String getcMobile() {
-		return cMobile;
-	}
-
-	public void setcMobile(String cMobile) {
-		this.cMobile = cMobile;
-	}
-
 	public LocalDateTime getBookingDate() {
 		return bookingDate;
 	}
@@ -148,22 +155,6 @@ public class HouseholdItemsResponse {
 		this.scheduledDate = scheduledDate;
 	}
 
-	public List<HouseholdItemsDTO> getHouseholdItemsDTO() {
-		return householdItemsDTO;
-	}
-
-	public void setHouseholdItemsDTO(List<HouseholdItemsDTO> householdItemsDTO) {
-		this.householdItemsDTO = householdItemsDTO;
-	}
-
-	public StatusHandler getStatusHandler() {
-		return statusHandler;
-	}
-
-	public void setStatusHandler(StatusHandler statusHandler) {
-		this.statusHandler = statusHandler;
-	}
-
 	public String getServiceType() {
 		return serviceType;
 	}
@@ -171,9 +162,5 @@ public class HouseholdItemsResponse {
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
 	}
-    
 
-	
-	
-	
 }

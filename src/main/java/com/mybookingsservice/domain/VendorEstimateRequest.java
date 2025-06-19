@@ -3,30 +3,44 @@ package com.mybookingsservice.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.mybookingsservice.entity.SelectedItems;
+
 
 public class VendorEstimateRequest {
-
+	
+	private Long custId;
+	private String c_mobile;
 	private LocalDateTime booking_date; 
-	private String scheduled_date;
+	private LocalDateTime scheduled_date;
 	private String service_type;
 	private String pickup_address;
-    private double pickup_latitude;
-    private double pickup_longitude;
+    private Double pickup_latitude;
+    private Double pickup_longitude;
     
     private String drop_address;
-    private double drop_latitude;
-    private double drop_longitude;
+    private Double drop_latitude;
+    private Double drop_longitude;
     private String pickup_zipcode;
     private String drop_zipcode;
     
-    private List<SelectedItemsDTO> selectedItemsDTO;
-    
-    
-    
-	public List<SelectedItemsDTO> getSelectedItemsDTO() {
-		return selectedItemsDTO;
+    private List<SelectedItems> selectedItems;
+
+	public Long getCustId() {
+		return custId;
 	}
-	
+
+	public void setCustId(Long custId) {
+		this.custId = custId;
+	}
+
+	public String getC_mobile() {
+		return c_mobile;
+	}
+
+	public void setC_mobile(String c_mobile) {
+		this.c_mobile = c_mobile;
+	}
+
 	public LocalDateTime getBooking_date() {
 		return booking_date;
 	}
@@ -35,11 +49,11 @@ public class VendorEstimateRequest {
 		this.booking_date = booking_date;
 	}
 
-	public String getScheduled_date() {
+	public LocalDateTime getScheduled_date() {
 		return scheduled_date;
 	}
 
-	public void setScheduled_date(String scheduled_date) {
+	public void setScheduled_date(LocalDateTime scheduled_date) {
 		this.scheduled_date = scheduled_date;
 	}
 
@@ -51,66 +65,77 @@ public class VendorEstimateRequest {
 		this.service_type = service_type;
 	}
 
-	public void setSelectedItemsDTO(List<SelectedItemsDTO> selectedItemsDTO) {
-		this.selectedItemsDTO = selectedItemsDTO;
-	}
-
 	public String getPickup_address() {
 		return pickup_address;
 	}
+
 	public void setPickup_address(String pickup_address) {
 		this.pickup_address = pickup_address;
 	}
-	public double getPickup_latitude() {
+
+	public Double getPickup_latitude() {
 		return pickup_latitude;
 	}
-	public void setPickup_latitude(double pickup_latitude) {
+
+	public void setPickup_latitude(Double pickup_latitude) {
 		this.pickup_latitude = pickup_latitude;
 	}
-	public double getPickup_longitude() {
+
+	public Double getPickup_longitude() {
 		return pickup_longitude;
 	}
-	public void setPickup_longitude(double pickup_longitude) {
+
+	public void setPickup_longitude(Double pickup_longitude) {
 		this.pickup_longitude = pickup_longitude;
 	}
-	public String getPickup_zipcode() {
-		return pickup_zipcode;
-	}
-	public void setPickup_zipcode(String pickup_zipcode) {
-		this.pickup_zipcode = pickup_zipcode;
-	}
+
 	public String getDrop_address() {
 		return drop_address;
 	}
+
 	public void setDrop_address(String drop_address) {
 		this.drop_address = drop_address;
 	}
-	public double getDrop_latitude() {
+
+	public Double getDrop_latitude() {
 		return drop_latitude;
 	}
-	public void setDrop_latitude(double drop_latitude) {
+
+	public void setDrop_latitude(Double drop_latitude) {
 		this.drop_latitude = drop_latitude;
 	}
-	public double getDrop_longitude() {
+
+	public Double getDrop_longitude() {
 		return drop_longitude;
 	}
-	public void setDrop_longitude(double drop_longitude) {
+
+	public void setDrop_longitude(Double drop_longitude) {
 		this.drop_longitude = drop_longitude;
 	}
+
+	public String getPickup_zipcode() {
+		return pickup_zipcode;
+	}
+
+	public void setPickup_zipcode(String pickup_zipcode) {
+		this.pickup_zipcode = pickup_zipcode;
+	}
+
 	public String getDrop_zipcode() {
 		return drop_zipcode;
 	}
+
 	public void setDrop_zipcode(String drop_zipcode) {
 		this.drop_zipcode = drop_zipcode;
 	}
 
-	@Override
-	public String toString() {
-		return "VendorEstimateRequest [booking_date=" + booking_date + ", scheduled_date=" + scheduled_date
-				+ ", service_type=" + service_type + ", pickup_address=" + pickup_address + ", pickup_latitude="
-				+ pickup_latitude + ", pickup_longitude=" + pickup_longitude + ", pickup_zipcode=" + pickup_zipcode
-				+ ", drop_address=" + drop_address + ", drop_latitude=" + drop_latitude + ", drop_longitude="
-				+ drop_longitude + ", drop_zipcode=" + drop_zipcode + ", selectedItemsDTO=" + selectedItemsDTO + "]";
+	public List<SelectedItems> getSelectedItems() {
+		return selectedItems;
 	}
+
+	public void setSelectedItems(List<SelectedItems> selectedItems) {
+		this.selectedItems = selectedItems;
+	}
+    
 
 }

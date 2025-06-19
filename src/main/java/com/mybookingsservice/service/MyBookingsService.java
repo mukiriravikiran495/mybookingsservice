@@ -2,11 +2,15 @@ package com.mybookingsservice.service;
 
 import java.util.List;
 
+import com.mybookingsservice.domain.BookingTypeRequest;
+import com.mybookingsservice.domain.BookingTypeResponse;
 import com.mybookingsservice.domain.CustCancelledBookingResponse;
 import com.mybookingsservice.domain.CustCancelledBookingResponseDTO;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.HouseholdItemsDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
+import com.mybookingsservice.domain.MyBookingsResponseDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorCancelledBookingResponse;
 import com.mybookingsservice.domain.VendorEstimateRequest;
@@ -60,5 +64,16 @@ public interface MyBookingsService {
 
 	VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request,
 			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler);
+
+
+	MyBookingsResponseDTO createBookings(MyBookingsDTO mybookingsDTO, MyBookingsResponseDTO myBookingsResponse,
+			StatusHandler statusHandler);
+
+
+	HouseholdItemsResponse savebookingType(BookingTypeRequest request, HouseholdItemsResponse response,
+			StatusHandler statusHandler);
+
+
+	
 
 }

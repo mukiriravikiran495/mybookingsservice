@@ -1,11 +1,13 @@
 package com.mybookingsservice.configuration;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 @Configuration
 @EnableTransactionManagement
@@ -77,4 +82,12 @@ public class HibernateConfiguration {
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;
     }
+    
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return builder -> builder
+            .serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")))
+            .deserializers(new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")));
+    }
+    
 }

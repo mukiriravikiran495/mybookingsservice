@@ -2,26 +2,26 @@ package com.mybookingsservice.domain;
 
 public class SelectedItemsDTO {
 
-	private long itemId;
-	private long itemCode;
+	private Long itemId;
+	private Long itemCode;
 	private String itemName;
 	private String category;
 	private String estCategory;
-	private String weight;
-	private long qty;
-	private String createdBy;
-	private String updatedBy;
+	private int weight;
+	private int qty;
+	private Long createdBy;
+	private Long updatedBy;
 	private String isActive;
-	public long getItemId() {
+	public Long getItemId() {
 		return itemId;
 	}
-	public void setItemId(long itemId) {
+	public void setItemId(Long itemId) {
 		this.itemId = itemId;
 	}
-	public long getItemCode() {
+	public Long getItemCode() {
 		return itemCode;
 	}
-	public void setItemCode(long itemCode) {
+	public void setItemCode(Long itemCode) {
 		this.itemCode = itemCode;
 	}
 	public String getItemName() {
@@ -42,28 +42,28 @@ public class SelectedItemsDTO {
 	public void setEstCategory(String estCategory) {
 		this.estCategory = estCategory;
 	}
-	public String getWeight() {
+	public int getWeight() {
 		return weight;
 	}
-	public void setWeight(String weight) {
+	public void setWeight(int weight) {
 		this.weight = weight;
 	}
-	public long getQty() {
+	public int getQty() {
 		return qty;
 	}
-	public void setQty(long qty) {
+	public void setQty(int qty) {
 		this.qty = qty;
 	}
-	public String getCreatedBy() {
+	public Long getCreatedBy() {
 		return createdBy;
 	}
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(Long createdBy) {
 		this.createdBy = createdBy;
 	}
-	public String getUpdatedBy() {
+	public Long getUpdatedBy() {
 		return updatedBy;
 	}
-	public void setUpdatedBy(String updatedBy) {
+	public void setUpdatedBy(Long updatedBy) {
 		this.updatedBy = updatedBy;
 	}
 	public String getIsActive() {
@@ -72,6 +72,5 @@ public class SelectedItemsDTO {
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
 	
 }

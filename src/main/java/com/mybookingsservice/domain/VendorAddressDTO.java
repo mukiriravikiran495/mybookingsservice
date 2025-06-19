@@ -1,59 +1,82 @@
 package com.mybookingsservice.domain;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 public class VendorAddressDTO {
 	
-	private String v_address_Id;
-    private String v_address1;
-    private String v_city;
-    private String v_state;
-    private String v_zipcode;
-	public String getV_address_Id() {
-		return v_address_Id;
+	private Long vAddressId;
+    private String vAddress1;
+    private String vCity;
+    private String vState;
+    private String vZipcode;
+    private int basePricePerKm;
+    private int pricePerKg;
+    private int avgDeliveryTimeInDays;
+    private int estimatedPrice;
+    private LocalDateTime estimatedDeliveryDate;
+	public Long getvAddressId() {
+		return vAddressId;
 	}
-	public void setV_address_Id(String v_address_Id) {
-		this.v_address_Id = v_address_Id;
+	public void setvAddressId(Long vAddressId) {
+		this.vAddressId = vAddressId;
 	}
-	public String getV_address1() {
-		return v_address1;
+	public String getvAddress1() {
+		return vAddress1;
 	}
-	public void setV_address1(String v_address1) {
-		this.v_address1 = v_address1;
+	public void setvAddress1(String vAddress1) {
+		this.vAddress1 = vAddress1;
 	}
-	public String getV_city() {
-		return v_city;
+	public String getvCity() {
+		return vCity;
 	}
-	public void setV_city(String v_city) {
-		this.v_city = v_city;
+	public void setvCity(String vCity) {
+		this.vCity = vCity;
 	}
-	public String getV_state() {
-		return v_state;
+	public String getvState() {
+		return vState;
 	}
-	public void setV_state(String v_state) {
-		this.v_state = v_state;
+	public void setvState(String vState) {
+		this.vState = vState;
 	}
-	public String getV_zipcode() {
-		return v_zipcode;
+	public String getvZipcode() {
+		return vZipcode;
 	}
-	public void setV_zipcode(String v_zipcode) {
-		this.v_zipcode = v_zipcode;
+	public void setvZipcode(String vZipcode) {
+		this.vZipcode = vZipcode;
 	}
-	public VendorAddressDTO(String v_address_Id, String v_address1, String v_city, String v_state, String v_zipcode) {
-		super();
-		this.v_address_Id = v_address_Id;
-		this.v_address1 = v_address1;
-		this.v_city = v_city;
-		this.v_state = v_state;
-		this.v_zipcode = v_zipcode;
+	public int getBasePricePerKm() {
+		return basePricePerKm;
 	}
+	public void setBasePricePerKm(int basePricePerKm) {
+		this.basePricePerKm = basePricePerKm;
+	}
+	public int getPricePerKg() {
+		return pricePerKg;
+	}
+	public void setPricePerKg(int pricePerKg) {
+		this.pricePerKg = pricePerKg;
+	}
+	public int getAvgDeliveryTimeInDays() {
+		return avgDeliveryTimeInDays;
+	}
+	public void setAvgDeliveryTimeInDays(int avgDeliveryTimeInDays) {
+		this.avgDeliveryTimeInDays = avgDeliveryTimeInDays;
+	}
+	public int getEstimatedPrice() {
+		return estimatedPrice;
+	}
+	public void setEstimatedPrice(int estimatedPrice) {
+		this.estimatedPrice = estimatedPrice;
+	}
+	public LocalDateTime getEstimatedDeliveryDate() {
+		return estimatedDeliveryDate;
+	}
+	public void setEstimatedDeliveryDate(LocalDateTime estimatedDeliveryDate) {
+		this.estimatedDeliveryDate = estimatedDeliveryDate;
+	}
+	
     
-    public VendorAddressDTO() {
-    	
-    }
-	@Override
-	public String toString() {
-		return "VendorAddressDTO [v_address_Id=" + v_address_Id + ", v_address1=" + v_address1 + ", v_city=" + v_city
-				+ ", v_state=" + v_state + ", v_zipcode=" + v_zipcode + "]";
-	}
-    
+	
 
 }

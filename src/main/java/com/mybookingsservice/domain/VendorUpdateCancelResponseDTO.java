@@ -4,16 +4,20 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class VendorUpdateCancelResponseDTO {
 
-	private long vendorId;
-	private long bookingId;
+	private Long vendorId;
+	private Long bookingId;
 	private String status;
 	private StatusHandler statusHandler;
-	
-	
-	public long getBookingId() {
+	public Long getVendorId() {
+		return vendorId;
+	}
+	public void setVendorId(Long vendorId) {
+		this.vendorId = vendorId;
+	}
+	public Long getBookingId() {
 		return bookingId;
 	}
-	public void setBookingId(long bookingId) {
+	public void setBookingId(Long bookingId) {
 		this.bookingId = bookingId;
 	}
 	public String getStatus() {
@@ -30,13 +34,4 @@ public class VendorUpdateCancelResponseDTO {
 	}
 	
 	
-	public VendorUpdateCancelResponseDTO() {
-		super();
-	}
-	public long getVendorId() {
-		return vendorId;
-	}
-	public void setVendorId(long vendorId) {
-		this.vendorId = vendorId;
-	}
 }

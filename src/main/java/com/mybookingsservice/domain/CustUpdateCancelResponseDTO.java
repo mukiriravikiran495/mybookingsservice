@@ -4,39 +4,45 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class CustUpdateCancelResponseDTO {
 
-	private long custId;
-	private long bookingId;
+	private Long custId;
+	private Long bookingId;
 	private String status;
 	private StatusHandler statusHandler;
-	public long getCustId() {
-		return custId;
-	}
-	public void setCustId(long custId) {
-		this.custId = custId;
-	}
-	
-	public long getBookingId() {
-		return bookingId;
-	}
-	public void setBookingId(long bookingId) {
-		this.bookingId = bookingId;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	public StatusHandler getStatusHandler() {
-		return statusHandler;
-	}
-	public void setStatusHandler(StatusHandler statusHandler) {
-		this.statusHandler = statusHandler;
-	}
-	
 	
 	public CustUpdateCancelResponseDTO() {
 		super();
+	}
+
+	public Long getCustId() {
+		return custId;
+	}
+
+	public void setCustId(Long custId) {
+		this.custId = custId;
+	}
+
+	public Long getBookingId() {
+		return bookingId;
+	}
+
+	public void setBookingId(Long bookingId) {
+		this.bookingId = bookingId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public StatusHandler getStatusHandler() {
+		return statusHandler;
+	}
+
+	public void setStatusHandler(StatusHandler statusHandler) {
+		this.statusHandler = statusHandler;
 	}
 	
 	

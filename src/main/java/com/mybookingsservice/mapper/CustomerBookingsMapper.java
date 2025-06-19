@@ -51,5 +51,7 @@ public interface CustomerBookingsMapper {
 	
     CustCancelledBookingResponseDTO toDto(MyBookings entity);
     List<CustCancelledBookingResponseDTO> toCancelDtoList(List<MyBookings> entities);
+    
+    List<HouseholdItemsDTO> toitemsDtoList(List<HouseholdItems> entities);
 	
 }

@@ -19,5 +19,7 @@ public class AppConstants {
 	public static final String NOT_FOUND = "NOT_FOUND";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String FAILED = "FAILED";
+	public static final String INSERT_QUERY_EXECUTION_FAILED = "INSERT_QUERY_EXECUTION_FAILED";
+	public static final String PENDING = "PENDING";
 
 }

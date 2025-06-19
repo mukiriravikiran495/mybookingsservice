@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import com.mybookingsservice.domain.CustAddressDTO;
 import com.mybookingsservice.domain.CustomerDetailsDTO;
 import com.mybookingsservice.domain.MyBookingsDTO;
+import com.mybookingsservice.domain.MyBookingsResponseDTO;
 import com.mybookingsservice.domain.SelectedItemsDTO;
 import com.mybookingsservice.domain.VendorAddressDTO;
 import com.mybookingsservice.domain.VendorDetailsDTO;
@@ -37,14 +38,29 @@ public interface MyBookingsMapper {
 	@Mapping(source = "itemId", target = "itemId")
 	SelectedItemsDTO toDto(SelectedItems entity);
 
-	@Mapping(source = "c_address_id", target = "c_address_Id")
+	@Mapping(source = "cAddressId", target = "cAddressId")
 	CustAddressDTO toCustAddressDTO(CustAddress custAddress);
 
 	List<CustAddressDTO> toCustAddressDTOList(List<CustAddress> addresses);
 
-	@Mapping(source = "v_address_id", target = "v_address_Id")
+	@Mapping(source = "vAddressId", target = "vAddressId")
 	VendorAddressDTO toVendorAddressDTO(VendorAddress vendorAddress);
 
 	List<VendorAddressDTO> toVendorAddressDTOList(List<VendorAddressDTO> addresses);
+	
+	SelectedItems toEntity(SelectedItemsDTO dto);
+
+
+    List<SelectedItems> toEntityList(List<SelectedItemsDTO> dtoList);
+
+    List<SelectedItemsDTO> toDtoSelectedList(List<SelectedItems> entityList);
+
+	MyBookings toEntity(MyBookingsDTO mybookingsDTO);
+
+//	MyBookingsResponseDTO toBookingsDto(MyBookings bookings);
+//
+//	MyBookingsResponseDTO toResponseDTO(MyBookings b);
+	
+	List<CustAddress> toAddressEntityList(List<CustAddressDTO> dtoList);
 
 }

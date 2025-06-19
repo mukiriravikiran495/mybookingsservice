@@ -4,12 +4,14 @@ package com.mybookingsservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,20 +19,20 @@ import jakarta.persistence.Table;
 public class CustAddress {
 
 	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY)
-	private long c_address_id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cust_address_seq_gen")
+	@SequenceGenerator(name = "cust_address_seq_gen", sequenceName = "CUSTOMER.CUST_ADDRESS_SEQ", allocationSize = 1)
+	private Long cAddressId;
 	
-	private String c_address1;
+	private String cAddress1;
 	
-	private String c_city;
+	private String cCity;
 	
-	private String c_state;
+	private String cState;
 	
-	private String c_zipcode;
+	private String cZipcode;
 	
-	@OneToOne
-	@JoinColumn(name = "custId")
-	@JsonBackReference
+	@OneToOne(mappedBy = "custAddress", cascade = CascadeType.ALL)
+    @JoinColumn(name = "custId")
     private CustomerDetails customerDetails;
 
 	public CustAddress() {
@@ -38,52 +40,47 @@ public class CustAddress {
 	}
 
 	
-
-	public long getC_address_id() {
-		return c_address_id;
+	public Long getcAddressId() {
+		return cAddressId;
 	}
 
 
-
-	public void setC_address_id(long c_address_id) {
-		this.c_address_id = c_address_id;
+	public void setcAddressId(Long cAddressId) {
+		this.cAddressId = cAddressId;
 	}
 
 
-
-	public String getC_address1() {
-		return c_address1;
+	public String getcAddress1() {
+		return cAddress1;
 	}
 
-	public void setC_address1(String c_address1) {
-		this.c_address1 = c_address1;
+	public void setcAddress1(String cAddress1) {
+		this.cAddress1 = cAddress1;
 	}
 
-	public String getC_city() {
-		return c_city;
+	public String getcCity() {
+		return cCity;
 	}
 
-	public void setC_city(String c_city) {
-		this.c_city = c_city;
+	public void setcCity(String cCity) {
+		this.cCity = cCity;
 	}
 
-	public String getC_state() {
-		return c_state;
+	public String getcState() {
+		return cState;
 	}
 
-	public void setC_state(String c_state) {
-		this.c_state = c_state;
+	public void setcState(String cState) {
+		this.cState = cState;
 	}
 
-	public String getC_zipcode() {
-		return c_zipcode;
+	public String getcZipcode() {
+		return cZipcode;
 	}
 
-	public void setC_zipcode(String c_zipcode) {
-		this.c_zipcode = c_zipcode;
+	public void setcZipcode(String cZipcode) {
+		this.cZipcode = cZipcode;
 	}
-
-
 
 	public CustomerDetails getCustomerDetails() {
 		return customerDetails;

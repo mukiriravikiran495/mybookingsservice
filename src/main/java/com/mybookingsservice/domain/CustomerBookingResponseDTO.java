@@ -13,12 +13,12 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class CustomerBookingResponseDTO {
 	
-	private long bookingId;
+	private Long bookingId;
 	private String status;
 	private LocalDateTime BOOKING_DATE; 
 	private String SCHEDULED_DATE;
 	private String PICKUP_TIME_SLOT; 
-	private String DELIVERY_DATE;
+	private LocalDateTime DELIVERY_DATE;
 	private String SERVICE_TYPE;
 	private BigInteger ITEM_COUNT;   
 	private BigDecimal  ESTIMATED_WEIGHT;  
@@ -32,38 +32,23 @@ public class CustomerBookingResponseDTO {
 	private String VEHICLE_NUMBER; 
 	private String TRACKING_URL;
 	private String OTP_FOR_DELIVERY;  
-	private String CREATED_AT;  
-	private String CREATED_BY; 
-	private String UPDATED_AT;  
-	private String UPDATED_BY;
+	private LocalDateTime CREATED_AT;  
+	private Long CREATED_BY; 
+	private LocalDateTime UPDATED_AT;  
+	private Long UPDATED_BY;
 	
-	private CustomerDetails customerDetails;
 	
+	private VendorDetailsDTO vendorDetails;
+	private CustomerDetailsDTO customerDetails;
 	private StatusHandler statusHandler;
 	
 	private List<SelectedItemsDTO> selectedItemsDTO;
-	
-	public List<SelectedItemsDTO> getSelectedItemsDTO() {
-		return selectedItemsDTO;
-	}
 
-	public void setSelectedItemsDTO(List<SelectedItemsDTO> selectedItemsDTO) {
-		this.selectedItemsDTO = selectedItemsDTO;
-	}
-
-	public StatusHandler getStatusHandler() {
-		return statusHandler;
-	}
-
-	public void setStatusHandler(StatusHandler statusHandler) {
-		this.statusHandler = statusHandler;
-	}
-
-	public long getBookingId() {
+	public Long getBookingId() {
 		return bookingId;
 	}
 
-	public void setBookingId(long bookingId) {
+	public void setBookingId(Long bookingId) {
 		this.bookingId = bookingId;
 	}
 
@@ -99,11 +84,11 @@ public class CustomerBookingResponseDTO {
 		PICKUP_TIME_SLOT = pICKUP_TIME_SLOT;
 	}
 
-	public String getDELIVERY_DATE() {
+	public LocalDateTime getDELIVERY_DATE() {
 		return DELIVERY_DATE;
 	}
 
-	public void setDELIVERY_DATE(String dELIVERY_DATE) {
+	public void setDELIVERY_DATE(LocalDateTime dELIVERY_DATE) {
 		DELIVERY_DATE = dELIVERY_DATE;
 	}
 
@@ -211,46 +196,70 @@ public class CustomerBookingResponseDTO {
 		OTP_FOR_DELIVERY = oTP_FOR_DELIVERY;
 	}
 
-	public String getCREATED_AT() {
+	public LocalDateTime getCREATED_AT() {
 		return CREATED_AT;
 	}
 
-	public void setCREATED_AT(String cREATED_AT) {
+	public void setCREATED_AT(LocalDateTime cREATED_AT) {
 		CREATED_AT = cREATED_AT;
 	}
 
-	public String getCREATED_BY() {
+	public Long getCREATED_BY() {
 		return CREATED_BY;
 	}
 
-	public void setCREATED_BY(String cREATED_BY) {
+	public void setCREATED_BY(Long cREATED_BY) {
 		CREATED_BY = cREATED_BY;
 	}
 
-	public String getUPDATED_AT() {
+	public LocalDateTime getUPDATED_AT() {
 		return UPDATED_AT;
 	}
 
-	public void setUPDATED_AT(String uPDATED_AT) {
+	public void setUPDATED_AT(LocalDateTime uPDATED_AT) {
 		UPDATED_AT = uPDATED_AT;
 	}
 
-	public String getUPDATED_BY() {
+	public Long getUPDATED_BY() {
 		return UPDATED_BY;
 	}
 
-	public void setUPDATED_BY(String uPDATED_BY) {
+	public void setUPDATED_BY(Long uPDATED_BY) {
 		UPDATED_BY = uPDATED_BY;
 	}
 
-	public CustomerDetails getCustomerDetails() {
+	public VendorDetailsDTO getVendorDetails() {
+		return vendorDetails;
+	}
+
+	public void setVendorDetails(VendorDetailsDTO vendorDetails) {
+		this.vendorDetails = vendorDetails;
+	}
+
+	public CustomerDetailsDTO getCustomerDetails() {
 		return customerDetails;
 	}
 
-	public void setCustomerDetails(CustomerDetails customerDetails) {
+	public void setCustomerDetails(CustomerDetailsDTO customerDetails) {
 		this.customerDetails = customerDetails;
 	}
 
+	public StatusHandler getStatusHandler() {
+		return statusHandler;
+	}
+
+	public void setStatusHandler(StatusHandler statusHandler) {
+		this.statusHandler = statusHandler;
+	}
+
+	public List<SelectedItemsDTO> getSelectedItemsDTO() {
+		return selectedItemsDTO;
+	}
+
+	public void setSelectedItemsDTO(List<SelectedItemsDTO> selectedItemsDTO) {
+		this.selectedItemsDTO = selectedItemsDTO;
+	}
+	
 	
 
 }

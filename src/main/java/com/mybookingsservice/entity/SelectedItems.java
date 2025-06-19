@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,10 +18,12 @@ public class SelectedItems {
 
 	@Id
     @Column(name = "ITEMID")
-    private long itemId;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "selecteditems_seq_gen")
+	@SequenceGenerator(name = "selecteditems_seq_gen", sequenceName = "selecteditems_seq", allocationSize = 1)
+    private Long itemId;
 
     @Column(name = "ITEMCODE")
-    private long itemCode;
+    private Long itemCode;
 
     @Column(name = "ITEMNAME")
     private String itemName;
@@ -31,10 +35,10 @@ public class SelectedItems {
     private String estCategory;
 
     @Column(name = "WEIGHT")
-    private String weight; // DB shows '3kg' → must be String
+    private int weight; // DB shows '3kg' → must be String
 
     @Column(name = "QTY")
-    private long qty;
+    private Long qty;
 
     @Column(name = "CREATEDBY")
     private String createdBy;
@@ -50,19 +54,19 @@ public class SelectedItems {
     @JsonBackReference
     private MyBookings booking;
 
-	public long getItemId() {
+	public Long getItemId() {
 		return itemId;
 	}
 
-	public void setItemId(long itemId) {
+	public void setItemId(Long itemId) {
 		this.itemId = itemId;
 	}
 
-	public long getItemCode() {
+	public Long getItemCode() {
 		return itemCode;
 	}
 
-	public void setItemCode(long itemCode) {
+	public void setItemCode(Long itemCode) {
 		this.itemCode = itemCode;
 	}
 
@@ -90,19 +94,20 @@ public class SelectedItems {
 		this.estCategory = estCategory;
 	}
 
-	public String getWeight() {
+
+	public int getWeight() {
 		return weight;
 	}
 
-	public void setWeight(String weight) {
+	public void setWeight(int weight) {
 		this.weight = weight;
 	}
 
-	public long getQty() {
+	public Long getQty() {
 		return qty;
 	}
 
-	public void setQty(long qty) {
+	public void setQty(Long qty) {
 		this.qty = qty;
 	}
 
@@ -137,7 +142,6 @@ public class SelectedItems {
 	public void setBooking(MyBookings booking) {
 		this.booking = booking;
 	}
-    
-    
-    
+
+	
 }

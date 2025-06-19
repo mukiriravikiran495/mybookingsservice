@@ -1,6 +1,7 @@
 package com.mybookingsservice.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -15,43 +16,27 @@ import jakarta.persistence.Table;
 public class VendorServiceArea {
 	
 	@Id
-	private long v_service_id;
+	private Long v_service_id;
 	private String v_address1;
 	private String v_city;
 	private String v_state;
 	private String v_zipcode;
-	private long basePricePerKm;
-    private long pricePerKg;
-    private long avgDeliveryTimeInDays;
-    private double estimatedPrice;
-    private Timestamp estimatedDeliveryDate;
+	private int basePricePerKm;
+    private int pricePerKg;
+    private int avgDeliveryTimeInDays;
+    private int estimatedPrice;
+    private LocalDateTime estimatedDeliveryDate;
     
 	@ManyToOne
     @JoinColumn(name = "vendorId")
     @JsonBackReference
     private Vendor vendor;
 
-	public Timestamp getEstimatedDeliveryDate() {
-		return estimatedDeliveryDate;
-	}
-
-	public void setEstimatedDeliveryDate(Timestamp estimatedDeliveryDate) {
-		this.estimatedDeliveryDate = estimatedDeliveryDate;
-	}
-
-	public double getEstimatedPrice() {
-		return estimatedPrice;
-	}
-
-	public void setEstimatedPrice(double estimatedPrice) {
-		this.estimatedPrice = estimatedPrice;
-	}
-
-	public long getV_service_id() {
+	public Long getV_service_id() {
 		return v_service_id;
 	}
 
-	public void setV_service_id(long v_service_id) {
+	public void setV_service_id(Long v_service_id) {
 		this.v_service_id = v_service_id;
 	}
 
@@ -87,6 +72,46 @@ public class VendorServiceArea {
 		this.v_zipcode = v_zipcode;
 	}
 
+	public int getBasePricePerKm() {
+		return basePricePerKm;
+	}
+
+	public void setBasePricePerKm(int basePricePerKm) {
+		this.basePricePerKm = basePricePerKm;
+	}
+
+	public int getPricePerKg() {
+		return pricePerKg;
+	}
+
+	public void setPricePerKg(int pricePerKg) {
+		this.pricePerKg = pricePerKg;
+	}
+
+	public int getAvgDeliveryTimeInDays() {
+		return avgDeliveryTimeInDays;
+	}
+
+	public void setAvgDeliveryTimeInDays(int avgDeliveryTimeInDays) {
+		this.avgDeliveryTimeInDays = avgDeliveryTimeInDays;
+	}
+
+	public int getEstimatedPrice() {
+		return estimatedPrice;
+	}
+
+	public void setEstimatedPrice(int estimatedPrice) {
+		this.estimatedPrice = estimatedPrice;
+	}
+
+	public LocalDateTime getEstimatedDeliveryDate() {
+		return estimatedDeliveryDate;
+	}
+
+	public void setEstimatedDeliveryDate(LocalDateTime estimatedDeliveryDate) {
+		this.estimatedDeliveryDate = estimatedDeliveryDate;
+	}
+
 	public Vendor getVendor() {
 		return vendor;
 	}
@@ -95,30 +120,5 @@ public class VendorServiceArea {
 		this.vendor = vendor;
 	}
 
-	public long getBasePricePerKm() {
-		return basePricePerKm;
-	}
-
-	public void setBasePricePerKm(long basePricePerKm) {
-		this.basePricePerKm = basePricePerKm;
-	}
-
-	public long getPricePerKg() {
-		return pricePerKg;
-	}
-
-	public void setPricePerKg(long pricePerKg) {
-		this.pricePerKg = pricePerKg;
-	}
-
-	public long getAvgDeliveryTimeInDays() {
-		return avgDeliveryTimeInDays;
-	}
-
-	public void setAvgDeliveryTimeInDays(long avgDeliveryTimeInDays) {
-		this.avgDeliveryTimeInDays = avgDeliveryTimeInDays;
-	}
-
 	
-
 }

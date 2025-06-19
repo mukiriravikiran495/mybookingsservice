@@ -15,11 +15,11 @@ import jakarta.persistence.Table;
 public class Vendor {
 
 	@Id
-	private long vendorId;
-	private String v_firstname;
-	private String v_lastname;
-	private String v_mobile;
-	private String v_email;
+	private Long vendorId;
+	private String vFirstname;
+	private String vLastname;
+	private String vMobile;
+	private String vEmail;
 	
 	
 	@OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
@@ -27,53 +27,53 @@ public class Vendor {
     private List<VendorServiceArea> vendorServiceArea;
 
 
-	public long getVendorId() {
+	public Long getVendorId() {
 		return vendorId;
 	}
 
 
-	public void setVendorId(long vendorId) {
+	public void setVendorId(Long vendorId) {
 		this.vendorId = vendorId;
 	}
 
 
-	public String getV_firstname() {
-		return v_firstname;
+	public String getvFirstname() {
+		return vFirstname;
 	}
 
 
-	public void setV_firstname(String v_firstname) {
-		this.v_firstname = v_firstname;
+	public void setvFirstname(String vFirstname) {
+		this.vFirstname = vFirstname;
 	}
 
 
-	public String getV_lastname() {
-		return v_lastname;
+	public String getvLastname() {
+		return vLastname;
 	}
 
 
-	public void setV_lastname(String v_lastname) {
-		this.v_lastname = v_lastname;
+	public void setvLastname(String vLastname) {
+		this.vLastname = vLastname;
 	}
 
 
-	public String getV_mobile() {
-		return v_mobile;
+	public String getvMobile() {
+		return vMobile;
 	}
 
 
-	public void setV_mobile(String v_mobile) {
-		this.v_mobile = v_mobile;
+	public void setvMobile(String vMobile) {
+		this.vMobile = vMobile;
 	}
 
 
-	public String getV_email() {
-		return v_email;
+	public String getvEmail() {
+		return vEmail;
 	}
 
 
-	public void setV_email(String v_email) {
-		this.v_email = v_email;
+	public void setvEmail(String vEmail) {
+		this.vEmail = vEmail;
 	}
 
 
@@ -85,6 +85,7 @@ public class Vendor {
 	public void setVendorServiceArea(List<VendorServiceArea> vendorServiceArea) {
 		this.vendorServiceArea = vendorServiceArea;
 	}
+
 
 
 }

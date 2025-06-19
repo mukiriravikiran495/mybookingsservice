@@ -4,7 +4,7 @@ import java.util.List;
 
 public class VendorDetailsDTO {
 
-	private String vendorId;
+	private long vendorId;
 	private String v_firstName;
 	private String v_lastName;
 	private String v_mobile;
@@ -12,10 +12,11 @@ public class VendorDetailsDTO {
 //	private List<VendorAddressDTO> vendorAddress;
 	private VendorAddressDTO vendorAddress;
 	
-	public String getVendorId() {
+	
+	public long getVendorId() {
 		return vendorId;
 	}
-	public void setVendorId(String vendorId) {
+	public void setVendorId(long vendorId) {
 		this.vendorId = vendorId;
 	}
 	public String getV_firstName() {
