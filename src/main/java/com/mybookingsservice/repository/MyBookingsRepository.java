@@ -15,6 +15,33 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface MyBookingsRepository extends JpaRepository<MyBookings, Long>{
 
+	MyBookings findAllByBookingId(Long bookingId);
+
+	@Query("SELECT m FROM MyBookings m where m.bookingId = :bookingId AND m.custId = :custId AND m.vendorId = :vendorId ")
+	MyBookings findByBookingIdAndCustIdAndVendorId(Long bookingId, Long custId, Long vendorId);
+
+	@Query("SELECT m FROM MyBookings m LEFT JOIN FETCH m.selectedItems WHERE m.custId = :custId")
+	List<MyBookings> findByCustIdWithItems(Long custId);
+
+	@Query("SELECT m FROM MyBookings m where m.bookingId = :bookingId AND m.custId = :custId ")
+	MyBookings findByBookingIdAndCustId(Long custId, Long bookingId);
+
+	@Query("SELECT m FROM MyBookings m LEFT JOIN FETCH m.selectedItems WHERE m.custId = :custId AND LOWER(m.status) = LOWER(:status)")
+	List<MyBookings> findByCustIdAndStatusWithItems(Long custId, String status);
+
+	@Query("SELECT m FROM MyBookings m LEFT JOIN FETCH m.selectedItems WHERE m.vendorId = :vendorId")
+	List<MyBookings> findByVendorIdWithItems(Long vendorId);
+
+	@Query("SELECT m FROM MyBookings m where m.bookingId = :bookingId AND m.vendorId = :vendorId ")
+	MyBookings findByBookingIdAndVendorId(Long vendorId, Long bookingId);
+	
+	@Query("SELECT m FROM MyBookings m LEFT JOIN FETCH m.selectedItems WHERE m.vendorId = :vendorId AND LOWER(m.status) = LOWER(:status)")
+	List<MyBookings> findByVendorIdAndStatusWithItems(Long vendorId, String status);
+
+//	List<MyBookings> findByVendorIdWithItems(long vendorId);
+
+//	MyBookings updateBookingStatus(Long bookingId, Long custId, Long vendorId, String accepted);
+
 //	@Query("SELECT b FROM MyBookings b " +
 //	           "JOIN FETCH b.customerDetails " +
 //	           "JOIN FETCH b.vendorDetails")

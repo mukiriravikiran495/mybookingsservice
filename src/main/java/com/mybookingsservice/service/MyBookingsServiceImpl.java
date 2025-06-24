@@ -1,7 +1,6 @@
 package com.mybookingsservice.service;
 
 import java.lang.invoke.MethodHandles;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,27 +17,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mybookingsservice.config.SecurityConfig;
 import com.mybookingsservice.constants.AppConstants;
+import com.mybookingsservice.domain.AcceptBookingRequest;
+import com.mybookingsservice.domain.AcceptBookingResponse;
 import com.mybookingsservice.domain.BookingTypeRequest;
-import com.mybookingsservice.domain.CustCancelledBookingResponse;
+import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
 import com.mybookingsservice.domain.HouseholdItemsDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
-import com.mybookingsservice.domain.MyBookingsDTO;
+import com.mybookingsservice.domain.MyBookingsRequestDTO;
 import com.mybookingsservice.domain.MyBookingsResponseDTO;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorCancelledBookingResponse;
+import com.mybookingsservice.domain.VendorBookingsDTO;
 import com.mybookingsservice.domain.VendorDTO;
 import com.mybookingsservice.domain.VendorEstimateRequest;
 import com.mybookingsservice.domain.VendorEstimateResponse;
 import com.mybookingsservice.domain.VendorServiceAreaDTO;
+import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.entity.HouseholdItems;
 import com.mybookingsservice.entity.MyBookings;
+import com.mybookingsservice.entity.SelectedItems;
 import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
-import com.mybookingsservice.mapper.CustomerBookingsMapper;
 import com.mybookingsservice.mapper.MyBookingsMapper;
-import com.mybookingsservice.mapper.VendorBookingsMapper;
 import com.mybookingsservice.repository.CustomerRepository;
 import com.mybookingsservice.repository.HouseholdRepository;
 import com.mybookingsservice.repository.MyBookingsRepository;
@@ -62,12 +63,6 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	MyBookingsMapper mapper;
 	
 	@Autowired
-	CustomerBookingsMapper customerMapper;
-	
-	@Autowired
-	VendorBookingsMapper vendorMapper;
-	
-	@Autowired
 	VendorRepository vendorRepository;
 	
 	@Autowired
@@ -81,7 +76,7 @@ public class MyBookingsServiceImpl implements MyBookingsService{
     }
 	
 	@Override
-	public List<MyBookingsDTO> getall() {
+	public List<MyBookingsRequestDTO> getall() {
 		
 //		List<MyBookings> list = repository.findAllWithCustomerAndVendor();
 //
@@ -91,121 +86,174 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	
 
 	@Override
-	public CustomerBookingResponseDTO getBookingsByBookingId(Long custId, Long bookingId, StatusHandler statusHandler,
-			CustomerBookingResponseDTO customerBookingResponse) {
-//		logger.info("START : Get Bookings By ID Service : "+custId+" "+bookingId);
-//		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
-//		
-//		logger.info("END : Get Bookings By ID Service : "+custId+" "+bookingId);
-//		return customerMapper.toCustomerBookingDTO(bookings);
-		return null;
+	public CustBookingResponse getBookingsByBookingId(Long custId, Long bookingId, StatusHandler statusHandler,
+			CustBookingResponse custBookingResponse) {
+		logger.info("START : Get Bookings By ID Service : "+custId+" "+bookingId);
+		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
+		
+		logger.info("END : Get Bookings By ID Service : "+custId+" "+bookingId);
+		MyBookingsRequestDTO booking = mapper.toDto(bookings);
+		custBookingResponse.setRequestDTO(booking);
+		return custBookingResponse;
 	}
 
 	@Override
-	public CustomerBookingResponseDTO cancelBookingById(Long custId, Long bookingId, CustomerBookingResponseDTO cancelResponse, StatusHandler statusHandler) {
-//		logger.info("Start : Cancel Booking by Id Service : "+custId+" "+bookingId);
-//		
-//		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
-//		try {
-//			if( null == bookings) {
-//				throw new InvalidRequestException(AppConstants.NOT_FOUND);
-//			}
-//		}catch(InvalidRequestException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(AppConstants.NOT_FOUND);
-//			cancelResponse.setStatusHandler(statusHandler);
-//			cancelResponse.setStatus(AppConstants.CANCEL_FAILED);
-//			return cancelResponse;
-//		}
-//		
-//		bookings.setStatus(AppConstants.CANCELLED);
-//		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
-//		
-//		return customerMapper.toCustomerBookingDTO(bookings);
-		return null;
+	public CustBookingResponse cancelBookingById(Long custId, Long bookingId, CustBookingResponse cancelResponse, StatusHandler statusHandler) {
+		logger.info("Start : Cancel Booking by Id Service : "+custId+" "+bookingId);
+		
+		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
+		try {
+			if( null == bookings) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			bookings.setStatus(AppConstants.CANCELLED);
+			bookings.setBookingStatus(AppConstants.CANCELLED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(custId);
+			MyBookings saved = repository.save(bookings);
+			if( null != saved ) {
+				MyBookingsRequestDTO dto = mapper.toDto(bookings);
+				cancelResponse.setRequestDTO(dto);
+				statusHandler.setStatusCode("200");
+				statusHandler.setMessage(AppConstants.SUCCESS);
+				cancelResponse.setStatusHandler(statusHandler);
+			}	
+		}catch(InvalidRequestException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(AppConstants.INVALID_REQUEST);
+			cancelResponse.setStatusHandler(statusHandler);
+			return cancelResponse;
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			cancelResponse.setStatusHandler(statusHandler);
+			return cancelResponse;
+		}
+		logger.info("End : cancel booking By Id Service : "+cancelResponse);
+		return cancelResponse;
 	}
 
-	public List<CustomerBookingResponseDTO> getBookingsByCustomerId(Long custId) {
-//		logger.info("Start : get all bookings service fro custId : "+custId);
-//        List<MyBookings> bookings = repository.findByCustId(custId);
-//        
-//        
-//        logger.info("End : get all bookings service fro custId : "+custId);
-//        return customerMapper.toCustomerBookingDTOs(bookings);
-		return null;
+	public CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response) {
+		logger.info("Start : get all bookings service fro custId : "+custId);
+        List<MyBookings> bookings = repository.findByCustIdWithItems(custId);
+        System.out.println(" Selected : "+bookings.get(0).getSelectedItems());
+        List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+        response.setRequestDTO(dtoList);
+        
+        logger.info("End : get all bookings service from custId : "+custId);
+		return response;
     }
 
 	@Override
-	public CustCancelledBookingResponse getAllCancelledBookings(Long custId, String status,
-			CustCancelledBookingResponse cancelledBookings, StatusHandler statusHandler) {
-//		logger.info("Start : get all cancelled bookings service for custId : "+custId);
-//		List<MyBookings> bookings = repository.findByCustIdAndStatus(custId, status);
-//		
-//		logger.info("END : get all cancelled bookings service for custId : "+custId);
-//		return customerMapper.toCustCancelBookingMapper(bookings, statusHandler);
-		return null;
+	public CustomerBookingResponseDTO getAllCancelledBookings(Long custId, String status,
+			CustomerBookingResponseDTO cancelledBookings, StatusHandler statusHandler) {
+		logger.info("Start : get all cancelled bookings service for custId : "+custId);
+		List<MyBookings> bookings = repository.findByCustIdAndStatusWithItems(custId, status);
+		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+		cancelledBookings.setRequestDTO(dtoList);
+		
+		logger.info("END : get all cancelled bookings service for custId : "+custId);
+		return cancelledBookings;
 	}
 
 	@Override
-	public List<VendorBookingResponseDTO> getBookingByVendorId(long vendorId) {
-//		logger.info("START : VendorBookings Service ");
-//		List<MyBookings> bookings = repository.findByVendorId(vendorId);
-//		
-//		logger.info("END : VendorBookings Service : ");
+	public VendorBookingsDTO getBookingByVendorId(Long vendorId, VendorBookingsDTO vendor, StatusHandler statusHandler) {
+		logger.info("START : VendorBookings Service ");
+		List<MyBookings> bookings = repository.findByVendorIdWithItems(vendorId);
+		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+		vendor.setRequestDTO(dtoList);
+		logger.info("END : VendorBookings Service : ");
 //	    return vendorMapper.toVendorBookingDTOs(bookings);
-		return null;
+		return vendor;
 	}
 
 
 	@Override
 	public VendorBookingResponseDTO getBookingByVendorIdbookingId(Long vendorId, Long bookingId,
 			VendorBookingResponseDTO vendorbooking, StatusHandler statusHandler) {
-//		logger.info("Start : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
-//		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//		
-//		logger.info("End : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
-//		return vendorMapper.toVendorBookingDTO(bookings);
-		return null;
+		logger.info("Start : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
+		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
+		MyBookingsRequestDTO booking = mapper.toDto(bookings);
+		vendorbooking.setRequestDTO(booking);
+		logger.info("End : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
+		return vendorbooking;
 	}
 
 	
 	@Override
 	public VendorBookingResponseDTO cancelVendorBooking(Long vendorId, Long bookingId, 
 			VendorBookingResponseDTO vendorResponse, StatusHandler statusHandler) {
-//		logger.info("Start : Cancel Bookings by Vendor Service : "+vendorId+" "+bookingId);
-//		
-//		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//		bookings.setStatus(AppConstants.CANCELLED);
-//		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
-//		logger.info("End : Cancel Bookings by Vendor Service : "+vendorId+" "+bookingId);
-//		return vendorMapper.toVendorBookingDTO(bookings);
-		return null;
+		logger.info("Start : Cancel Bookings by Vendor Service : "+vendorId+" "+bookingId);
+		
+		try {
+			if( null == vendorId || null == bookingId) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
+			
+			bookings.setStatus(AppConstants.CANCELLED);
+			bookings.setBookingStatus(AppConstants.CANCELLED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			MyBookings saved = repository.save(bookings);
+			if( null != saved ) {
+				MyBookingsRequestDTO dto = mapper.toDto(bookings);
+				vendorResponse.setRequestDTO(dto);
+				statusHandler.setStatusCode("200");
+				statusHandler.setMessage(AppConstants.SUCCESS);
+				vendorResponse.setStatusHandler(statusHandler);
+			}
+		}catch(InvalidRequestException ex) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
+			vendorResponse.setStatusHandler(statusHandler);
+			return vendorResponse;
+		}catch(Exception ex ) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setMessage(ex.getMessage());
+			vendorResponse.setStatusHandler(statusHandler);
+			return vendorResponse;
+		}
+		
+		logger.info("End : Cancel Bookings by Vendor Service : "+vendorId+" "+bookingId);
+		
+		return vendorResponse;
 	}
 
 
 	@Override
-	public VendorCancelledBookingResponse getVendorCancelledBookings(Long vendorId, String status,
-			VendorCancelledBookingResponse cancelledBookings, StatusHandler statusHandler) {
-//		logger.info("Start : Get all Vendor Cancelled Bookings : "+vendorId);
-//		List<MyBookings> bookings = repository.findByVendorIdAndStatus(vendorId, status);
-//		
-//		logger.info("End : Get all Vendor Cancelled Bookings : "+vendorId);
-//		return vendorMapper.toVendorCancelBookingMapper(bookings, statusHandler);
-		return null;
+	public VendorBookingsDTO getVendorCancelledBookings(Long vendorId, String status,
+			VendorBookingsDTO cancelledBookings, StatusHandler statusHandler) {
+		logger.info("Start : Get all Vendor Cancelled Bookings : "+vendorId);
+		List<MyBookings> bookings = repository.findByVendorIdAndStatusWithItems(vendorId, status);
+		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+		cancelledBookings.setRequestDTO(dtoList);
+		logger.info("End : Get all Vendor Cancelled Bookings : "+vendorId);
+		
+		return cancelledBookings;
 	}
 
 
 	@Override
-	public VendorBookingResponseDTO acceptBpooking(Long vendorId, Long bookingId,
-			VendorBookingResponseDTO vendorBookings, StatusHandler statusHandler) {
-//		logger.info("Start : Accept Bookings Service : "+vendorId+" "+bookingId);
+	public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest, AcceptBookingResponse acceptBookingResponse, StatusHandler statusHandler) {
+		logger.info("Start : Accept Bookings Service : "+acceptBookingRequest);
 //		
 //		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
 //		bookings.setStatus(AppConstants.ACCEPTED);
 //		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
-//		logger.info("End : Accept Bookings Service : "+vendorId+" "+bookingId);
+		MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(acceptBookingRequest.getBookingId(), 
+				acceptBookingRequest.getCustId(), acceptBookingRequest.getVendorId());
+		bookings.setStatus(AppConstants.ACCEPTED);
+		bookings.setBookingStatus(AppConstants.ACCEPTED);
+		bookings.setUpdatedAt(LocalDateTime.now());
+		bookings.setUpdatedBy(acceptBookingRequest.getVendorId());
+		MyBookings updatedBooking = repository.save(bookings);
+		
+		MyBookingsRequestDTO dto =  mapper.toDto(updatedBooking);
+		acceptBookingResponse.setMybookingsDTO(dto);
+		logger.info("End : Accept Bookings Service : "+acceptBookingResponse);
 //		return vendorMapper.toVendorBookingDTO(bookings);
-		return null;
+		return acceptBookingResponse;
 	}
 
 
@@ -238,176 +286,188 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request,
 			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler) {
 		logger.info("Start : Get Estimates Vendors : service : " + request);
-
-		List<VendorNativeResult> flatResult = vendorRepository.findVendorsByZipcodeNative(request.getPickup_zipcode());
-
-		Map<Long, VendorDTO> vendorMap = new LinkedHashMap<>();
-
-		for (VendorNativeResult row : flatResult) {
-			VendorDTO vendorDTO = vendorMap.computeIfAbsent(row.getVendorId(), id -> {
-				VendorDTO dto = new VendorDTO();
-				dto.setVendorId(row.getVendorId());
-				dto.setvFirstname(row.getVfirstname());
-				dto.setvLastname(row.getVlastname());
-				dto.setvMobile(row.getVmobile());
-				dto.setvEmail(row.getVemail());
-				dto.setVendorServiceAreaDTO(new ArrayList<>());
-				return dto;
-			});
-
-			VendorServiceAreaDTO areaDTO = new VendorServiceAreaDTO();
-			areaDTO.setvServiceId(row.getVserviceId());
-			areaDTO.setvZipcode(row.getVzipcode());
-			areaDTO.setBasePricePerKm(row.getBasePricePerKm());
-			areaDTO.setPricePerKg(row.getPricePerKg());
-			areaDTO.setAvgDeliveryTimeInDays(row.getAvgDeliveryTimeInDays());
-			int weight = 0;
-			for (int i = 0; i < request.getSelectedItems().size(); i++) {
-				weight = weight + request.getSelectedItems().get(i).getWeight();
-			}
-			int estimatedPrice = weight * row.getBasePricePerKm() + row.getPricePerKg() * 10;
-			areaDTO.setEstimatedPrice(estimatedPrice);
-
-			areaDTO.setEstimatedDeliveryDate(null);
-			vendorDTO.getVendorServiceAreaDTO().add(areaDTO);
-		}
-
 		VendorEstimateResponse response = new VendorEstimateResponse();
-		response.setBOOKING_DATE(LocalDateTime.now());
-		response.setSCHEDULED_DATE(request.getScheduled_date());
-		response.setSERVICE_TYPE(request.getService_type());
+		try {
+			if( null == request.getPickupLatitude() || null == request.getPickupLongitude() || null == request.getDropLatitude() || null == request.getDropLongitude()) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			List<VendorNativeResult> flatResult = vendorRepository.findVendorsByZipcodeNative(request.getPickupZipcode());
+			Optional.ofNullable(flatResult).orElseThrow(() ->  new RuntimeException(AppConstants.VENDRO_SERVICES_NOT_AVAILABLE));
+			Map<Long, VendorDTO> vendorMap = new LinkedHashMap<>();
 
-		response.setPickupAddress(request.getPickup_address());
-		response.setPickupLatitude(request.getPickup_latitude());
-		response.setPickupLongitude(request.getPickup_longitude());
-		response.setPickup_zipcode(request.getPickup_zipcode());
-		response.setDrop_zipcode(request.getDrop_zipcode());
-		response.setDropAddress(request.getDrop_address());
-		response.setDropLatitude(request.getDrop_latitude());
-		response.setDropLongitude(request.getDrop_longitude());
+			for (VendorNativeResult row : flatResult) {
+				VendorDTO vendorDTO = vendorMap.computeIfAbsent(row.getVendorId(), id -> {
+					VendorDTO dto = new VendorDTO();
+					dto.setVendorId(row.getVendorId());
+					dto.setvFirstname(row.getVfirstname());
+					dto.setvLastname(row.getVlastname());
+					dto.setvMobile(row.getVmobile());
+					dto.setvEmail(row.getVemail());
+					dto.setVendorServiceAreaDTO(new ArrayList<>());
+					return dto;
+				});
 
-		response.setVendorDTO(new ArrayList<>(vendorMap.values()));
+				VendorServiceAreaDTO areaDTO = new VendorServiceAreaDTO();
+				areaDTO.setvServiceId(row.getVserviceId());
+				areaDTO.setvZipcode(row.getVzipcode());
+				areaDTO.setBasePricePerKm(row.getBasePricePerKm());
+				areaDTO.setPricePerKg(row.getPricePerKg());
+				areaDTO.setAvgDeliveryTimeInDays(row.getAvgDeliveryTimeInDays());
+				int weight = 0;
+				for (int i = 0; i < request.getSelectedItems().size(); i++) {
+					weight = weight + request.getSelectedItems().get(i).getWeight();
+				}
+				int estimatedPrice = weight * row.getBasePricePerKm() + row.getPricePerKg() * 10;
+				areaDTO.setEstimatedPrice(estimatedPrice);
 
-		StatusHandler status = new StatusHandler();
-		status.setStatusCode("200");
-		status.setMessage("Estimate success");
-		response.setStatusHandler(status);
+				areaDTO.setEstimatedDeliveryDate(null);
+				vendorDTO.getVendorServiceAreaDTO().add(areaDTO);
+			}
 
+			
+			response.setBookingDate(LocalDateTime.now());
+			response.setScheduledDate(request.getScheduledDate());
+			response.setServicetype(request.getServiceType());
+
+			response.setPickupAddress(request.getPickupAddress());
+			response.setPickupLatitude(request.getPickupLatitude());
+			response.setPickupLongitude(request.getPickupLongitude());
+			response.setPickupZipcode(request.getPickupZipcode());
+			response.setDropZipcode(request.getDropZipcode());
+			response.setDropAddress(request.getDropAddress());
+			response.setDropLatitude(request.getDropLatitude());
+			response.setDropLongitude(request.getDropLongitude());
+
+			response.setVendorDTO(new ArrayList<>(vendorMap.values()));
+
+			StatusHandler status = new StatusHandler();
+			status.setStatusCode("200");
+			status.setMessage(AppConstants.SUCCESS);
+			response.setStatusHandler(status);
+
+			
+		}catch(Exception ex) {
+			
+		}
 		return response;
+
+		
 
 	}
 
-
+	
 	@Override
 	@Transactional
-	public MyBookingsResponseDTO createBookings(MyBookingsDTO mybookingsDTO, MyBookingsResponseDTO myBookingsResponse,
+	public MyBookingsResponseDTO createBookings(MyBookingsRequestDTO mybookingsRequestDTO, MyBookingsResponseDTO myBookingsResponse,
 			StatusHandler statusHandler) {
-		logger.info("Start : Create Bookings Service : "+mybookingsDTO);
-//		MyBookings bookings = new MyBookings();
-//		bookings.setStatus("CONFIRM");
-//		
-//		List<SelectedItems> list = new ArrayList<>();
-//		for( SelectedItemsDTO selected : mybookingsDTO.getSelectedItems()) {
-//			SelectedItems selectedItems = new SelectedItems();
-//			selectedItems.setItemCode(selected.getItemCode());
-//			selectedItems.setItemName(selected.getItemName());
-//			selectedItems.setCategory(selected.getCategory());
-//			selectedItems.setEstCategory(selected.getEstCategory());
-//			selectedItems.setWeight(selected.getWeight());
-//			selectedItems.setQty(selected.getQty());
-//			selectedItems.setCreatedBy(selected.getCreatedBy());
-//			selectedItems.setUpdatedBy(selected.getUpdatedBy());
-//			selectedItems.setIsActive(selected.getIsActive());
-//			selectedItems.setBooking(bookings);
-//			list.add(selectedItems);
-//		}
-//		bookings.setSelectedItems(list);
-//		
-//		CustomerDetails custDetails = customerRepository.findById(mybookingsDTO.getCustomerDetails().getCustId() )
-//				.orElseThrow(() -> new RuntimeException("CustId not found : " +mybookingsDTO.getCustomerDetails().getCustId() ));
-//		
-//		
-//		CustomerDetails cust = new CustomerDetails();
-//		cust.setCustId(custDetails.getCustId());
-//		cust.setC_firstName(custDetails.getC_firstName());
-//		cust.setC_lastName(custDetails.getC_lastName());
-//		cust.setC_mobile(custDetails.getC_mobile());
-//		cust.setC_email(custDetails.getC_email());
-//		
-//		CustAddressDTO addressDTO = mybookingsDTO.getCustomerDetails().getCustAddress();
-//		CustAddress address = new CustAddress();
-//		address.setC_address1(addressDTO.getC_address1());
-////		address.setC_address_id(addressDTO.getC_address_Id());
-//		address.setC_city(addressDTO.getC_city());
-//		address.setC_state(addressDTO.getC_state());
-//		address.setC_zipcode(addressDTO.getC_zipcode());
-//		address.setCustomerDetails(custDetails);
-//		
-//		custDetails.setCustAddress(address);
-//		bookings.setCustomerDetails(custDetails);
-//		
-//		VendorDetails vendorDetails = vendorDetailsRepository.findById(mybookingsDTO.getVendorDetails().getVendorId() )
-//				.orElseThrow(() -> new RuntimeException("VendorId not found : " +mybookingsDTO.getVendorDetails().getVendorId()  ));
-//		
-//		VendorDetails vend = new VendorDetails();
-//		vend.setVendorId(vendorDetails.getVendorId());
-//		vend.setV_firstName(vendorDetails.getV_firstName());
-//		vend.setV_lastName(vendorDetails.getV_lastName());
-//		vend.setV_mobile(vendorDetails.getV_mobile());
-//		vend.setV_email(vendorDetails.getV_email());
-//		
-//		
-//		VendorAddressDTO vendorDTO = mybookingsDTO.getVendorDetails().getVendorAddress();
-//		VendorAddress vaddress = new VendorAddress();
-//		vaddress.setV_address1(vendorDTO.getV_address1());
-////		vaddress.setV_address_id(vendorDTO.getV_address_Id());
-//		vaddress.setV_city(vendorDTO.getV_city());
-//		vaddress.setV_state(vendorDTO.getV_state());
-//		vaddress.setV_zipcode(vendorDTO.getV_zipcode());
-//		vaddress.setPricePerKg(vendorDTO.getPricePerKg());
-//		vaddress.setBasePricePerKm(vendorDTO.getBasePricePerKm());
-//		vaddress.setAvgDeliveryTimeInDays(vendorDTO.getAvgDeliveryTimeInDays());
-//		vaddress.setEstimatedDeliveryDate(vendorDTO.getEstimatedDeliveryDate());
-//		vaddress.setVendorDetails(vendorDetails);
-//		vendorDetails.setVendorAddress(vaddress);
-//		bookings.setVendorDetails(vendorDetails);
-//		
-//		bookings.setESTIMATED_WEIGHT(mybookingsDTO.getESTIMATED_WEIGHT());
-//		bookings.setPICKUP_TIME_SLOT(mybookingsDTO.getPICKUP_TIME_SLOT());
-//		bookings.setOTP_FOR_DELIVERY(mybookingsDTO.getOTP_FOR_DELIVERY());
-//		bookings.setESTIMATED_COST(mybookingsDTO.getESTIMATED_COST());
-//		bookings.setCREATED_BY(mybookingsDTO.getCREATED_BY());
-//		bookings.setBOOKING_STATUS("CONFIRM");
-//		bookings.setDELIVERY_DATE(mybookingsDTO.getDELIVERY_DATE());
-//		bookings.setBOOKING_DATE(mybookingsDTO.getBOOKING_DATE());
-//		bookings.setDISCOUNT_AMOUNT(mybookingsDTO.getDISCOUNT_AMOUNT());
-//		bookings.setPAYMENT_MODE(mybookingsDTO.getPAYMENT_MODE());
-//		bookings.setUPDATED_AT(mybookingsDTO.getUPDATED_AT());
-//		bookings.setITEM_COUNT(mybookingsDTO.getITEM_COUNT());
-//		bookings.setSCHEDULED_DATE(mybookingsDTO.getSCHEDULED_DATE());
-//		bookings.setTRACKING_URL(mybookingsDTO.getTRACKING_URL());
-//		bookings.setVEHICLE_NUMBER(mybookingsDTO.getVEHICLE_NUMBER());
-//		bookings.setPAYMENT_STATUS(mybookingsDTO.getPAYMENT_STATUS());
-//		bookings.setSERVICE_TYPE(mybookingsDTO.getSERVICE_TYPE());
-//		bookings.setUPDATED_BY(mybookingsDTO.getUPDATED_BY());
-//		bookings.setFINAL_COST(mybookingsDTO.getFINAL_COST());
-//		bookings.setTRANSACTION_ID(mybookingsDTO.getTRANSACTION_ID());
-//		
-//		bookings.setPickup_latitude(mybookingsDTO.getPickup_latitude());
-//		bookings.setPickup_longitude(mybookingsDTO.getPickup_longitude());
-//		bookings.setPickup_address(mybookingsDTO.getPickup_address());
-//		bookings.setPickup_zipcode(mybookingsDTO.getPickup_zipcode());
-//		bookings.setDrop_latitude(mybookingsDTO.getDrop_latitude());
-//		bookings.setDrop_longitude(mybookingsDTO.getDrop_longitude());
-//		bookings.setDrop_address(mybookingsDTO.getDrop_address());
-//		bookings.setDrop_zipcode(mybookingsDTO.getDrop_zipcode());
-//		
-//		MyBookings b = repository.save(bookings);
-//		
-//		MyBookingsResponseDTO response = mapper.toResponseDTO(b);
+		logger.info("Start : Create Bookings Service : "+mybookingsRequestDTO);
 		
+		try {
+			MyBookings bookings = repository.findAllByBookingId(mybookingsRequestDTO.getBookingId());
+			Optional.ofNullable(bookings).orElseThrow( () -> new RuntimeException(AppConstants.BOOKINGID_NOT_FOUND));
+			bookings.setStatus(AppConstants.CONFRIRMED);
+
+			bookings.setcFirstname(mybookingsRequestDTO.getcFirstname());
+			bookings.setcLastname(mybookingsRequestDTO.getcLastname());
+			bookings.setcEmail(mybookingsRequestDTO.getcEmail());
+			bookings.setcAddressId(mybookingsRequestDTO.getcAddressId());
+			bookings.setcAddress1(mybookingsRequestDTO.getcAddress1());
+			bookings.setcCity(mybookingsRequestDTO.getcCity());
+			bookings.setcState(mybookingsRequestDTO.getcState());
+			bookings.setcZipcode(mybookingsRequestDTO.getcZipcode());
+			
+			bookings.setVendorId(mybookingsRequestDTO.getVendorId());
+			bookings.setvFirstname(mybookingsRequestDTO.getvFirstname());
+			bookings.setvLastname(mybookingsRequestDTO.getvLastname());
+			bookings.setvMobile(mybookingsRequestDTO.getvMobile());
+			bookings.setvEmail(mybookingsRequestDTO.getvEmail());
+			bookings.setvAddressId(mybookingsRequestDTO.getvAddressId());
+			bookings.setvAddress1(mybookingsRequestDTO.getvAddress1());
+			bookings.setvCity(mybookingsRequestDTO.getvCity());
+			bookings.setvState(mybookingsRequestDTO.getvState());
+			bookings.setvZipcode(mybookingsRequestDTO.getvZipcode());
+			bookings.setBasePricePerKM(mybookingsRequestDTO.getBasePricePerKM());
+			bookings.setPricePerKG(mybookingsRequestDTO.getPricePerKG());
+			bookings.setAvgDeliveryTimeInDays(mybookingsRequestDTO.getAvgDeliveryTimeInDays());
+			bookings.setEstimatedPrice(mybookingsRequestDTO.getEstimatedPrice());
+			bookings.setEstimatedDeliverydate(mybookingsRequestDTO.getEstimatedDeliverydate());
+
+			bookings.setPickupAddress(mybookingsRequestDTO.getPickupAddress());
+			bookings.setPickupLatitude(mybookingsRequestDTO.getPickupLatitude());
+			bookings.setPickupLongitude(mybookingsRequestDTO.getPickupLongitude());
+			bookings.setPickupZipcode(mybookingsRequestDTO.getPickupZipcode());
+			bookings.setDropAddress(mybookingsRequestDTO.getDropAddress());
+			bookings.setDropLatitude(mybookingsRequestDTO.getDropLatitude());
+			bookings.setDropLongitude(mybookingsRequestDTO.getDropLongitude());
+			bookings.setDropZipcode(mybookingsRequestDTO.getDropZipcode());
+			bookings.setEstimatedWeight(mybookingsRequestDTO.getEstimatedWeight());
+			bookings.setPickupTimeSlot(mybookingsRequestDTO.getPickupTimeSlot());
+			bookings.setOtpforDelivery(mybookingsRequestDTO.getOtpforDelivery());
+			bookings.setEstimatedCost(mybookingsRequestDTO.getEstimatedCost());
+			bookings.setCreatedAt(LocalDateTime.now());
+			bookings.setBookingStatus(mybookingsRequestDTO.getBookingStatus());
+
+			bookings.setCreatedBy(mybookingsRequestDTO.getCreatedBy());
+			bookings.setDeliveryDate(mybookingsRequestDTO.getDeliveryDate());
+			bookings.setBookingDate(mybookingsRequestDTO.getBookingDate());
+			bookings.setDiscountAmount(mybookingsRequestDTO.getDiscountAmount());
+			bookings.setPaymentMode(mybookingsRequestDTO.getPaymentMode());
+			bookings.setUpdatedAt(mybookingsRequestDTO.getUpdatedAt());
+			bookings.setUpdatedBy(mybookingsRequestDTO.getUpdatedBy());
+			bookings.setItemCount(mybookingsRequestDTO.getItemCount());
+			bookings.setScheduledDate(mybookingsRequestDTO.getScheduledDate());
+			bookings.setTrackingUrl(mybookingsRequestDTO.getTrackingUrl());
+			bookings.setVehicleNumber(mybookingsRequestDTO.getVehicleNumber());
+			bookings.setPaymentStatus(mybookingsRequestDTO.getPaymentStatus());
+			bookings.setServiceType(mybookingsRequestDTO.getServiceType());
+			bookings.setFinalCost(mybookingsRequestDTO.getFinalCost());
+			bookings.setTransactionId(mybookingsRequestDTO.getTransactionId());
+
+			List<SelectedItems> itemsList = mapper.toEntityList(mybookingsRequestDTO.getSelectedItems());
+			List<SelectedItems> selectedList = new ArrayList<>();
+			for(SelectedItems item : itemsList) {
+				SelectedItems selected = new SelectedItems();
+				selected.setItemId(item.getItemId());
+				selected.setItemCode(item.getItemCode());
+				selected.setItemName(item.getItemName());
+				selected.setCategory(item.getCategory());
+				selected.setEstCategory(item.getEstCategory());
+				selected.setWeight(item.getWeight());
+				selected.setQty(item.getQty());
+				selected.setCreatedBy(bookings.getCustId());
+				selected.setUpdatedBy(item.getUpdatedBy());
+				selected.setCreatedAt(mybookingsRequestDTO.getCreatedAt());
+				selected.setUpdatedAt(mybookingsRequestDTO.getUpdatedAt());
+				selected.setBooking(bookings);
+				selectedList.add(selected);	
+			}
+			bookings.setSelectedItems(selectedList);
+			MyBookings savedBookings = repository.save(bookings);
+			
+			if( null != savedBookings) {
+				
+				CustomerDetails details = customerRepository.findByCustId(mybookingsRequestDTO.getCustId());
+				details.setcFirstname(mybookingsRequestDTO.getcFirstname());
+				details.setcCity(mybookingsRequestDTO.getcCity());
+				details.setcState(mybookingsRequestDTO.getcState());
+				details.setcZipcode(mybookingsRequestDTO.getPickupZipcode());
+				customerRepository.save(details);
+				MyBookingsRequestDTO dto = mapper.toDto(savedBookings);
+				myBookingsResponse.setMyBookingRequestDTO(dto);
+				statusHandler.setStatusCode("200");
+				statusHandler.setMessage(AppConstants.SUCCESS);
+				myBookingsResponse.setStatusHandler(statusHandler);
+			}
+			
+			
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			myBookingsResponse.setStatusHandler(statusHandler);
+		}
+			
 		logger.info("END : Booking Saved Succesfully : ");
-		return null;
+		return myBookingsResponse;
 	}
 
 
@@ -442,7 +502,19 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			bookings.setServiceType(request.getServiceType());
 			bookings.setcMobile(request.getcMobile());
 			bookings.setCreatedBy(request.getCustId());
+			bookings.setPricePerKG(0);
+			bookings.setBasePricePerKM(0);
+			bookings.setEstimatedPrice(0);
+			bookings.setAvgDeliveryTimeInDays(0);
+			
 			MyBookings booking = repository.save(bookings);
+
+			CustomerDetails details = customerRepository.findByCustId(request.getCustId());
+			details.setcAddress1(request.getPickupAddress());
+			details.setPickupLattitude(request.getPickupLatitude());
+			details.setPickupLongitude(request.getPickupLongitude());
+			details.setcZipcode(request.getPickupZipcode());
+			customerRepository.save(details);
 			
 			if( bookings.getBookingId() < 0) {
 				throw new RuntimeException(AppConstants.INSERT_QUERY_EXECUTION_FAILED);
@@ -463,6 +535,10 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			response.setScheduledDate(booking.getScheduledDate());
 			response.setServiceType(booking.getServiceType());
 			response.setcMobile(booking.getcMobile());
+			response.setPricePerKG(booking.getPricePerKG());
+			response.setBasePricePerKM(booking.getBasePricePerKM());
+			response.setEstimatedPrice(booking.getEstimatedPrice());
+			response.setAvgDeliveryTimeInDays(booking.getAvgDeliveryTimeInDays());
 			
 			logger.info("End Booking Items Saved Succesfully : "+booking);
 			
@@ -471,7 +547,7 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			
 			List<HouseholdItems> items =  houseRepository.findByEstCategoryIn(Arrays.asList("ONEBHK", "None"));
 			
-			itemsDTO = customerMapper.toitemsDtoList(items);
+			itemsDTO = mapper.toitemsDtoList(items);
 			statusHandler.setStatusCode("200");
 			statusHandler.setMessage("SUCCESS");
 			response.setStatusHandler(statusHandler);
@@ -491,6 +567,81 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		logger.info("End : Save booking type Service : ");
 		return response;
 		
+	}
+
+	@Override
+	@Transactional
+	public VendorBookingResponseDTO updatePickup(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBooking,
+			StatusHandler statusHandler) {
+		logger.info("Start : update pickup service : "+vendorId);
+		
+		try {
+			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
+			if(null == bookingId) {
+				throw new RuntimeException("VendorId and bookingId is Null : ");
+			}
+			bookings.setStatus(AppConstants.PICKUP_COMPLETED);
+			bookings.setBookingStatus(AppConstants.PICKUP_COMPLETED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			MyBookings saved = repository.save(bookings);
+			MyBookingsRequestDTO booking = mapper.toDto(saved);
+			vendorBooking.setRequestDTO(booking);
+			if( null != saved) {
+				statusHandler.setErrorCode("200");
+				statusHandler.setErrorMessage(AppConstants.SUCCESS);
+				vendorBooking.setStatusHandler(statusHandler);
+			}
+			
+		}catch(RuntimeException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			vendorBooking.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			vendorBooking.setStatusHandler(statusHandler);
+		}
+		
+		
+		logger.info("End : update pickup service : "+vendorId);
+		return vendorBooking;
+	}
+
+	@Override
+	public VendorBookingResponseDTO updateDrop(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBooking,
+			StatusHandler statusHandler) {
+		logger.info("Start : update drop service : "+vendorId+" "+bookingId);
+		try {
+			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
+			if(null == bookingId) {
+				throw new RuntimeException("VendorId and bookingId is Null : ");
+			}
+			bookings.setStatus(AppConstants.DROP_COMPLETED);
+			bookings.setBookingStatus(AppConstants.DROP_COMPLETED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			MyBookings saved = repository.save(bookings);
+			MyBookingsRequestDTO booking = mapper.toDto(saved);
+			vendorBooking.setRequestDTO(booking);
+			if( null != saved) {
+				statusHandler.setErrorCode("200");
+				statusHandler.setErrorMessage(AppConstants.SUCCESS);
+				vendorBooking.setStatusHandler(statusHandler);
+			}
+			
+		}catch(RuntimeException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			vendorBooking.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			vendorBooking.setStatusHandler(statusHandler);
+		}
+		
+		logger.info("End : update drop service : "+vendorId+" "+bookingId);
+		return vendorBooking;
 	}
 
 	

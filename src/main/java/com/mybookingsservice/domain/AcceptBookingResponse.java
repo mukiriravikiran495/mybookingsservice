@@ -1,21 +1,16 @@
 package com.mybookingsservice.domain;
 
-import java.util.List;
-
 import com.mybookingsservice.exceptions.StatusHandler;
 
+public class AcceptBookingResponse {
 
-
-
-public class CustomerBookingResponseDTO {
-	
-	private List<MyBookingsRequestDTO> requestDTO;
+	private MyBookingsRequestDTO mybookingsDTO;
 	private StatusHandler statusHandler;
-	public List<MyBookingsRequestDTO> getRequestDTO() {
-		return requestDTO;
+	public MyBookingsRequestDTO getMybookingsDTO() {
+		return mybookingsDTO;
 	}
-	public void setRequestDTO(List<MyBookingsRequestDTO> requestDTO) {
-		this.requestDTO = requestDTO;
+	public void setMybookingsDTO(MyBookingsRequestDTO mybookingsDTO) {
+		this.mybookingsDTO = mybookingsDTO;
 	}
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
@@ -23,6 +18,7 @@ public class CustomerBookingResponseDTO {
 	public void setStatusHandler(StatusHandler statusHandler) {
 		this.statusHandler = statusHandler;
 	}
+	
 	
 	
 }

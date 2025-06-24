@@ -1,6 +1,7 @@
 package com.mybookingsservice.configuration;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -83,11 +84,16 @@ public class HibernateConfiguration {
         return transactionManager;
     }
     
+//    @Bean
+//    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+//        return builder -> builder
+//            .serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")))
+//            .deserializers(new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")));
+//    }
+    
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        return builder -> builder
-            .serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")))
-            .deserializers(new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS")));
+    public Jackson2ObjectMapperBuilderCustomizer customizer() {
+        return builder -> builder.locale(Locale.ENGLISH);
     }
     
 }

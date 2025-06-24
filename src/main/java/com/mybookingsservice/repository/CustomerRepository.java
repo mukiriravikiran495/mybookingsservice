@@ -8,4 +8,6 @@ import com.mybookingsservice.entity.CustomerDetails;
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerDetails, Long>{
 
+	CustomerDetails findByCustId(Long custId);
+
 }

@@ -4,19 +4,25 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybookingsservice.exceptions.StatusHandler;
 
 public class VendorEstimateResponse {
 
+	@JsonProperty("bookingDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
+	private LocalDateTime bookingDate; 
 	
-	private LocalDateTime BOOKING_DATE; 
-	private LocalDateTime SCHEDULED_DATE;
-	private String SERVICE_TYPE;
+	@JsonProperty("scheduledDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
+	private LocalDateTime scheduledDate;
+	private String servicetype;
 	private String pickupAddress;
     private Double pickupLatitude;
     private Double pickupLongitude;
-    private String pickup_zipcode;
-    private String drop_zipcode;
+    private String pickupZipcode;
+    private String dropZipcode;
     private String dropAddress;
     private Double dropLatitude;
     private Double dropLongitude;
@@ -26,29 +32,28 @@ public class VendorEstimateResponse {
     
     private StatusHandler statusHandler;
 
-	public LocalDateTime getBOOKING_DATE() {
-		return BOOKING_DATE;
+	public LocalDateTime getBookingDate() {
+		return bookingDate;
 	}
 
-	public void setBOOKING_DATE(LocalDateTime bOOKING_DATE) {
-		BOOKING_DATE = bOOKING_DATE;
+	public void setBookingDate(LocalDateTime bookingDate) {
+		this.bookingDate = bookingDate;
 	}
 
-
-	public LocalDateTime getSCHEDULED_DATE() {
-		return SCHEDULED_DATE;
+	public LocalDateTime getScheduledDate() {
+		return scheduledDate;
 	}
 
-	public void setSCHEDULED_DATE(LocalDateTime sCHEDULED_DATE) {
-		SCHEDULED_DATE = sCHEDULED_DATE;
+	public void setScheduledDate(LocalDateTime scheduledDate) {
+		this.scheduledDate = scheduledDate;
 	}
 
-	public String getSERVICE_TYPE() {
-		return SERVICE_TYPE;
+	public String getServicetype() {
+		return servicetype;
 	}
 
-	public void setSERVICE_TYPE(String sERVICE_TYPE) {
-		SERVICE_TYPE = sERVICE_TYPE;
+	public void setServicetype(String servicetype) {
+		this.servicetype = servicetype;
 	}
 
 	public String getPickupAddress() {
@@ -75,20 +80,20 @@ public class VendorEstimateResponse {
 		this.pickupLongitude = pickupLongitude;
 	}
 
-	public String getPickup_zipcode() {
-		return pickup_zipcode;
+	public String getPickupZipcode() {
+		return pickupZipcode;
 	}
 
-	public void setPickup_zipcode(String pickup_zipcode) {
-		this.pickup_zipcode = pickup_zipcode;
+	public void setPickupZipcode(String pickupZipcode) {
+		this.pickupZipcode = pickupZipcode;
 	}
 
-	public String getDrop_zipcode() {
-		return drop_zipcode;
+	public String getDropZipcode() {
+		return dropZipcode;
 	}
 
-	public void setDrop_zipcode(String drop_zipcode) {
-		this.drop_zipcode = drop_zipcode;
+	public void setDropZipcode(String dropZipcode) {
+		this.dropZipcode = dropZipcode;
 	}
 
 	public String getDropAddress() {

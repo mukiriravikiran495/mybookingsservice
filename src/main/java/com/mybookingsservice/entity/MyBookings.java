@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -52,7 +53,30 @@ public class MyBookings implements Serializable{
 	private String vehicleNumber; 
 	private String trackingUrl;
 	private String otpforDelivery;
+	private String vFirstname;
+	private String vLastname;
+	private String vMobile;
+	private String vEmail;
+	private Long vAddressId;
+	private String vAddress1;
+	private String vCity;
+	private String vState;
+	private String vZipcode;
+	private int basePricePerKM;
+	private int pricePerKG;
+	private int estimatedPrice;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
+	private LocalDateTime estimatedDeliverydate;
+	private int avgDeliveryTimeInDays;
+	private Long cAddressId;
+	private String cAddress1;
+	private String cCity;
+	private String cState;
+	private String cZipcode;
+	private String cFirstname;
+	private String cLastname;
+	private String cEmail;
     
     @JsonProperty("bookingDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
@@ -90,12 +114,186 @@ public class MyBookings implements Serializable{
     
     
 
-	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<SelectedItems> selectedItems;
     
-    
-    
+	public String getvFirstname() {
+		return vFirstname;
+	}
+
+	public void setvFirstname(String vFirstname) {
+		this.vFirstname = vFirstname;
+	}
+
+	public String getvLastname() {
+		return vLastname;
+	}
+
+	public void setvLastname(String vLastname) {
+		this.vLastname = vLastname;
+	}
+
+	public String getvMobile() {
+		return vMobile;
+	}
+
+	public void setvMobile(String vMobile) {
+		this.vMobile = vMobile;
+	}
+
+	public String getvEmail() {
+		return vEmail;
+	}
+
+	public void setvEmail(String vEmail) {
+		this.vEmail = vEmail;
+	}
+
+	public Long getvAddressId() {
+		return vAddressId;
+	}
+
+	public void setvAddressId(Long vAddressId) {
+		this.vAddressId = vAddressId;
+	}
+
+	public String getvAddress1() {
+		return vAddress1;
+	}
+
+	public void setvAddress1(String vAddress1) {
+		this.vAddress1 = vAddress1;
+	}
+
+	public String getvCity() {
+		return vCity;
+	}
+
+	public void setvCity(String vCity) {
+		this.vCity = vCity;
+	}
+
+	public String getvState() {
+		return vState;
+	}
+
+	public void setvState(String vState) {
+		this.vState = vState;
+	}
+
+	public String getvZipcode() {
+		return vZipcode;
+	}
+
+	public void setvZipcode(String vZipcode) {
+		this.vZipcode = vZipcode;
+	}
+
+	public int getBasePricePerKM() {
+		return basePricePerKM;
+	}
+
+	public void setBasePricePerKM(int basePricePerKM) {
+		this.basePricePerKM = basePricePerKM;
+	}
+
+	public int getPricePerKG() {
+		return pricePerKG;
+	}
+
+	public void setPricePerKG(int pricePerKG) {
+		this.pricePerKG = pricePerKG;
+	}
+
+	public int getEstimatedPrice() {
+		return estimatedPrice;
+	}
+
+	public void setEstimatedPrice(int estimatedPrice) {
+		this.estimatedPrice = estimatedPrice;
+	}
+
+	public LocalDateTime getEstimatedDeliverydate() {
+		return estimatedDeliverydate;
+	}
+
+	public void setEstimatedDeliverydate(LocalDateTime estimatedDeliverydate) {
+		this.estimatedDeliverydate = estimatedDeliverydate;
+	}
+
+	public int getAvgDeliveryTimeInDays() {
+		return avgDeliveryTimeInDays;
+	}
+
+	public void setAvgDeliveryTimeInDays(int avgDeliveryTimeInDays) {
+		this.avgDeliveryTimeInDays = avgDeliveryTimeInDays;
+	}
+
+	public Long getcAddressId() {
+		return cAddressId;
+	}
+
+	public void setcAddressId(Long cAddressId) {
+		this.cAddressId = cAddressId;
+	}
+
+	public String getcAddress1() {
+		return cAddress1;
+	}
+
+	public void setcAddress1(String cAddress1) {
+		this.cAddress1 = cAddress1;
+	}
+
+	public String getcCity() {
+		return cCity;
+	}
+
+	public void setcCity(String cCity) {
+		this.cCity = cCity;
+	}
+
+	public String getcState() {
+		return cState;
+	}
+
+	public void setcState(String cState) {
+		this.cState = cState;
+	}
+
+	public String getcZipcode() {
+		return cZipcode;
+	}
+
+	public void setcZipcode(String cZipcode) {
+		this.cZipcode = cZipcode;
+	}
+
+	public String getcFirstname() {
+		return cFirstname;
+	}
+
+	public void setcFirstname(String cFirstname) {
+		this.cFirstname = cFirstname;
+	}
+
+	public String getcLastname() {
+		return cLastname;
+	}
+
+	public void setcLastname(String cLastname) {
+		this.cLastname = cLastname;
+	}
+
+	public String getcEmail() {
+		return cEmail;
+	}
+
+	public void setcEmail(String cEmail) {
+		this.cEmail = cEmail;
+	}
+
 	public Long getBookingId() {
 		return bookingId;
 	}

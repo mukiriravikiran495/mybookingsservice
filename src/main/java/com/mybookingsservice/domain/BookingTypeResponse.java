@@ -21,7 +21,11 @@ public class BookingTypeResponse {
     private Double dropLatitude;
     private Double dropLongitude;
     private String dropZipcode;
-    
+    private int basePricePerKM;
+	private int pricePerKG;
+	private int estimatedPrice;
+	private int avgDeliveryTimeInDays;
+	
     @JsonProperty("bookingDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
 	private LocalDateTime bookingDate; 
@@ -34,6 +38,38 @@ public class BookingTypeResponse {
 	private StatusHandler statusHandler;
 	
 	
+
+	public int getBasePricePerKM() {
+		return basePricePerKM;
+	}
+
+	public void setBasePricePerKM(int basePricePerKM) {
+		this.basePricePerKM = basePricePerKM;
+	}
+
+	public int getPricePerKG() {
+		return pricePerKG;
+	}
+
+	public void setPricePerKG(int pricePerKG) {
+		this.pricePerKG = pricePerKG;
+	}
+
+	public int getEstimatedPrice() {
+		return estimatedPrice;
+	}
+
+	public void setEstimatedPrice(int estimatedPrice) {
+		this.estimatedPrice = estimatedPrice;
+	}
+
+	public int getAvgDeliveryTimeInDays() {
+		return avgDeliveryTimeInDays;
+	}
+
+	public void setAvgDeliveryTimeInDays(int avgDeliveryTimeInDays) {
+		this.avgDeliveryTimeInDays = avgDeliveryTimeInDays;
+	}
 
 	public Long getCreateBy() {
 		return createBy;

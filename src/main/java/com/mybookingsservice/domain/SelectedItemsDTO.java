@@ -1,5 +1,9 @@
 package com.mybookingsservice.domain;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+
 public class SelectedItemsDTO {
 
 	private Long itemId;
@@ -11,7 +15,23 @@ public class SelectedItemsDTO {
 	private int qty;
 	private Long createdBy;
 	private Long updatedBy;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 	private String isActive;
+	
+	
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 	public Long getItemId() {
 		return itemId;
 	}

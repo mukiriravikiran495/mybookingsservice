@@ -3,27 +3,37 @@ package com.mybookingsservice.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybookingsservice.entity.SelectedItems;
 
 
 public class VendorEstimateRequest {
 	
 	private Long custId;
-	private String c_mobile;
-	private LocalDateTime booking_date; 
-	private LocalDateTime scheduled_date;
-	private String service_type;
-	private String pickup_address;
-    private Double pickup_latitude;
-    private Double pickup_longitude;
+	private String cMobile;
+	
+	@JsonProperty("bookingDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
+	private LocalDateTime bookingDate; 
+	
+	@JsonProperty("scheduledDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
+	private LocalDateTime scheduledDate;
+	private String serviceType;
+	private String pickupAddress;
+    private Double pickupLatitude;
+    private Double pickupLongitude;
     
-    private String drop_address;
-    private Double drop_latitude;
-    private Double drop_longitude;
-    private String pickup_zipcode;
-    private String drop_zipcode;
+    private String dropAddress;
+    private Double dropLatitude;
+    private Double dropLongitude;
+    private String pickupZipcode;
+    private String dropZipcode;
+    
     
     private List<SelectedItems> selectedItems;
+
 
 	public Long getCustId() {
 		return custId;
@@ -33,100 +43,101 @@ public class VendorEstimateRequest {
 		this.custId = custId;
 	}
 
-	public String getC_mobile() {
-		return c_mobile;
+	
+	public String getcMobile() {
+		return cMobile;
 	}
 
-	public void setC_mobile(String c_mobile) {
-		this.c_mobile = c_mobile;
+	public void setcMobile(String cMobile) {
+		this.cMobile = cMobile;
 	}
 
-	public LocalDateTime getBooking_date() {
-		return booking_date;
+	public LocalDateTime getBookingDate() {
+		return bookingDate;
 	}
 
-	public void setBooking_date(LocalDateTime booking_date) {
-		this.booking_date = booking_date;
+	public void setBookingDate(LocalDateTime bookingDate) {
+		this.bookingDate = bookingDate;
 	}
 
-	public LocalDateTime getScheduled_date() {
-		return scheduled_date;
+	public LocalDateTime getScheduledDate() {
+		return scheduledDate;
 	}
 
-	public void setScheduled_date(LocalDateTime scheduled_date) {
-		this.scheduled_date = scheduled_date;
+	public void setScheduledDate(LocalDateTime scheduledDate) {
+		this.scheduledDate = scheduledDate;
 	}
 
-	public String getService_type() {
-		return service_type;
+	public String getServiceType() {
+		return serviceType;
 	}
 
-	public void setService_type(String service_type) {
-		this.service_type = service_type;
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 
-	public String getPickup_address() {
-		return pickup_address;
+	public String getPickupAddress() {
+		return pickupAddress;
 	}
 
-	public void setPickup_address(String pickup_address) {
-		this.pickup_address = pickup_address;
+	public void setPickupAddress(String pickupAddress) {
+		this.pickupAddress = pickupAddress;
 	}
 
-	public Double getPickup_latitude() {
-		return pickup_latitude;
+	public Double getPickupLatitude() {
+		return pickupLatitude;
 	}
 
-	public void setPickup_latitude(Double pickup_latitude) {
-		this.pickup_latitude = pickup_latitude;
+	public void setPickupLatitude(Double pickupLatitude) {
+		this.pickupLatitude = pickupLatitude;
 	}
 
-	public Double getPickup_longitude() {
-		return pickup_longitude;
+	public Double getPickupLongitude() {
+		return pickupLongitude;
 	}
 
-	public void setPickup_longitude(Double pickup_longitude) {
-		this.pickup_longitude = pickup_longitude;
+	public void setPickupLongitude(Double pickupLongitude) {
+		this.pickupLongitude = pickupLongitude;
 	}
 
-	public String getDrop_address() {
-		return drop_address;
+	public String getDropAddress() {
+		return dropAddress;
 	}
 
-	public void setDrop_address(String drop_address) {
-		this.drop_address = drop_address;
+	public void setDropAddress(String dropAddress) {
+		this.dropAddress = dropAddress;
 	}
 
-	public Double getDrop_latitude() {
-		return drop_latitude;
+	public Double getDropLatitude() {
+		return dropLatitude;
 	}
 
-	public void setDrop_latitude(Double drop_latitude) {
-		this.drop_latitude = drop_latitude;
+	public void setDropLatitude(Double dropLatitude) {
+		this.dropLatitude = dropLatitude;
 	}
 
-	public Double getDrop_longitude() {
-		return drop_longitude;
+	public Double getDropLongitude() {
+		return dropLongitude;
 	}
 
-	public void setDrop_longitude(Double drop_longitude) {
-		this.drop_longitude = drop_longitude;
+	public void setDropLongitude(Double dropLongitude) {
+		this.dropLongitude = dropLongitude;
 	}
 
-	public String getPickup_zipcode() {
-		return pickup_zipcode;
+	public String getPickupZipcode() {
+		return pickupZipcode;
 	}
 
-	public void setPickup_zipcode(String pickup_zipcode) {
-		this.pickup_zipcode = pickup_zipcode;
+	public void setPickupZipcode(String pickupZipcode) {
+		this.pickupZipcode = pickupZipcode;
 	}
 
-	public String getDrop_zipcode() {
-		return drop_zipcode;
+	public String getDropZipcode() {
+		return dropZipcode;
 	}
 
-	public void setDrop_zipcode(String drop_zipcode) {
-		this.drop_zipcode = drop_zipcode;
+	public void setDropZipcode(String dropZipcode) {
+		this.dropZipcode = dropZipcode;
 	}
 
 	public List<SelectedItems> getSelectedItems() {

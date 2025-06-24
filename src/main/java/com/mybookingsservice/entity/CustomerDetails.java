@@ -30,23 +30,24 @@ public class CustomerDetails implements Serializable{
 	@Id
 	@Column( name = "custId")
 	private Long custId;
-	
-	
 	private String cFirstname;
-	
 	private String cLastname;
-	
 	private String cMobile;
-	
 	private String cEmail;
+	private String cAddress1;
+	private String cCity;
+	private String cState;
+	private String cZipcode;
+	private Double pickupLattitude;
+	private Double pickupLongitude;
 	
 	
 //	@OneToMany(mappedBy = "customerDetails", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //	@JsonManagedReference
 	
-	@OneToOne
-	@JoinColumn( name = "custId")
-    private CustAddress custAddress;
+//	@OneToOne
+//	@JoinColumn( name = "custId")
+//    private CustAddress custAddress;
 	
 	
 //	@OneToMany(mappedBy = "customerDetails")
@@ -58,6 +59,55 @@ public class CustomerDetails implements Serializable{
 	public void setcFirstname(String cFirstname) {
 		this.cFirstname = cFirstname;
 	}
+
+	public String getcAddress1() {
+		return cAddress1;
+	}
+
+	public void setcAddress1(String cAddress1) {
+		this.cAddress1 = cAddress1;
+	}
+
+	public String getcCity() {
+		return cCity;
+	}
+
+	public void setcCity(String cCity) {
+		this.cCity = cCity;
+	}
+
+	public String getcState() {
+		return cState;
+	}
+
+	public void setcState(String cState) {
+		this.cState = cState;
+	}
+
+	public String getcZipcode() {
+		return cZipcode;
+	}
+
+	public void setcZipcode(String cZipcode) {
+		this.cZipcode = cZipcode;
+	}
+
+	public Double getPickupLattitude() {
+		return pickupLattitude;
+	}
+
+	public void setPickupLattitude(Double pickupLattitude) {
+		this.pickupLattitude = pickupLattitude;
+	}
+
+	public Double getPickupLongitude() {
+		return pickupLongitude;
+	}
+
+	public void setPickupLongitude(Double pickupLongitude) {
+		this.pickupLongitude = pickupLongitude;
+	}
+
 
 	public Long getCustId() {
 		return custId;
@@ -93,14 +143,6 @@ public class CustomerDetails implements Serializable{
 
 	public void setcEmail(String cEmail) {
 		this.cEmail = cEmail;
-	}
-
-	public CustAddress getCustAddress() {
-		return custAddress;
-	}
-
-	public void setCustAddress(CustAddress custAddress) {
-		this.custAddress = custAddress;
 	}
 
 	public void setCustId(long custId) {

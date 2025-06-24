@@ -4,10 +4,7 @@ import java.util.List;
 
 import com.mybookingsservice.exceptions.StatusHandler;
 
-
-
-
-public class CustomerBookingResponseDTO {
+public class VendorBookingsDTO {
 	
 	private List<MyBookingsRequestDTO> requestDTO;
 	private StatusHandler statusHandler;
@@ -23,6 +20,5 @@ public class CustomerBookingResponseDTO {
 	public void setStatusHandler(StatusHandler statusHandler) {
 		this.statusHandler = statusHandler;
 	}
-	
 	
 }

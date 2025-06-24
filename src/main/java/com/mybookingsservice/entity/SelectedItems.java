@@ -1,5 +1,7 @@
 package com.mybookingsservice.entity;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -41,18 +43,57 @@ public class SelectedItems {
     private Long qty;
 
     @Column(name = "CREATEDBY")
-    private String createdBy;
+    private Long createdBy;
 
     @Column(name = "UPDATEDBY")
-    private String updatedBy;
+    private Long updatedBy;
+    
+    @Column(name = "CREATEDAT")
+    private LocalDateTime createdAt;
+
+    @Column(name = "UPDATEDAT")
+    private LocalDateTime updatedAt;
 
     @Column(name = "ISACTIVE")
     private String isActive;
 	
     @ManyToOne
-    @JoinColumn(name = "bookingId")
+    @JoinColumn(name = "bookingId", nullable = false)
     @JsonBackReference
     private MyBookings booking;
+
+	public Long getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Long getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(Long updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
 	public Long getItemId() {
 		return itemId;
@@ -109,22 +150,6 @@ public class SelectedItems {
 
 	public void setQty(Long qty) {
 		this.qty = qty;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
 	}
 
 	public String getIsActive() {

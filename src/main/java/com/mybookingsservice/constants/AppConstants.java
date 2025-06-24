@@ -21,5 +21,10 @@ public class AppConstants {
 	public static final String FAILED = "FAILED";
 	public static final String INSERT_QUERY_EXECUTION_FAILED = "INSERT_QUERY_EXECUTION_FAILED";
 	public static final String PENDING = "PENDING";
+	public static final String VENDRO_SERVICES_NOT_AVAILABLE = "VENDRO_SERVICES_NOT_AVAILABLE";
+	public static final String BOOKINGID_NOT_FOUND = "BOOKINGID_NOT_FOUND";
+	public static final String CONFRIRMED = "CONFRIRMED";
+	public static final String PICKUP_COMPLETED = "PICKUP_COMPLETED";
+	public static final String DROP_COMPLETED = "DROP_COMPLETED";
 
 }

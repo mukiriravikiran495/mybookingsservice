@@ -16,11 +16,11 @@ import jakarta.persistence.Table;
 public class VendorServiceArea {
 	
 	@Id
-	private Long v_service_id;
-	private String v_address1;
-	private String v_city;
-	private String v_state;
-	private String v_zipcode;
+	private Long vServiceId;
+	private String vAddress1;
+	private String vCity;
+	private String vState;
+	private String vZipcode;
 	private int basePricePerKm;
     private int pricePerKg;
     private int avgDeliveryTimeInDays;
@@ -32,44 +32,44 @@ public class VendorServiceArea {
     @JsonBackReference
     private Vendor vendor;
 
-	public Long getV_service_id() {
-		return v_service_id;
+	public Long getvServiceId() {
+		return vServiceId;
 	}
 
-	public void setV_service_id(Long v_service_id) {
-		this.v_service_id = v_service_id;
+	public void setvServiceId(Long vServiceId) {
+		this.vServiceId = vServiceId;
 	}
 
-	public String getV_address1() {
-		return v_address1;
+	public String getvAddress1() {
+		return vAddress1;
 	}
 
-	public void setV_address1(String v_address1) {
-		this.v_address1 = v_address1;
+	public void setvAddress1(String vAddress1) {
+		this.vAddress1 = vAddress1;
 	}
 
-	public String getV_city() {
-		return v_city;
+	public String getvCity() {
+		return vCity;
 	}
 
-	public void setV_city(String v_city) {
-		this.v_city = v_city;
+	public void setvCity(String vCity) {
+		this.vCity = vCity;
 	}
 
-	public String getV_state() {
-		return v_state;
+	public String getvState() {
+		return vState;
 	}
 
-	public void setV_state(String v_state) {
-		this.v_state = v_state;
+	public void setvState(String vState) {
+		this.vState = vState;
 	}
 
-	public String getV_zipcode() {
-		return v_zipcode;
+	public String getvZipcode() {
+		return vZipcode;
 	}
 
-	public void setV_zipcode(String v_zipcode) {
-		this.v_zipcode = v_zipcode;
+	public void setvZipcode(String vZipcode) {
+		this.vZipcode = vZipcode;
 	}
 
 	public int getBasePricePerKm() {
@@ -120,5 +120,6 @@ public class VendorServiceArea {
 		this.vendor = vendor;
 	}
 
+	
 	
 }

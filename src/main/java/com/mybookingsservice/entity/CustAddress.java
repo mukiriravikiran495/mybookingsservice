@@ -31,9 +31,9 @@ public class CustAddress {
 	
 	private String cZipcode;
 	
-	@OneToOne(mappedBy = "custAddress", cascade = CascadeType.ALL)
-    @JoinColumn(name = "custId")
-    private CustomerDetails customerDetails;
+//	@OneToOne(mappedBy = "custAddress", cascade = CascadeType.ALL)
+//    @JoinColumn(name = "custId")
+//    private CustomerDetails customerDetails;
 
 	public CustAddress() {
 		
@@ -82,16 +82,5 @@ public class CustAddress {
 		this.cZipcode = cZipcode;
 	}
 
-	public CustomerDetails getCustomerDetails() {
-		return customerDetails;
-	}
-
-
-
-	public void setCustomerDetails(CustomerDetails customerDetails) {
-		this.customerDetails = customerDetails;
-	}
-
-	
 	
 }

@@ -5,12 +5,13 @@ import java.util.List;
 public class VendorDetailsDTO {
 
 	private long vendorId;
-	private String v_firstName;
-	private String v_lastName;
-	private String v_mobile;
-	private String v_email;
+	private String vFirstname;
+	private String vLastname;
+	private String vMobile;
+	private String vEmail;
 //	private List<VendorAddressDTO> vendorAddress;
 	private VendorAddressDTO vendorAddress;
+	
 	
 	
 	public long getVendorId() {
@@ -19,43 +20,35 @@ public class VendorDetailsDTO {
 	public void setVendorId(long vendorId) {
 		this.vendorId = vendorId;
 	}
-	public String getV_firstName() {
-		return v_firstName;
+	public String getvFirstname() {
+		return vFirstname;
 	}
-	public void setV_firstName(String v_firstName) {
-		this.v_firstName = v_firstName;
+	public void setvFirstname(String vFirstname) {
+		this.vFirstname = vFirstname;
 	}
-	public String getV_lastName() {
-		return v_lastName;
+	public String getvLastname() {
+		return vLastname;
 	}
-	public void setV_lastName(String v_lastName) {
-		this.v_lastName = v_lastName;
+	public void setvLastname(String vLastname) {
+		this.vLastname = vLastname;
 	}
-	public String getV_mobile() {
-		return v_mobile;
+	public String getvMobile() {
+		return vMobile;
 	}
-	public void setV_mobile(String v_mobile) {
-		this.v_mobile = v_mobile;
+	public void setvMobile(String vMobile) {
+		this.vMobile = vMobile;
 	}
-	public String getV_email() {
-		return v_email;
+	public String getvEmail() {
+		return vEmail;
 	}
-	public void setV_email(String v_email) {
-		this.v_email = v_email;
+	public void setvEmail(String vEmail) {
+		this.vEmail = vEmail;
 	}
-	
-	
 	public VendorAddressDTO getVendorAddress() {
 		return vendorAddress;
 	}
 	public void setVendorAddress(VendorAddressDTO vendorAddress) {
 		this.vendorAddress = vendorAddress;
 	}
-	@Override
-	public String toString() {
-		return "VendorDetailsDTO [vendorId=" + vendorId + ", v_firstName=" + v_firstName + ", v_lastName=" + v_lastName
-				+ ", v_mobile=" + v_mobile + ", v_email=" + v_email + ", vendorAddress=" + vendorAddress + "]";
-	}
-	
 	
 }
