@@ -144,7 +144,7 @@ public class MyBookingsController {
 			if(null == custId) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
-			response = service.getBookingsByCustomerId(custId, response);
+			response = service.getBookingsByCustomerId(custId, response, statusHandler);
 			statusHandler.setErrorCode("200");
 			statusHandler.setErrorMessage(AppConstants.SUCCESS);
 			response.setStatusHandler(statusHandler);

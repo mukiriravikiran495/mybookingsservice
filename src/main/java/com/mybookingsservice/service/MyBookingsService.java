@@ -26,7 +26,7 @@ public interface MyBookingsService {
 	List<MyBookingsRequestDTO> getall();
 
 	
-	CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response);
+	CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response, StatusHandler statusHandler);
 	
 	CustBookingResponse getBookingsByBookingId(Long custId, Long bookingId, StatusHandler statusHandler,
 			CustBookingResponse custBookingResponse);

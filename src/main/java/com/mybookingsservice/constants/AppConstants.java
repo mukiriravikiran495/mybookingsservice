@@ -26,5 +26,7 @@ public class AppConstants {
 	public static final String CONFRIRMED = "CONFRIRMED";
 	public static final String PICKUP_COMPLETED = "PICKUP_COMPLETED";
 	public static final String DROP_COMPLETED = "DROP_COMPLETED";
+	public static final String CUSTID_DOES_NOT_EXISTS = "CUSTID_DOES_NOT_EXISTS";
+	public static final String VENDORID_DOES_NOT_EXISTS = "VENDORID_DOES_NOT_EXISTS";
 
 }

@@ -35,6 +35,7 @@ import com.mybookingsservice.domain.VendorBookingsDTO;
 import com.mybookingsservice.domain.VendorDTO;
 import com.mybookingsservice.domain.VendorEstimateRequest;
 import com.mybookingsservice.domain.VendorEstimateResponse;
+import com.mybookingsservice.domain.VendorResponse;
 import com.mybookingsservice.domain.VendorServiceAreaDTO;
 import com.mybookingsservice.entity.BookingTransaction;
 import com.mybookingsservice.entity.CustomerDetails;
@@ -52,6 +53,7 @@ import com.mybookingsservice.repository.HouseholdRepository;
 import com.mybookingsservice.repository.MyBookingsRepository;
 import com.mybookingsservice.repository.VendorRepository;
 import com.mybookingsservice.utils.CustomerUtils;
+import com.mybookingsservice.utils.VendorUtils;
 
 @Service("MyBookingsService")
 public class MyBookingsServiceImpl implements MyBookingsService{
@@ -85,10 +87,12 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	BookingTransactionMapper transactionMapper;
 	
 	private final CustomerUtils customerUtils;
+	private final VendorUtils vendorUtils;
 
-    MyBookingsServiceImpl(SecurityConfig securityConfig, CustomerUtils customerUtils) {
+    MyBookingsServiceImpl(SecurityConfig securityConfig, CustomerUtils customerUtils, VendorUtils vendorUtils) {
         this.securityConfig = securityConfig;
         this.customerUtils = customerUtils;
+        this.vendorUtils = vendorUtils;
     }
 	
 	@Override
@@ -125,8 +129,15 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public CustBookingResponse cancelBookingById(Long custId, Long bookingId, CustBookingResponse cancelResponse, StatusHandler statusHandler) {
 		logger.info("Start : Cancel Booking by Id Service : "+custId+" "+bookingId);
 		
-		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
+		
 		try {
+			CustomerResponse custDetails = customerUtils.getCustomer(custId);
+			
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
 			if( null == bookings) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
@@ -157,12 +168,29 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		return cancelResponse;
 	}
 
-	public CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response) {
+	public CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response, StatusHandler statusHandler) {
 		logger.info("Start : get all bookings service fro custId : "+custId);
-        List<MyBookings> bookings = repository.findByCustIdWithItems(custId);
-        System.out.println(" Selected : "+bookings.get(0).getSelectedItems());
-        List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
-        response.setRequestDTO(dtoList);
+		try {
+			CustomerResponse custDetails = customerUtils.getCustomer(custId);
+			
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			List<MyBookings> bookings = repository.findByCustIdWithItems(custId);
+	        System.out.println(" Selected : "+bookings.get(0).getSelectedItems());
+	        List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+	        response.setRequestDTO(dtoList);
+		}catch(RuntimeException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			response.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			response.setStatusHandler(statusHandler);
+		}
+        
         
         logger.info("End : get all bookings service from custId : "+custId);
 		return response;
@@ -172,9 +200,26 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public CustomerBookingResponseDTO getAllCancelledBookings(Long custId, String status,
 			CustomerBookingResponseDTO cancelledBookings, StatusHandler statusHandler) {
 		logger.info("Start : get all cancelled bookings service for custId : "+custId);
-		List<MyBookings> bookings = repository.findByCustIdAndStatusWithItems(custId, status);
-		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
-		cancelledBookings.setRequestDTO(dtoList);
+		try {
+			CustomerResponse custDetails = customerUtils.getCustomer(custId);
+			
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			List<MyBookings> bookings = repository.findByCustIdAndStatusWithItems(custId, status);
+			List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+			cancelledBookings.setRequestDTO(dtoList);
+		}catch(RuntimeException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(ex.getMessage());
+			cancelledBookings.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			cancelledBookings.setStatusHandler(statusHandler);
+		}
+		
 		
 		logger.info("END : get all cancelled bookings service for custId : "+custId);
 		return cancelledBookings;
@@ -183,9 +228,22 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	@Override
 	public VendorBookingsDTO getBookingByVendorId(Long vendorId, VendorBookingsDTO vendor, StatusHandler statusHandler) {
 		logger.info("START : VendorBookings Service ");
-		List<MyBookings> bookings = repository.findByVendorIdWithItems(vendorId);
-		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
-		vendor.setRequestDTO(dtoList);
+		try {
+			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+			
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
+			List<MyBookings> bookings = repository.findByVendorIdWithItems(vendorId);
+			List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
+			vendor.setRequestDTO(dtoList);
+		}catch(RuntimeException ex) {
+			
+		}catch(Exception ex) {
+			
+		}
+		
 		logger.info("END : VendorBookings Service : ");
 //	    return vendorMapper.toVendorBookingDTOs(bookings);
 		return vendor;
@@ -196,9 +254,26 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public VendorBookingResponseDTO getBookingByVendorIdbookingId(Long vendorId, Long bookingId,
 			VendorBookingResponseDTO vendorbooking, StatusHandler statusHandler) {
 		logger.info("Start : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
-		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-		MyBookingsRequestDTO booking = mapper.toDto(bookings);
-		vendorbooking.setRequestDTO(booking);
+		try {
+			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+			
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
+			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
+			MyBookingsRequestDTO booking = mapper.toDto(bookings);
+			vendorbooking.setRequestDTO(booking);
+		}catch(RuntimeException ex) {
+			statusHandler.setErrorCode("400");
+			statusHandler.setErrorMessage(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			vendorbooking.setStatusHandler(statusHandler);
+		}catch(Exception ex) {
+			statusHandler.setErrorCode("500");
+			statusHandler.setErrorMessage(ex.getMessage());
+			vendorbooking.setStatusHandler(statusHandler);
+		}
+		
 		logger.info("End : get bookings by vendorId and bookingId service : "+vendorId+" "+bookingId);
 		return vendorbooking;
 	}
@@ -213,6 +288,14 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			if( null == vendorId || null == bookingId) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
+			
+			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+			
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
+			
 			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
 			
 			bookings.setStatus(AppConstants.CANCELLED);
@@ -227,6 +310,11 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 				statusHandler.setMessage(AppConstants.SUCCESS);
 				vendorResponse.setStatusHandler(statusHandler);
 			}
+		}catch(RuntimeException ex) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			vendorResponse.setStatusHandler(statusHandler);
+			return vendorResponse;
 		}catch(InvalidRequestException ex) {
 			statusHandler.setStatusCode("400");
 			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
@@ -249,6 +337,12 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public VendorBookingsDTO getVendorCancelledBookings(Long vendorId, String status,
 			VendorBookingsDTO cancelledBookings, StatusHandler statusHandler) {
 		logger.info("Start : Get all Vendor Cancelled Bookings : "+vendorId);
+		VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+		
+		System.out.println(vendorDetails.getVendorDTO());
+		if( null == vendorDetails.getVendorDTO().getVendorId()) {
+			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+		}
 		List<MyBookings> bookings = repository.findByVendorIdAndStatusWithItems(vendorId, status);
 		List<MyBookingsRequestDTO> dtoList = mapper.toCustomerBookingDTOs(bookings);
 		cancelledBookings.setRequestDTO(dtoList);
@@ -503,6 +597,7 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		List<HouseholdItemsDTO> itemsDTO = new ArrayList<>();
 		
 		
+		
 		try {
 			Optional.ofNullable(request.getCustId()).orElseThrow( () ->  new InvalidRequestException("CUSTID_IS_REQUIRED") );
 			Optional.ofNullable(request.getcMobile()).orElseThrow( () -> new InvalidRequestException("MOBILENUMBER_IS_REQUIRED"));
@@ -510,6 +605,14 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			Optional.ofNullable(request.getPickupLongitude()).orElseThrow( () -> new InvalidRequestException("LOCATION_IS_REQUIRED"));
 			Optional.ofNullable(request.getDropLatitude()).orElseThrow( () -> new InvalidRequestException("LOCATION_IS_REQUIRED"));
 			Optional.ofNullable(request.getDropLongitude()).orElseThrow( () -> new InvalidRequestException("LOCATION_IS_REQUIRED"));
+			
+			CustomerResponse custDetails = customerUtils.getCustomer(request.getCustId());
+			
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			
 			MyBookings bookings = new MyBookings();
 			bookings.setStatus("PENDING");
 			bookings.setCustId(request.getCustId());
