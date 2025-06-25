@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mybookingsservice.constants.AppConstants;
 import com.mybookingsservice.domain.AcceptBookingRequest;
 import com.mybookingsservice.domain.AcceptBookingResponse;
+import com.mybookingsservice.domain.BookingSummaryRequest;
+import com.mybookingsservice.domain.BookingTransactionDTO;
+import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.BookingTypeRequest;
 import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
@@ -32,6 +36,7 @@ import com.mybookingsservice.domain.VendorEstimateRequest;
 import com.mybookingsservice.domain.VendorEstimateResponse;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
+import com.mybookingsservice.repository.CustomerRepository;
 import com.mybookingsservice.service.MyBookingsService;
 
 import jakarta.validation.Valid;
@@ -39,6 +44,10 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping( path = "/v1/api/bookings")
 public class MyBookingsController {
+
+    private final CustomerRepository customerRepository;
+
+    private final JpaTransactionManager transactionManager;
 
     private final DataSource dataSource;
 
@@ -48,9 +57,11 @@ public class MyBookingsController {
 	
 	
 	@Autowired
-	public MyBookingsController(MyBookingsService service, DataSource dataSource) {
+	public MyBookingsController(MyBookingsService service, DataSource dataSource, JpaTransactionManager transactionManager, CustomerRepository customerRepository) {
 		this.service = service;
 		this.dataSource = dataSource;
+		this.transactionManager = transactionManager;
+		this.customerRepository = customerRepository;
 	}
 	
 //	@GetMapping( value = "/getall")
@@ -468,7 +479,55 @@ public class MyBookingsController {
 		return ResponseEntity.ok(vendorBooking);
 	}
 	
-	
+	 @PostMapping( value = "/transaction/create")
+	    public ResponseEntity<BookingTransactionResponse> createTransaction(@RequestBody BookingTransactionDTO dto) {
+		 logger.info("Start : create booking transaction controller : "+dto);
+		 StatusHandler statusHandler = new StatusHandler();
+		 BookingTransactionResponse response = new BookingTransactionResponse();
+		 System.out.println(dto.getBookingId());
+		 try {
+			 if( null == dto.getBookingId()) {
+				 throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			 }
+			 response = service.createTransaction(dto, response, statusHandler);
+			 statusHandler.setStatusCode("200");
+			 statusHandler.setMessage(AppConstants.SUCCESS);
+			 response.setStatusHandler(statusHandler);
+		 }catch(InvalidRequestException ex) {
+			 statusHandler.setStatusCode("400");
+			 statusHandler.setMessage(ex.getMessage());
+			 response.setStatusHandler(statusHandler);
+		 }catch(Exception ex) {
+			 statusHandler.setStatusCode("500");
+			 statusHandler.setMessage(ex.getMessage());
+			 response.setStatusHandler(statusHandler);
+		 }
+		 
+		 
+		 logger.info("End : create booking transaction controller : "+dto);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	    }
+	 
+	 @GetMapping( value = "/booking/summary")
+	 public ResponseEntity<MyBookingsResponseDTO> getBookingSummary(@RequestBody BookingSummaryRequest bookingSummary){
+		 logger.info("Start : Booking Summary controller : "+bookingSummary);
+		 StatusHandler statusHandler = new StatusHandler();
+		 MyBookingsResponseDTO response = new MyBookingsResponseDTO();
+		 try {
+			 response = service.getBookingSummary(bookingSummary, response, statusHandler);
+			 statusHandler.setStatusCode("200");
+			 statusHandler.setMessage(AppConstants.SUCCESS);
+			 response.setStatusHandler(statusHandler);
+		 }catch(Exception ex) {
+			 statusHandler.setStatusCode("500");
+			 statusHandler.setMessage(ex.getMessage());
+			 response.setStatusHandler(statusHandler);
+		 }
+		 
+		 
+		 logger.info("End : booking Summary controller : "+bookingSummary);
+		 return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	 }
 	
 }
 

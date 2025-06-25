@@ -19,9 +19,13 @@ import com.mybookingsservice.config.SecurityConfig;
 import com.mybookingsservice.constants.AppConstants;
 import com.mybookingsservice.domain.AcceptBookingRequest;
 import com.mybookingsservice.domain.AcceptBookingResponse;
+import com.mybookingsservice.domain.BookingSummaryRequest;
+import com.mybookingsservice.domain.BookingTransactionDTO;
+import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.BookingTypeRequest;
 import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
+import com.mybookingsservice.domain.CustomerResponse;
 import com.mybookingsservice.domain.HouseholdItemsDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsRequestDTO;
@@ -32,6 +36,7 @@ import com.mybookingsservice.domain.VendorDTO;
 import com.mybookingsservice.domain.VendorEstimateRequest;
 import com.mybookingsservice.domain.VendorEstimateResponse;
 import com.mybookingsservice.domain.VendorServiceAreaDTO;
+import com.mybookingsservice.entity.BookingTransaction;
 import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.entity.HouseholdItems;
 import com.mybookingsservice.entity.MyBookings;
@@ -39,12 +44,14 @@ import com.mybookingsservice.entity.SelectedItems;
 import com.mybookingsservice.entity.Vendor;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
+import com.mybookingsservice.mapper.BookingTransactionMapper;
 import com.mybookingsservice.mapper.MyBookingsMapper;
+import com.mybookingsservice.repository.BookingTransactionRepository;
 import com.mybookingsservice.repository.CustomerRepository;
 import com.mybookingsservice.repository.HouseholdRepository;
 import com.mybookingsservice.repository.MyBookingsRepository;
-import com.mybookingsservice.repository.VendorDetailsRepository;
 import com.mybookingsservice.repository.VendorRepository;
+import com.mybookingsservice.utils.CustomerUtils;
 
 @Service("MyBookingsService")
 public class MyBookingsServiceImpl implements MyBookingsService{
@@ -69,10 +76,19 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	CustomerRepository customerRepository;
 	
 	@Autowired
-	VendorDetailsRepository vendorDetailsRepository;
+	BookingTransactionRepository transactionRepository;
+	
+//	@Autowired
+//	VendorDetailsRepository vendorDetailsRepository;
+	
+	@Autowired
+	BookingTransactionMapper transactionMapper;
+	
+	private final CustomerUtils customerUtils;
 
-    MyBookingsServiceImpl(SecurityConfig securityConfig) {
+    MyBookingsServiceImpl(SecurityConfig securityConfig, CustomerUtils customerUtils) {
         this.securityConfig = securityConfig;
+        this.customerUtils = customerUtils;
     }
 	
 	@Override
@@ -89,11 +105,19 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public CustBookingResponse getBookingsByBookingId(Long custId, Long bookingId, StatusHandler statusHandler,
 			CustBookingResponse custBookingResponse) {
 		logger.info("START : Get Bookings By ID Service : "+custId+" "+bookingId);
-		MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
+		CustomerResponse custDetails = customerUtils.getCustomer(custId);
 		
-		logger.info("END : Get Bookings By ID Service : "+custId+" "+bookingId);
-		MyBookingsRequestDTO booking = mapper.toDto(bookings);
-		custBookingResponse.setRequestDTO(booking);
+		System.out.println(custDetails.getDetailsDTO());
+		if( null != custDetails.getDetailsDTO().getCustId()) {
+			MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
+			
+			logger.info("END : Get Bookings By ID Service : "+custId+" "+bookingId);
+			MyBookingsRequestDTO booking = mapper.toDto(bookings);
+			custBookingResponse.setRequestDTO(booking);
+		}else {
+			throw new RuntimeException("CustId you are passing is doesn't exists : "+custId);
+		}
+		
 		return custBookingResponse;
 	}
 
@@ -642,6 +666,49 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		
 		logger.info("End : update drop service : "+vendorId+" "+bookingId);
 		return vendorBooking;
+	}
+
+	@Override
+	public BookingTransactionResponse createTransaction(BookingTransactionDTO dto, BookingTransactionResponse response,
+			StatusHandler statusHandler) {
+		logger.info("Start : create transaction service : "+dto);
+		
+		MyBookings booking = repository.findById(dto.getBookingId())
+	            .orElseThrow(() -> new RuntimeException("Booking ID not found: " + dto.getBookingId()));
+		BookingTransaction transaction = new BookingTransaction();
+		transaction.setBooking(booking); // ✅ Set the actual entity, not just ID
+	    transaction.setTransactionRef(dto.getTransactionRef());
+	    transaction.setTransactionType(dto.getTransactionType());
+	    transaction.setAmount(dto.getAmount());
+	    transaction.setCurrency(dto.getCurrency());
+	    transaction.setStatus(dto.getStatus());
+	    transaction.setPaymentMode(dto.getPaymentMode());
+	    transaction.setResponseMessage(dto.getResponseMessage());
+	    transaction.setCreatedAt(LocalDateTime.now());
+	    transaction.setCreatedBy(dto.getCreatedBy());
+	    BookingTransaction  tran = transactionRepository.save(transaction);
+	    BookingTransactionDTO newDto = transactionMapper.toDTO(tran);
+	    newDto.setBookingId(dto.getBookingId());
+		response.setTransactionDTO(newDto);
+		
+//		BookingTransaction transaction = transactionMapper.toEntity(dto);
+//		System.out.println(transaction.toString());
+//		BookingTransaction  tran = transactionRepository.save(transaction);
+//		BookingTransactionDTO newDto = transactionMapper.toDTO(tran);
+//		response.setTransactionDTO(newDto);
+		logger.info("End : create transaction service : "+dto);
+		return response;
+	}
+
+	@Override
+	public MyBookingsResponseDTO getBookingSummary(BookingSummaryRequest bookingSummary, MyBookingsResponseDTO response,
+			StatusHandler statusHandler) {
+		logger.info("Start : bokking summary service : "+bookingSummary);
+		MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingSummary.getBookingId(), bookingSummary.getCustId(), bookingSummary.getVendorId());
+		MyBookingsRequestDTO dto = mapper.toDto(bookings);
+		response.setMyBookingRequestDTO(dto);
+		logger.info("End : booking summary service : "+bookingSummary);
+		return response;
 	}
 
 	

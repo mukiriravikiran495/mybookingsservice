@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mybookingsservice.entity.BookingTransaction;
 
 public class MyBookingsRequestDTO {
 	
@@ -94,7 +95,18 @@ public class MyBookingsRequestDTO {
 //	private VendorDetailsDTO vendorDetails;
 	
 	private List<SelectedItemsDTO> selectedItems;
+	
+	private List<BookingTransactionDTO> transaction;
 
+
+
+	public List<BookingTransactionDTO> getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(List<BookingTransactionDTO> transaction) {
+		this.transaction = transaction;
+	}
 
 	public String getcMobile() {
 		return cMobile;

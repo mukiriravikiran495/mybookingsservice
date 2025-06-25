@@ -31,6 +31,10 @@ public class TokenID {
 	public void setResult(String result) {
 		this.result = result;
 	}
+	@Override
+	public String toString() {
+		return "TokenID [token=" + token + ", expires=" + expires + ", status=" + status + ", result=" + result + "]";
+	}
 	
 	
 }

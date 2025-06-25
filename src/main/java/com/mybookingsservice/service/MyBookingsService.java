@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.mybookingsservice.domain.AcceptBookingRequest;
 import com.mybookingsservice.domain.AcceptBookingResponse;
+import com.mybookingsservice.domain.BookingSummaryRequest;
+import com.mybookingsservice.domain.BookingTransactionDTO;
+import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.BookingTypeRequest;
 import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
@@ -79,6 +82,14 @@ public interface MyBookingsService {
 
 	VendorBookingResponseDTO updateDrop(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBooking,
 			StatusHandler statushandler);
+
+
+	BookingTransactionResponse createTransaction(BookingTransactionDTO dto, BookingTransactionResponse response,
+			StatusHandler statusHandler);
+
+
+	MyBookingsResponseDTO getBookingSummary(BookingSummaryRequest bookingSummary, MyBookingsResponseDTO response,
+			StatusHandler statusHandler);
 
 
 

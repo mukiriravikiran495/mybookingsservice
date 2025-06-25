@@ -1,6 +1,5 @@
 package com.mybookingsservice.configuration;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -18,9 +17,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableTransactionManagement
@@ -45,7 +42,8 @@ public class HibernateConfiguration {
 
     @Value("${hibernate.show_sql}")
     private String HIBERNATE_SHOW_SQL;
-
+    
+    
     /*@Value("${hibernate.hbm2ddl.auto}")
     private String HIBERNATE_HBM2DDL_AUTO;*/
 
@@ -66,7 +64,7 @@ public class HibernateConfiguration {
         return emf;
     }
 
-    @Bean
+	@Bean
     DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(DB_DRIVER);
@@ -94,6 +92,11 @@ public class HibernateConfiguration {
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer customizer() {
         return builder -> builder.locale(Locale.ENGLISH);
+    }
+    
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
     
 }

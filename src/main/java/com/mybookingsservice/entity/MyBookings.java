@@ -117,7 +117,18 @@ public class MyBookings implements Serializable{
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<SelectedItems> selectedItems;
+	
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<BookingTransaction> transaction;
     
+	public List<BookingTransaction> getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(List<BookingTransaction> transaction) {
+		this.transaction = transaction;
+	}
+
 	public String getvFirstname() {
 		return vFirstname;
 	}
