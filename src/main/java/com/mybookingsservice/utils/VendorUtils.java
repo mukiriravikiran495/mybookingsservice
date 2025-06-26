@@ -19,6 +19,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.mybookingsservice.configuration.HibernateConfiguration;
 import com.mybookingsservice.domain.TokenID;
+import com.mybookingsservice.domain.VendorEstimateRequest;
+import com.mybookingsservice.domain.VendorEstimateResponse;
 import com.mybookingsservice.domain.VendorResponse;
 
 @Component
@@ -94,4 +96,61 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 		logger.info("End : get token customer-service : ");
 		return response.getBody();
 	}
+	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request) {
+		logger.info("Start : get vendor estimates utils : "+request);
+		HibernateConfiguration conf = new HibernateConfiguration();
+		String url = vendorServiceUrl+"/vendor/vendorestimates";
+		
+		TokenID token = getToken();
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer "+token.getToken());
+		System.out.println("token : "+token.getToken());
+		System.out.println(" URL : "+url);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<VendorEstimateRequest> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<VendorEstimateResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                VendorEstimateResponse.class
+            );
+            logger.info("Response: " + response.getBody());
+            logger.info("End : get vendor estimates utils : ");
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
+            System.out.println(ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            logger.error("Request failed: ", e);
+            throw e;
+        }
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

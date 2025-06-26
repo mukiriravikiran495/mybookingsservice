@@ -337,6 +337,8 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	public VendorBookingsDTO getVendorCancelledBookings(Long vendorId, String status,
 			VendorBookingsDTO cancelledBookings, StatusHandler statusHandler) {
 		logger.info("Start : Get all Vendor Cancelled Bookings : "+vendorId);
+		
+		
 		VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
 		
 		System.out.println(vendorDetails.getVendorDTO());
@@ -355,7 +357,17 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 	@Override
 	public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest, AcceptBookingResponse acceptBookingResponse, StatusHandler statusHandler) {
 		logger.info("Start : Accept Bookings Service : "+acceptBookingRequest);
-//		
+		
+		CustomerResponse custDetails = customerUtils.getCustomer(acceptBookingRequest.getCustId());
+		System.out.println(custDetails.getDetailsDTO());
+		if( null == custDetails.getDetailsDTO().getCustId()) {
+			throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+		}
+		VendorResponse vendorDetails = vendorUtils.getVendor(acceptBookingRequest.getVendorId());
+		System.out.println(vendorDetails.getVendorDTO());
+		if( null == vendorDetails.getVendorDTO().getVendorId()) {
+			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+		}
 //		MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
 //		bookings.setStatus(AppConstants.ACCEPTED);
 //		bookings.setUPDATED_AT(new Timestamp(System.currentTimeMillis()));
@@ -409,55 +421,15 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			if( null == request.getPickupLatitude() || null == request.getPickupLongitude() || null == request.getDropLatitude() || null == request.getDropLongitude()) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
-			List<VendorNativeResult> flatResult = vendorRepository.findVendorsByZipcodeNative(request.getPickupZipcode());
-			Optional.ofNullable(flatResult).orElseThrow(() ->  new RuntimeException(AppConstants.VENDRO_SERVICES_NOT_AVAILABLE));
-			Map<Long, VendorDTO> vendorMap = new LinkedHashMap<>();
-
-			for (VendorNativeResult row : flatResult) {
-				VendorDTO vendorDTO = vendorMap.computeIfAbsent(row.getVendorId(), id -> {
-					VendorDTO dto = new VendorDTO();
-					dto.setVendorId(row.getVendorId());
-					dto.setvFirstname(row.getVfirstname());
-					dto.setvLastname(row.getVlastname());
-					dto.setvMobile(row.getVmobile());
-					dto.setvEmail(row.getVemail());
-					dto.setVendorServiceAreaDTO(new ArrayList<>());
-					return dto;
-				});
-
-				VendorServiceAreaDTO areaDTO = new VendorServiceAreaDTO();
-				areaDTO.setvServiceId(row.getVserviceId());
-				areaDTO.setvZipcode(row.getVzipcode());
-				areaDTO.setBasePricePerKm(row.getBasePricePerKm());
-				areaDTO.setPricePerKg(row.getPricePerKg());
-				areaDTO.setAvgDeliveryTimeInDays(row.getAvgDeliveryTimeInDays());
-				int weight = 0;
-				for (int i = 0; i < request.getSelectedItems().size(); i++) {
-					weight = weight + request.getSelectedItems().get(i).getWeight();
-				}
-				int estimatedPrice = weight * row.getBasePricePerKm() + row.getPricePerKg() * 10;
-				areaDTO.setEstimatedPrice(estimatedPrice);
-
-				areaDTO.setEstimatedDeliveryDate(null);
-				vendorDTO.getVendorServiceAreaDTO().add(areaDTO);
-			}
-
 			
-			response.setBookingDate(LocalDateTime.now());
-			response.setScheduledDate(request.getScheduledDate());
-			response.setServicetype(request.getServiceType());
-
-			response.setPickupAddress(request.getPickupAddress());
-			response.setPickupLatitude(request.getPickupLatitude());
-			response.setPickupLongitude(request.getPickupLongitude());
-			response.setPickupZipcode(request.getPickupZipcode());
-			response.setDropZipcode(request.getDropZipcode());
-			response.setDropAddress(request.getDropAddress());
-			response.setDropLatitude(request.getDropLatitude());
-			response.setDropLongitude(request.getDropLongitude());
-
-			response.setVendorDTO(new ArrayList<>(vendorMap.values()));
-
+			CustomerResponse custDetails = customerUtils.getCustomer(request.getCustId());
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			
+			response = vendorUtils.getvendorEstimates(request);
+			
 			StatusHandler status = new StatusHandler();
 			status.setStatusCode("200");
 			status.setMessage(AppConstants.SUCCESS);
@@ -481,6 +453,17 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		logger.info("Start : Create Bookings Service : "+mybookingsRequestDTO);
 		
 		try {
+			CustomerResponse custDetails = customerUtils.getCustomer(mybookingsRequestDTO.getCustId());
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+			}
+			
+			VendorResponse vendorDetails = vendorUtils.getVendor(mybookingsRequestDTO.getVendorId());
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
 			MyBookings bookings = repository.findAllByBookingId(mybookingsRequestDTO.getBookingId());
 			Optional.ofNullable(bookings).orElseThrow( () -> new RuntimeException(AppConstants.BOOKINGID_NOT_FOUND));
 			bookings.setStatus(AppConstants.CONFRIRMED);
@@ -703,9 +686,21 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		logger.info("Start : update pickup service : "+vendorId);
 		
 		try {
+			
+			
+			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
 			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
 			if(null == bookingId) {
 				throw new RuntimeException("VendorId and bookingId is Null : ");
+			}
+			CustomerResponse custDetails = customerUtils.getCustomer(bookings.getCustId());
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
 			}
 			bookings.setStatus(AppConstants.PICKUP_COMPLETED);
 			bookings.setBookingStatus(AppConstants.PICKUP_COMPLETED);
@@ -740,9 +735,22 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 			StatusHandler statusHandler) {
 		logger.info("Start : update drop service : "+vendorId+" "+bookingId);
 		try {
+			
+			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
+			
+			System.out.println(vendorDetails.getVendorDTO());
+			if( null == vendorDetails.getVendorDTO().getVendorId()) {
+				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+			}
 			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
 			if(null == bookingId) {
 				throw new RuntimeException("VendorId and bookingId is Null : ");
+			}
+			CustomerResponse custDetails = customerUtils.getCustomer(bookings.getCustId());
+			
+			System.out.println(custDetails.getDetailsDTO());
+			if( null == custDetails.getDetailsDTO().getCustId()) {
+				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
 			}
 			bookings.setStatus(AppConstants.DROP_COMPLETED);
 			bookings.setBookingStatus(AppConstants.DROP_COMPLETED);
@@ -778,6 +786,19 @@ public class MyBookingsServiceImpl implements MyBookingsService{
 		
 		MyBookings booking = repository.findById(dto.getBookingId())
 	            .orElseThrow(() -> new RuntimeException("Booking ID not found: " + dto.getBookingId()));
+		
+		CustomerResponse custDetails = customerUtils.getCustomer(booking.getCustId());
+		System.out.println(custDetails.getDetailsDTO());
+		if( null == custDetails.getDetailsDTO().getCustId()) {
+			throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
+		}
+		
+		VendorResponse vendorDetails = vendorUtils.getVendor(booking.getVendorId());
+		System.out.println(vendorDetails.getVendorDTO());
+		if( null == vendorDetails.getVendorDTO().getVendorId()) {
+			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+		}
+		
 		BookingTransaction transaction = new BookingTransaction();
 		transaction.setBooking(booking); // ✅ Set the actual entity, not just ID
 	    transaction.setTransactionRef(dto.getTransactionRef());
