@@ -24,7 +24,7 @@ public class VendorEstimateRequest {
 	private String pickupAddress;
     private Double pickupLatitude;
     private Double pickupLongitude;
-    
+    private String cCity;
     private String dropAddress;
     private Double dropLatitude;
     private Double dropLongitude;
@@ -34,6 +34,14 @@ public class VendorEstimateRequest {
     
     private List<SelectedItems> selectedItems;
 
+
+	public String getcCity() {
+		return cCity;
+	}
+
+	public void setcCity(String cCity) {
+		this.cCity = cCity;
+	}
 
 	public Long getCustId() {
 		return custId;
