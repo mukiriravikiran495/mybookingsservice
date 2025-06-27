@@ -1,6 +1,6 @@
 package com.mybookingsservice.domain;
 
-
+import java.time.LocalDateTime;
 
 public class CustomerDetailsDTO {
 
@@ -15,7 +15,8 @@ public class CustomerDetailsDTO {
 	private String cZipcode;
 	private Double cPickupLattitude;
 	private Double cPickupLongitude;
-	
+	private LocalDateTime createdAt = LocalDateTime.now();
+    private String createdBy;
 	
 	@Override
 	public String toString() {
@@ -23,6 +24,26 @@ public class CustomerDetailsDTO {
 				+ ", cMobile=" + cMobile + ", cEmail=" + cEmail + ", cAddress1=" + cAddress1 + ", cCity=" + cCity
 				+ ", cState=" + cState + ", cZipcode=" + cZipcode + ", cPickupLattitude=" + cPickupLattitude
 				+ ", cPickupLongitude=" + cPickupLongitude + "]";
+	}
+
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 

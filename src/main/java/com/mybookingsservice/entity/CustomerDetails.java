@@ -38,8 +38,8 @@ public class CustomerDetails implements Serializable{
 	private String cCity;
 	private String cState;
 	private String cZipcode;
-	private Double pickupLattitude;
-	private Double pickupLongitude;
+	private Double cpickupLattitude;
+	private Double cpickupLongitude;
 	
 	
 //	@OneToMany(mappedBy = "customerDetails", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -92,22 +92,21 @@ public class CustomerDetails implements Serializable{
 		this.cZipcode = cZipcode;
 	}
 
-	public Double getPickupLattitude() {
-		return pickupLattitude;
+	public Double getCpickupLattitude() {
+		return cpickupLattitude;
 	}
 
-	public void setPickupLattitude(Double pickupLattitude) {
-		this.pickupLattitude = pickupLattitude;
+	public void setCpickupLattitude(Double cpickupLattitude) {
+		this.cpickupLattitude = cpickupLattitude;
 	}
 
-	public Double getPickupLongitude() {
-		return pickupLongitude;
+	public Double getCpickupLongitude() {
+		return cpickupLongitude;
 	}
 
-	public void setPickupLongitude(Double pickupLongitude) {
-		this.pickupLongitude = pickupLongitude;
+	public void setCpickupLongitude(Double cpickupLongitude) {
+		this.cpickupLongitude = cpickupLongitude;
 	}
-
 
 	public Long getCustId() {
 		return custId;

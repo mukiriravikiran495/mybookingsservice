@@ -30,6 +30,9 @@ public class MyBookings implements Serializable{
 	private Long bookingId;
 	private Long custId;
 	private String cMobile;
+	private String cFirstname;
+	private String cLastname;
+	private String cEmail;
 	private String status;
 	private Long vendorId;
 	private String pickupAddress;
@@ -74,9 +77,7 @@ public class MyBookings implements Serializable{
 	private String cCity;
 	private String cState;
 	private String cZipcode;
-	private String cFirstname;
-	private String cLastname;
-	private String cEmail;
+	
     
     @JsonProperty("bookingDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
@@ -95,7 +96,7 @@ public class MyBookings implements Serializable{
 	
 	@JsonProperty("createdAt")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
-	private LocalDateTime createdAt; 
+	private LocalDateTime createdAt = LocalDateTime.now(); 
 	
 	private Long createdBy;
 	
@@ -121,6 +122,8 @@ public class MyBookings implements Serializable{
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<BookingTransaction> transaction;
     
+	
+	
 	public List<BookingTransaction> getTransaction() {
 		return transaction;
 	}

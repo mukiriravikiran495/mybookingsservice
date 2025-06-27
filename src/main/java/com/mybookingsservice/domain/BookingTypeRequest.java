@@ -14,7 +14,8 @@ public class BookingTypeRequest {
 	
 	private Long custId;
 	private String status;
-	
+	private String cCity;
+	private String cState;
 	private Long createdBy;
 	private String cMobile;
 	private String pickupAddress;
@@ -38,6 +39,22 @@ public class BookingTypeRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MMM-yyyy HH:mm:ss.SSS")
 	private LocalDateTime scheduledDate;
     
+	public String getcCity() {
+		return cCity;
+	}
+
+	public void setcCity(String cCity) {
+		this.cCity = cCity;
+	}
+
+	public String getcState() {
+		return cState;
+	}
+
+	public void setcState(String cState) {
+		this.cState = cState;
+	}
+
 	public int getBasePricePerKM() {
 		return basePricePerKM;
 	}

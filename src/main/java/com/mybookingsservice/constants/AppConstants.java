@@ -28,5 +28,6 @@ public class AppConstants {
 	public static final String DROP_COMPLETED = "DROP_COMPLETED";
 	public static final String CUSTID_DOES_NOT_EXISTS = "CUSTID_DOES_NOT_EXISTS";
 	public static final String VENDORID_DOES_NOT_EXISTS = "VENDORID_DOES_NOT_EXISTS";
+	public static final String CUSTOMER_DETAILS_NOT_SAVED = "CUSTOMER_DETAILS_NOT_SAVED";
 
 }
