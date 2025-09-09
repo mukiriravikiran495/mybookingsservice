@@ -29,5 +29,14 @@ public class AppConstants {
 	public static final String CUSTID_DOES_NOT_EXISTS = "CUSTID_DOES_NOT_EXISTS";
 	public static final String VENDORID_DOES_NOT_EXISTS = "VENDORID_DOES_NOT_EXISTS";
 	public static final String CUSTOMER_DETAILS_NOT_SAVED = "CUSTOMER_DETAILS_NOT_SAVED";
+	public static final String CUSTID_IS_REQUIRED = "CUSTID_IS_REQUIRED";
+	public static final String VEHICLE_BOOKING_FORM = "VEHICLE_BOOKING_FORM";
+	public static final String LOCATION_IS_REQUIRED = "LOCATION_IS_REQUIRED";
+	public static final String PANDM_BOOKING_FORM = "PANDM_BOOKING_FORM";
+	public static final String CONFIRM_VEHICLE_BOOKING = "CONFIRM_VEHICLE_BOOKING";
+	public static final String FARE_IS_REQUIRED = "FARE_IS_REQUIRED";
+	public static final String VEHICLEID_IS_REQUIRED = "VEHICLEID_IS_REQUIRED";
+	public static final String VEHICLE_NAME_IS_REQUIRED = "VEHICLE_NAME_IS_REQUIRED";
+	public static final String BOOKINGID_IS_REQUIRED = "BOOKINGID_IS_REQUIRED";
 
 }

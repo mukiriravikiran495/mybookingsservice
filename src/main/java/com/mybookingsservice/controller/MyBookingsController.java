@@ -2,18 +2,16 @@ package com.mybookingsservice.controller;
 
 import java.lang.invoke.MethodHandles;
 
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,12 +22,13 @@ import com.mybookingsservice.domain.AcceptBookingResponse;
 import com.mybookingsservice.domain.BookingSummaryRequest;
 import com.mybookingsservice.domain.BookingTransactionDTO;
 import com.mybookingsservice.domain.BookingTransactionResponse;
-import com.mybookingsservice.domain.BookingTypeRequest;
+import com.mybookingsservice.domain.ConfirmBookingRequest;
+import com.mybookingsservice.domain.ConfirmBookingResponse;
 import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
-import com.mybookingsservice.domain.MyBookingsRequestDTO;
-import com.mybookingsservice.domain.MyBookingsResponseDTO;
+import com.mybookingsservice.domain.MyBookingsRequest;
+import com.mybookingsservice.domain.MyBookingsResponse;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorBookingsDTO;
 import com.mybookingsservice.domain.VendorEstimateRequest;
@@ -39,40 +38,21 @@ import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.repository.CustomerRepository;
 import com.mybookingsservice.service.MyBookingsService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping( path = "/v1/api/bookings")
 public class MyBookingsController {
-
-    private final CustomerRepository customerRepository;
-
-    private final JpaTransactionManager transactionManager;
-
-    private final DataSource dataSource;
-
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	
+    private final CustomerRepository customerRepository;
 	private final MyBookingsService service;
 	
 	
 	@Autowired
-	public MyBookingsController(MyBookingsService service, DataSource dataSource, JpaTransactionManager transactionManager, CustomerRepository customerRepository) {
+	public MyBookingsController(MyBookingsService service, CustomerRepository customerRepository) {
 		this.service = service;
-		this.dataSource = dataSource;
-		this.transactionManager = transactionManager;
 		this.customerRepository = customerRepository;
 	}
 	
-//	@GetMapping( value = "/getall")
-//	public List<MyBookingsDTO> getbookings(){
-//		return service.getall();
-//	}
-//	
-//	/* 
-//	 	 Below All API's are related to Customer Bookings 
-//	 */
-//	
 	@GetMapping( value = "/customer/{custId}/{bookingId}")
 	public ResponseEntity<CustBookingResponse> getBookingsByBookingId(@PathVariable Long custId, 
 																	  @PathVariable Long bookingId) {
@@ -347,44 +327,6 @@ public class MyBookingsController {
 		logger.info("End : Accept Booking Controller : ");
 		return new ResponseEntity<>(acceptBookingresponse, HttpStatus.OK);
 	}
-//	
-//	
-//	
-//	@GetMapping( value = "/items/{estCategory}")
-//	public ResponseEntity<HouseholdItemsResponse> getHouseHoldItems(@PathVariable String estCategory){
-//		logger.info("Start : get ONE BHK Household Items : "+estCategory);
-//		StatusHandler statusHandler = new StatusHandler();
-//		HouseholdItemsResponse itemResponse = new HouseholdItemsResponse();
-//		ResponseEntity<HouseholdItemsResponse> response = null;
-//		try {
-//			if( null == estCategory || estCategory.isEmpty()) {
-//				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-//			}
-//			
-//			itemResponse = service.getHouseHoldItems(estCategory, itemResponse, statusHandler);
-//			response = new ResponseEntity<>(itemResponse, HttpStatus.OK);
-//		}catch(InvalidRequestException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			itemResponse.setStatusHandler(statusHandler);
-//		}catch(Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(AppConstants.INTERNAL_SERVER_ERROR);
-//			itemResponse.setStatusHandler(statusHandler);
-//		}
-//		statusHandler.setStatusCode("200");
-//		statusHandler.setMessage(AppConstants.SUCCESS);
-//		itemResponse.setStatusHandler(statusHandler);
-//		logger.info("END : get ONE BHK Household Items "+estCategory);
-//		return response;
-//	}
-//	
-//	
-//	@GetMapping( value = "/vendorprofile/{vendorId}")
-//	public Vendor getVendorProfile(@PathVariable long vendorId) {
-//		Vendor vendor = service.getvendorProfile(vendorId);
-//		return vendor;
-//	}
 	
 	@PostMapping( value = "/vendor/vendorestimates")
 	public ResponseEntity<VendorEstimateResponse> getVendorEstimates( @RequestBody VendorEstimateRequest request) {
@@ -397,28 +339,49 @@ public class MyBookingsController {
 		return response;
 	}
 	
-	@PostMapping( value = "/createbookings")
-	public ResponseEntity<MyBookingsResponseDTO> createBookings(@RequestBody MyBookingsRequestDTO mybookingsDTO){
-		logger.info("Start : Create booking Controller : "+mybookingsDTO);
+	@PostMapping( value = "/save/vehicle/bookings")
+	public ResponseEntity<MyBookingsResponse> saveVehicleBookings(@RequestBody MyBookingsRequest mybookingsDTO, 
+														@RequestHeader("Authorization") String accessToken,
+														@RequestHeader("APPID") String appId){
+		logger.info("Start : Create vehicle booking Controller : "+mybookingsDTO);
 		StatusHandler statusHandler = new StatusHandler();
-		MyBookingsResponseDTO myBookingsResponse = new MyBookingsResponseDTO();
-		myBookingsResponse = service.createBookings(mybookingsDTO, myBookingsResponse, statusHandler);
-		ResponseEntity<MyBookingsResponseDTO> response = new ResponseEntity<MyBookingsResponseDTO>(myBookingsResponse, HttpStatus.OK);
-		logger.info("END : Create booking Controller : ");
+		MyBookingsResponse myBookingsResponse = new MyBookingsResponse();
+		String token = accessToken.replace("Bearer ", "");
+		myBookingsResponse = service.saveVehicleBookings(mybookingsDTO, myBookingsResponse, token, appId, statusHandler);
+		ResponseEntity<MyBookingsResponse> response = new ResponseEntity<MyBookingsResponse>(myBookingsResponse, HttpStatus.OK);
+		logger.info("END : Create vehicle booking Controller : ");
 		return response;
 	}
 	
-	@PostMapping( value = "/save/bookingtype")
-	public ResponseEntity<HouseholdItemsResponse> savebookingType( @Valid @RequestBody BookingTypeRequest request){
-		logger.info(" Start : Save Booking Type Controller : "+request);
+	@PostMapping( value = "/save/pandm/bookings")
+	public ResponseEntity<HouseholdItemsResponse> savePandMBookings(@RequestBody MyBookingsRequest mybookingsDTO, 
+															@RequestHeader("Authorization") String accessToken,
+															@RequestHeader("APPID") String appId){
+		logger.info(" Start : Save pandm Booking Type Controller : "+mybookingsDTO);
 		StatusHandler statusHandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
 		HouseholdItemsResponse response = new HouseholdItemsResponse();
-		System.out.println(request.getBookingDate());
-		response = service.savebookingType(request, response, statusHandler);
+		System.out.println(mybookingsDTO.getMyBookingsDTO().getBookingDate());
+		response = service.savePandMBookings(mybookingsDTO, response, token, appId, statusHandler);
 		ResponseEntity<HouseholdItemsResponse> houseHoldResponse = new ResponseEntity<>(response, HttpStatus.OK);
 		
-		logger.info("End : Save Booking type Controller ");
+		logger.info("End : Save pandm Booking type Controller ");
 		return houseHoldResponse;
+	}
+	
+	@PostMapping( value = "/truck/bookings/confirm")
+	public ResponseEntity<ConfirmBookingResponse> confirmTruckBooking(@RequestBody ConfirmBookingRequest confirmBookingRequest,
+																		@RequestHeader("Authorization") String accessToken,
+																		@RequestHeader("APPID") String appId){
+		ConfirmBookingResponse confirmBookingresponse = new ConfirmBookingResponse();
+		logger.info(" Start : confirm Booking Controller : "+confirmBookingRequest);
+		StatusHandler statusHandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
+		confirmBookingresponse = service.confirmTruckBooking(confirmBookingRequest, confirmBookingresponse, token, appId, statusHandler);
+		
+		logger.info(" End : confirm Booking Controller : "+confirmBookingresponse);
+		ResponseEntity<ConfirmBookingResponse> response = new ResponseEntity<>(confirmBookingresponse, HttpStatus.OK);
+		return response;
 	}
 	
 	@PostMapping( value = "/vendor/update/pickup/{vendorId}/{bookingId}")
@@ -509,10 +472,10 @@ public class MyBookingsController {
 	    }
 	 
 	 @GetMapping( value = "/booking/summary")
-	 public ResponseEntity<MyBookingsResponseDTO> getBookingSummary(@RequestBody BookingSummaryRequest bookingSummary){
+	 public ResponseEntity<MyBookingsResponse> getBookingSummary(@RequestBody BookingSummaryRequest bookingSummary){
 		 logger.info("Start : Booking Summary controller : "+bookingSummary);
 		 StatusHandler statusHandler = new StatusHandler();
-		 MyBookingsResponseDTO response = new MyBookingsResponseDTO();
+		 MyBookingsResponse response = new MyBookingsResponse();
 		 try {
 			 response = service.getBookingSummary(bookingSummary, response, statusHandler);
 			 statusHandler.setStatusCode("200");

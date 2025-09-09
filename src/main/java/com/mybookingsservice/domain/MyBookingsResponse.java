@@ -1,14 +1,14 @@
 package com.mybookingsservice.domain;
 
-
 import java.util.List;
+
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class HouseholdItemsResponse {	
-	
+public class MyBookingsResponse {
+
 	private Long bookingId;
 	private Long custId;
-    private List<AvailableItemsDTO> availableItemsDTO;
+	private List<AvailableVehiclesDTO> avaiableVehiclesDTO;
 	private StatusHandler statusHandler;
 	
 	
@@ -24,11 +24,11 @@ public class HouseholdItemsResponse {
 	public void setCustId(Long custId) {
 		this.custId = custId;
 	}
-	public List<AvailableItemsDTO> getAvailableItemsDTO() {
-		return availableItemsDTO;
+	public List<AvailableVehiclesDTO> getAvaiableVehiclesDTO() {
+		return avaiableVehiclesDTO;
 	}
-	public void setAvailableItemsDTO(List<AvailableItemsDTO> availableItemsDTO) {
-		this.availableItemsDTO = availableItemsDTO;
+	public void setAvaiableVehiclesDTO(List<AvailableVehiclesDTO> avaiableVehiclesDTO) {
+		this.avaiableVehiclesDTO = avaiableVehiclesDTO;
 	}
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
@@ -36,7 +36,7 @@ public class HouseholdItemsResponse {
 	public void setStatusHandler(StatusHandler statusHandler) {
 		this.statusHandler = statusHandler;
 	}
-    
-    
+
+	
 	
 }

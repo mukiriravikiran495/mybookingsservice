@@ -13,7 +13,7 @@ public interface HouseholdRepository extends JpaRepository<HouseholdItems, Long>
 //	@Query("SELECT h FROM HouseholdItems h WHERE h.estCategory IN :categories")
 //	public List<HouseholdItems> findByEstCategoryIn(@Param("categories") List<String> categories);
 
-	@Query(value = "SELECT * FROM householditems WHERE estCategory IN :categories", nativeQuery = true)
-    List<HouseholdItems> findByEstCategoryIn(@Param("categories") List<String> categories);
-	
+//	@Query(value = "SELECT * FROM householditems WHERE estCategory IN :categories", nativeQuery = true)
+//    List<HouseholdItems> findByEstCategoryIn(@Param("categories") List<String> categories);
+//	
 }

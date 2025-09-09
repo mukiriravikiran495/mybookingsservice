@@ -2,39 +2,14 @@ package com.mybookingsservice.domain;
 
 public class TokenID {
 
-	private String token;
-	private long expires;
-	private String status;
-	private String result;
-	public String getToken() {
-		return token;
+	private String accessToken;
+
+	public String getAccessToken() {
+		return accessToken;
 	}
-	public void setToken(String token) {
-		this.token = token;
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
-	
-	public long getExpires() {
-		return expires;
-	}
-	public void setExpires(long expires) {
-		this.expires = expires;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
-	@Override
-	public String toString() {
-		return "TokenID [token=" + token + ", expires=" + expires + ", status=" + status + ", result=" + result + "]";
-	}
-	
 	
 }

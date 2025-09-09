@@ -9,12 +9,12 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class CustomerBookingResponseDTO {
 	
-	private List<MyBookingsRequestDTO> requestDTO;
+	private List<MyBookingsRequest> requestDTO;
 	private StatusHandler statusHandler;
-	public List<MyBookingsRequestDTO> getRequestDTO() {
+	public List<MyBookingsRequest> getRequestDTO() {
 		return requestDTO;
 	}
-	public void setRequestDTO(List<MyBookingsRequestDTO> requestDTO) {
+	public void setRequestDTO(List<MyBookingsRequest> requestDTO) {
 		this.requestDTO = requestDTO;
 	}
 	public StatusHandler getStatusHandler() {

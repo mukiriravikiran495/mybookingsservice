@@ -27,21 +27,7 @@ public class VendorDetails implements Serializable{
 	private String vMobile;
 	private String vEmail;
 	
-	@OneToOne
-	@JoinColumn(name = "vendorId")
-    private VendorAddress vendorAddress;
 	
-
-//	@OneToMany(mappedBy = "vendorDetails", cascade = CascadeType.ALL)
-//	@JsonIgnore
-//    private List<MyBookings> bookings;
-//	
-	
-	
-	
-	public VendorAddress getVendorAddress() {
-		return vendorAddress;
-	}
 	public String getvFirstname() {
 		return vFirstname;
 	}
@@ -68,9 +54,6 @@ public class VendorDetails implements Serializable{
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-	public void setVendorAddress(VendorAddress vendorAddress) {
-		this.vendorAddress = vendorAddress;
 	}
 	
 	public Long getVendorId() {

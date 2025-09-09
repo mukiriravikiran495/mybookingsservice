@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: mybookingsservice
+
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521/orclpdb
+    username: MY_BOOKINGS
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: none   # or none/validate/create depending on your use case
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+  jackson:
+    date-format: dd-MMM-yyyy HH:mm:ss.SSS
+    time-zone: UTC
+
+server:
+  port: 8084
+
+logging:
+  level:
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.apache.http: DEBUG
+
+customerlogin:
+   service:
+      url: http://localhost:8082/v1/api/customer
+customer:
+  service:
+    url: http://localhost:8083/v1/api/customer
+
+vendor:
+  service:
+    url: http://localhost:8086/v1/api/vendor
+
+transaction:
+  service:
+    url: http://localhost:8087/v1/api/transaction/log

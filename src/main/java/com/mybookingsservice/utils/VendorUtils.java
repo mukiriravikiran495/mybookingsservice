@@ -2,7 +2,6 @@ package com.mybookingsservice.utils;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.mybookingsservice.configuration.HibernateConfiguration;
+import com.mybookingsservice.domain.ConfirmBookingResponse;
 import com.mybookingsservice.domain.TokenID;
 import com.mybookingsservice.domain.VendorEstimateRequest;
 import com.mybookingsservice.domain.VendorEstimateResponse;
@@ -45,14 +44,13 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 	
 	public  VendorResponse getVendor(Long vendorId) {
 		logger.info("Start : get vendor details by custId : "+vendorId);
-		HibernateConfiguration conf = new HibernateConfiguration();
 		String url = vendorServiceUrl+"/get/"+vendorId;
 		
 		TokenID token = getToken();
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getToken());
-		System.out.println("token : "+token.getToken());
+		headers.set("Authorization", "Bearer "+token.getAccessToken());
+		System.out.println("token : "+token.getAccessToken());
 		System.out.println(" URL : "+url);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -98,14 +96,13 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 	}
 	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request) {
 		logger.info("Start : get vendor estimates utils : "+request);
-		HibernateConfiguration conf = new HibernateConfiguration();
 		String url = vendorServiceUrl+"/vendor/vendorestimates";
 		
 		TokenID token = getToken();
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getToken());
-		System.out.println("token : "+token.getToken());
+		headers.set("Authorization", "Bearer "+token.getAccessToken());
+		System.out.println("token : "+token.getAccessToken());
 		System.out.println(" URL : "+url);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -131,6 +128,40 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
             throw e;
         }
 		
+		
+	}
+	public ConfirmBookingResponse findNearestTrucks(Double cPickupLatitude, Double cPickupLongitude, String token,
+			String appId) {
+		logger.info("Start : call vendorservice ");
+		String url = vendorServiceUrl+"/get/near/trucks/"+cPickupLatitude+"/"+cPickupLongitude;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer "+token);
+		headers.set("APPID", appId);
+		System.out.println("token : "+token);
+		System.out.println(" URL : "+url);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<ConfirmBookingResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                ConfirmBookingResponse.class
+            );
+            logger.info("Response: " + response.getBody());
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
+            System.out.println(ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            logger.error("Request failed: ", e);
+            throw e;
+        }
 		
 	}
 	

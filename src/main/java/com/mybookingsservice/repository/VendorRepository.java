@@ -15,14 +15,14 @@ public interface VendorRepository extends JpaRepository<Vendor, Long>{
 
 	Vendor findByVendorId(long vendorId);
 
-	@Query(value = """
-	        SELECT v.vendorId AS vendorId, v.vfirstname, v.vlastname, v.vmobile, v.vemail,
-	               vs.vserviceid, vs.vzipcode, vs.basepriceperkm AS basePricePerKm,
-	               vs.priceperkg AS pricePerKg, vs.avgdeliverytimeindays AS avgDeliveryTimeInDays
-	        FROM VENDOR.VENDOR v
-	        JOIN VENDOR.vendor_service_area vs ON v.vendorId = vs.vendorId
-	        WHERE vs.vzipcode = :zipcode
-	        """, nativeQuery = true)
-	    List<VendorNativeResult> findVendorsByZipcodeNative(@Param("zipcode") String zipcode);
-	
+//	@Query(value = """
+//	        SELECT v.vendorId AS vendorId, v.vfirstname, v.vlastname, v.vmobile, v.vemail,
+//	               vs.vserviceid, vs.vzipcode, vs.basepriceperkm AS basePricePerKm,
+//	               vs.priceperkg AS pricePerKg, vs.avgdeliverytimeindays AS avgDeliveryTimeInDays
+//	        FROM VENDOR.VENDOR v
+//	        JOIN VENDOR.vendor_service_area vs ON v.vendorId = vs.vendorId
+//	        WHERE vs.vzipcode = :zipcode
+//	        """, nativeQuery = true)
+//	    List<VendorNativeResult> findVendorsByZipcodeNative(@Param("zipcode") String zipcode);
+//	
 }

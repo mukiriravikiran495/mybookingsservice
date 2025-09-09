@@ -57,10 +57,16 @@ public class SelectedItems {
     @Column(name = "ISACTIVE")
     private String isActive;
 	
-    @ManyToOne
-    @JoinColumn(name = "bookingId", nullable = false)
-    @JsonBackReference
-    private MyBookings booking;
+    @Column(name = "BOOKINGID")
+    private Long bookingId;
+
+	public Long getBookingId() {
+		return bookingId;
+	}
+
+	public void setBookingId(Long bookingId) {
+		this.bookingId = bookingId;
+	}
 
 	public Long getCreatedBy() {
 		return createdBy;
@@ -158,14 +164,6 @@ public class SelectedItems {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
-	}
-
-	public MyBookings getBooking() {
-		return booking;
-	}
-
-	public void setBooking(MyBookings booking) {
-		this.booking = booking;
 	}
 
 	

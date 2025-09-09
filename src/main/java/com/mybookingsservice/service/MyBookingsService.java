@@ -8,11 +8,13 @@ import com.mybookingsservice.domain.BookingSummaryRequest;
 import com.mybookingsservice.domain.BookingTransactionDTO;
 import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.BookingTypeRequest;
+import com.mybookingsservice.domain.ConfirmBookingRequest;
+import com.mybookingsservice.domain.ConfirmBookingResponse;
 import com.mybookingsservice.domain.CustBookingResponse;
 import com.mybookingsservice.domain.CustomerBookingResponseDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
-import com.mybookingsservice.domain.MyBookingsRequestDTO;
-import com.mybookingsservice.domain.MyBookingsResponseDTO;
+import com.mybookingsservice.domain.MyBookingsRequest;
+import com.mybookingsservice.domain.MyBookingsResponse;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
 import com.mybookingsservice.domain.VendorBookingsDTO;
 import com.mybookingsservice.domain.VendorEstimateRequest;
@@ -23,7 +25,7 @@ import com.mybookingsservice.exceptions.StatusHandler;
 public interface MyBookingsService {
 
 	
-	List<MyBookingsRequestDTO> getall();
+	List<MyBookingsRequest> getall();
 
 	
 	CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response, StatusHandler statusHandler);
@@ -68,11 +70,11 @@ public interface MyBookingsService {
 			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler);
 
 
-	MyBookingsResponseDTO createBookings(MyBookingsRequestDTO mybookingsDTO, MyBookingsResponseDTO myBookingsResponse,
-			StatusHandler statusHandler);
+	MyBookingsResponse saveVehicleBookings(MyBookingsRequest mybookingsDTO, MyBookingsResponse myBookingsResponse,
+			String token, String appId, StatusHandler statusHandler);
 
 
-	HouseholdItemsResponse savebookingType(BookingTypeRequest request, HouseholdItemsResponse response,
+	HouseholdItemsResponse savePandMBookings(MyBookingsRequest mybookingsDTO, HouseholdItemsResponse response, String accessToken, String appId,
 			StatusHandler statusHandler);
 
 
@@ -88,8 +90,12 @@ public interface MyBookingsService {
 			StatusHandler statusHandler);
 
 
-	MyBookingsResponseDTO getBookingSummary(BookingSummaryRequest bookingSummary, MyBookingsResponseDTO response,
+	MyBookingsResponse getBookingSummary(BookingSummaryRequest bookingSummary, MyBookingsResponse response,
 			StatusHandler statusHandler);
+
+
+	ConfirmBookingResponse confirmTruckBooking(ConfirmBookingRequest confirmBookingRequest,
+			ConfirmBookingResponse confirmBookingresponse, String token, String appId, StatusHandler statusHandler);
 
 
 
