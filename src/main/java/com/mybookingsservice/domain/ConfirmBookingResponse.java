@@ -3,7 +3,8 @@ package com.mybookingsservice.domain;
 import com.mybookingsservice.exceptions.StatusHandler;
 
 public class ConfirmBookingResponse {
-
+	
+	private VehicleDetailsDTO vehicleDetailsDTO;
 	private StatusHandler statusHandler;
 
 	public StatusHandler getStatusHandler() {

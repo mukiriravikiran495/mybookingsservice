@@ -38,5 +38,16 @@ public class AppConstants {
 	public static final String VEHICLEID_IS_REQUIRED = "VEHICLEID_IS_REQUIRED";
 	public static final String VEHICLE_NAME_IS_REQUIRED = "VEHICLE_NAME_IS_REQUIRED";
 	public static final String BOOKINGID_IS_REQUIRED = "BOOKINGID_IS_REQUIRED";
+	public static final String INVALID_TOKEN = "INVALID_TOKEN";
+	public static final String UPDATE_TRUCK_PICKUP = "UPDATE_TRUCK_PICKUP";
+	public static final String CUSTID_AND_VENDORID_DOES_NOT_EXISTS = "CUSTID_AND_VENDORID_DOES_NOT_EXISTS";
+	public static final String INVALID_OTP = "INVALID_OTP";
+	public static final String UPDATE_TRUCK_DROP = "UPDATE_TRUCK_DROP";
+	public static final String UPDATE_CUSTOMER_LOCATED = "UPDATE_CUSTOMER_LOCATED";
+	public static final String CUSTOMER_LOCATED = "CUSTOMER_LOCATED";
+	public static final String UPDATE_REACHED_DROP_LOCATION = "UPDATE_REACHED_DROP_LOCATION";
+	public static final String REACHED_DROP_LOCATION = "REACHED_DROP_LOCATION";
+	public static final String CONFIRM_PACKERS_AND_MOVERS_BOOKING = "CONFIRM_PACKERS_AND_MOVERS_BOOKING";
+	
 
 }

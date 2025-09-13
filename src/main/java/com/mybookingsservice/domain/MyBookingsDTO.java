@@ -44,7 +44,13 @@ public class MyBookingsDTO {
     private Long createdBy;
     private LocalDateTime updatedAt;
     private Long updatedBy;
-   
+    private String vehicleType;
+    private String pickupOTP;
+    private String dropOTP;
+    private String pickupOtpIsVerified;
+    private String dropOtpIsVerified;
+    private Double fare;
+    
 	public Long getBookingId() {
 		return bookingId;
 	}
@@ -62,6 +68,13 @@ public class MyBookingsDTO {
 	}
 	public void setVendorId(Long vendorId) {
 		this.vendorId = vendorId;
+	}
+	
+	public String getVehicleType() {
+		return vehicleType;
+	}
+	public void setVehicleType(String vehicleType) {
+		this.vehicleType = vehicleType;
 	}
 	public String getBookingStatus() {
 		return bookingStatus;
@@ -269,6 +282,37 @@ public class MyBookingsDTO {
 	}
 	public void setUpdatedBy(Long updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+	public String getPickupOTP() {
+		return pickupOTP;
+	}
+	public void setPickupOTP(String pickupOTP) {
+		this.pickupOTP = pickupOTP;
+	}
+	public String getDropOTP() {
+		return dropOTP;
+	}
+	public void setDropOTP(String dropOTP) {
+		this.dropOTP = dropOTP;
+	}
+	public String getPickupOtpIsVerified() {
+		return pickupOtpIsVerified;
+	}
+	public void setPickupOtpIsVerified(String pickupOtpIsVerified) {
+		this.pickupOtpIsVerified = pickupOtpIsVerified;
+	}
+	public String getDropOtpIsVerified() {
+		return dropOtpIsVerified;
+	}
+	public void setDropOtpIsVerified(String dropOtpIsVerified) {
+		this.dropOtpIsVerified = dropOtpIsVerified;
+	}
+	
+	public Double getFare() {
+		return fare;
+	}
+	public void setFare(Double fare) {
+		this.fare = fare;
 	}
 	public MyBookingsDTO() {
 		super();

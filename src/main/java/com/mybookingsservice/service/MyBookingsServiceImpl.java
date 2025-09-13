@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import org.json.simple.JSONArray;
@@ -21,36 +22,39 @@ import org.springframework.web.client.RestTemplate;
 
 import com.mybookingsservice.config.SecurityConfig;
 import com.mybookingsservice.constants.AppConstants;
-import com.mybookingsservice.domain.AcceptBookingRequest;
-import com.mybookingsservice.domain.AcceptBookingResponse;
 import com.mybookingsservice.domain.AvailableItemsDTO;
+import com.mybookingsservice.domain.AvailablePandMDTO;
 import com.mybookingsservice.domain.AvailableVehiclesDTO;
 import com.mybookingsservice.domain.BookingSummaryRequest;
 import com.mybookingsservice.domain.BookingTransactionDTO;
 import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.ConfirmBookingRequest;
 import com.mybookingsservice.domain.ConfirmBookingResponse;
-import com.mybookingsservice.domain.CustBookingResponse;
-import com.mybookingsservice.domain.CustomerBookingResponseDTO;
 import com.mybookingsservice.domain.CustomerDetailsDTO;
-import com.mybookingsservice.domain.CustomerResponse;
+import com.mybookingsservice.domain.CustomerDetailsDTOResponse;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsDTO;
 import com.mybookingsservice.domain.MyBookingsRequest;
 import com.mybookingsservice.domain.MyBookingsResponse;
+import com.mybookingsservice.domain.SelectPackersAndMoversRequest;
+import com.mybookingsservice.domain.SelectPackersAndMoversResponse;
+import com.mybookingsservice.domain.SelectedItemsDTO;
 import com.mybookingsservice.domain.TranLogResponse;
+import com.mybookingsservice.domain.VehicleDetailsDTO;
+import com.mybookingsservice.domain.VehicleSearchRequest;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorBookingsDTO;
-import com.mybookingsservice.domain.VendorEstimateRequest;
-import com.mybookingsservice.domain.VendorEstimateResponse;
+import com.mybookingsservice.domain.VendorDetailsDTO;
+import com.mybookingsservice.domain.VendorsListResponse;
 import com.mybookingsservice.entity.Applications;
 import com.mybookingsservice.entity.AvailableItems;
 import com.mybookingsservice.entity.AvailableVehicles;
 import com.mybookingsservice.entity.CustomerTokens;
 import com.mybookingsservice.entity.MyBookings;
 import com.mybookingsservice.entity.Vendor;
+import com.mybookingsservice.entity.VendorTokens;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
+import com.mybookingsservice.exceptions.TokenPersistenceException;
 import com.mybookingsservice.mapper.BookingTransactionMapper;
 import com.mybookingsservice.mapper.MyBookingsMapper;
 import com.mybookingsservice.repository.ApplicationsRepository;
@@ -104,7 +108,7 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 
 	@Autowired
 	AvailableVehicleRepository availableVehicleRepository;
-	
+
 	@Autowired
 	AvailableItemsRepository availableItemsRepository;
 
@@ -137,337 +141,18 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 	public static Predicate<MyBookings> isPending() {
 		return booking -> "PENDING".equalsIgnoreCase(booking.getBookingStatus());
 	}
-
-	@Override
-	public CustBookingResponse getBookingsByBookingId(Long custId, Long bookingId, StatusHandler statusHandler,
-			CustBookingResponse custBookingResponse) {
-		logger.info("START : Get Bookings By ID Service : " + custId + " " + bookingId);
-		CustomerResponse custDetails = customerUtils.findCustomer(custId, "");
-
-//		System.out.println(custDetails.getDetailsDTO());
-//		if (null != custDetails.getDetailsDTO().getCustId()) {
-//			MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
-//
-//			logger.info("END : Get Bookings By ID Service : " + custId + " " + bookingId);
-//			MyBookingsRequest booking = mapper.toDto(bookings);
-//			custBookingResponse.setRequestDTO(booking);
-//		} else {
-//			throw new RuntimeException("CustId you are passing is doesn't exists : " + custId);
-//		}
-
-		return custBookingResponse;
-	}
-
-	@Override
-	public CustBookingResponse cancelBookingById(Long custId, Long bookingId, CustBookingResponse cancelResponse,
-			StatusHandler statusHandler) {
-		logger.info("Start : Cancel Booking by Id Service : " + custId + " " + bookingId);
-
-//		try {
-//			CustomerResponse custDetails = customerUtils.getCustomer(custId);
-//
-//			System.out.println(custDetails.getDetailsDTO());
-//			if (null == custDetails.getDetailsDTO().getCustId()) {
-//				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//			}
-//			MyBookings bookings = repository.findByBookingIdAndCustId(custId, bookingId);
-//			if (null == bookings) {
-//				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-//			}
-//			bookings.setStatus(AppConstants.CANCELLED);
-//			bookings.setBookingStatus(AppConstants.CANCELLED);
-//			bookings.setUpdatedAt(LocalDateTime.now());
-//			bookings.setUpdatedBy(custId);
-//			MyBookings saved = repository.save(bookings);
-//			if (null != saved) {
-//				MyBookingsRequest dto = mapper.toDto(bookings);
-//				cancelResponse.setRequestDTO(dto);
-//				statusHandler.setStatusCode("200");
-//				statusHandler.setMessage(AppConstants.SUCCESS);
-//				cancelResponse.setStatusHandler(statusHandler);
-//			}
-//		} catch (InvalidRequestException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(AppConstants.INVALID_REQUEST);
-//			cancelResponse.setStatusHandler(statusHandler);
-//			return cancelResponse;
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			cancelResponse.setStatusHandler(statusHandler);
-//			return cancelResponse;
-//		}
-		logger.info("End : cancel booking By Id Service : " + cancelResponse);
-		return cancelResponse;
-	}
-
-	public CustomerBookingResponseDTO getBookingsByCustomerId(Long custId, CustomerBookingResponseDTO response,
-			StatusHandler statusHandler) {
-		logger.info("Start : get all bookings service fro custId : " + custId);
-//		try {
-//			CustomerResponse custDetails = customerUtils.getCustomer(custId);
-//
-//			System.out.println(custDetails.getDetailsDTO());
-//			if (null == custDetails.getDetailsDTO().getCustId()) {
-//				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//			}
-//
-//			List<MyBookings> bookings = repository.findByCustIdWithItems(custId).stream().collect(Collectors.toList());
-//			System.out.println(" Selected : " + bookings.get(0).getSelectedItems());
-//			List<MyBookingsRequest> dtoList = mapper.toCustomerBookingDTOs(bookings);
-//			response.setRequestDTO(dtoList);
-//		} catch (RuntimeException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			response.setStatusHandler(statusHandler);
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			response.setStatusHandler(statusHandler);
-//		}
-
-		logger.info("End : get all bookings service from custId : " + custId);
-		return response;
-	}
-
-	@Override
-	public CustomerBookingResponseDTO getAllCancelledBookings(Long custId, String status,
-			CustomerBookingResponseDTO cancelledBookings, StatusHandler statusHandler) {
-		logger.info("Start : get all cancelled bookings service for custId : " + custId);
-//		try {
-//			CustomerResponse custDetails = customerUtils.getCustomer(custId);
-//
-//			System.out.println(custDetails.getDetailsDTO());
-//			if (null == custDetails.getDetailsDTO().getCustId()) {
-//				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//			}
-//			List<MyBookings> bookings = repository.findByCustIdAndStatusWithItems(custId, status);
-//			List<MyBookingsRequest> dtoList = bookings.stream().filter(isCancelled()).map(mapper::toDto)
-//					.collect(Collectors.toList());
-//			cancelledBookings.setRequestDTO(dtoList);
-//		} catch (RuntimeException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			cancelledBookings.setStatusHandler(statusHandler);
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			cancelledBookings.setStatusHandler(statusHandler);
-//		}
-
-		logger.info("END : get all cancelled bookings service for custId : " + custId);
-		return cancelledBookings;
-	}
-
-	@Override
-	public VendorBookingsDTO getBookingByVendorId(Long vendorId, VendorBookingsDTO vendor,
-			StatusHandler statusHandler) {
-		logger.info("START : VendorBookings Service ");
-//		try {
-//			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//
-//			System.out.println(vendorDetails.getVendorDTO());
-//			if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			}
-//			List<MyBookings> bookings = repository.findByVendorIdWithItems(vendorId);
-//			List<MyBookingsRequest> dtoList = mapper.toCustomerBookingDTOs(bookings);
-//			vendor.setRequestDTO(dtoList);
-//		} catch (RuntimeException ex) {
-//
-//		} catch (Exception ex) {
-//
-//		}
-
-		logger.info("END : VendorBookings Service : ");
-//	    return vendorMapper.toVendorBookingDTOs(bookings);
-		return vendor;
-	}
-
-	@Override
-	public VendorBookingResponseDTO getBookingByVendorIdbookingId(Long vendorId, Long bookingId,
-			VendorBookingResponseDTO vendorbooking, StatusHandler statusHandler) {
-		logger.info("Start : get bookings by vendorId and bookingId service : " + vendorId + " " + bookingId);
-//		try {
-//			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//
-//			System.out.println(vendorDetails.getVendorDTO());
-//			if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			}
-//			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//			MyBookingsRequest booking = mapper.toDto(bookings);
-//			vendorbooking.setRequestDTO(booking);
-//		} catch (RuntimeException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			vendorbooking.setStatusHandler(statusHandler);
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			vendorbooking.setStatusHandler(statusHandler);
-//		}
-
-		logger.info("End : get bookings by vendorId and bookingId service : " + vendorId + " " + bookingId);
-		return vendorbooking;
-	}
-
-	@Override
-	public VendorBookingResponseDTO cancelVendorBooking(Long vendorId, Long bookingId,
-			VendorBookingResponseDTO vendorResponse, StatusHandler statusHandler) {
-		logger.info("Start : Cancel Bookings by Vendor Service : " + vendorId + " " + bookingId);
-
-//		try {
-//			if (null == vendorId || null == bookingId) {
-//				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-//			}
-//
-//			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//
-//			System.out.println(vendorDetails.getVendorDTO());
-//			if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			}
-//
-//			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//
-//			bookings.setStatus(AppConstants.CANCELLED);
-//			bookings.setBookingStatus(AppConstants.CANCELLED);
-//			bookings.setUpdatedAt(LocalDateTime.now());
-//			bookings.setUpdatedBy(vendorId);
-//			MyBookings saved = repository.save(bookings);
-//			if (null != saved) {
-//				MyBookingsRequest dto = mapper.toDto(bookings);
-//				vendorResponse.setRequestDTO(dto);
-//				statusHandler.setStatusCode("200");
-//				statusHandler.setMessage(AppConstants.SUCCESS);
-//				vendorResponse.setStatusHandler(statusHandler);
-//			}
-//		} catch (RuntimeException ex) {
-//			statusHandler.setStatusCode("400");
-//			statusHandler.setMessage(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			vendorResponse.setStatusHandler(statusHandler);
-//			return vendorResponse;
-//		} catch (InvalidRequestException ex) {
-//			statusHandler.setStatusCode("400");
-//			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
-//			vendorResponse.setStatusHandler(statusHandler);
-//			return vendorResponse;
-//		} catch (Exception ex) {
-//			statusHandler.setStatusCode("500");
-//			statusHandler.setMessage(ex.getMessage());
-//			vendorResponse.setStatusHandler(statusHandler);
-//			return vendorResponse;
-//		}
-
-		logger.info("End : Cancel Bookings by Vendor Service : " + vendorId + " " + bookingId);
-
-		return vendorResponse;
-	}
-
-	@Override
-	public VendorBookingsDTO getVendorCancelledBookings(Long vendorId, String status,
-			VendorBookingsDTO cancelledBookings, StatusHandler statusHandler) {
-		logger.info("Start : Get all Vendor Cancelled Bookings : " + vendorId);
-
-//		VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//
-//		System.out.println(vendorDetails.getVendorDTO());
-//		if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//		}
-//		List<MyBookings> bookings = repository.findByVendorIdAndStatusWithItems(vendorId, status);
-//		List<MyBookingsRequest> dtoList = bookings.stream().filter(isCancelled()).map(mapper::toDto)
-//				.collect(Collectors.toList());
-//		cancelledBookings.setRequestDTO(dtoList);
-		logger.info("End : Get all Vendor Cancelled Bookings : " + vendorId);
-
-		return cancelledBookings;
-	}
-
-	@Override
-	public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest,
-			AcceptBookingResponse acceptBookingResponse, StatusHandler statusHandler) {
-		logger.info("Start : Accept Bookings Service : " + acceptBookingRequest);
-
-//		CustomerResponse custDetails = customerUtils.getCustomer(acceptBookingRequest.getCustId());
-//		System.out.println(custDetails.getDetailsDTO());
-//		if (null == custDetails.getDetailsDTO().getCustId()) {
-//			throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//		}
-//		VendorResponse vendorDetails = vendorUtils.getVendor(acceptBookingRequest.getVendorId());
-//		System.out.println(vendorDetails.getVendorDTO());
-//		if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//		}
-//
-//		MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(acceptBookingRequest.getBookingId(),
-//				acceptBookingRequest.getCustId(), acceptBookingRequest.getVendorId());
-//		bookings.setStatus(AppConstants.ACCEPTED);
-//		bookings.setBookingStatus(AppConstants.ACCEPTED);
-//		bookings.setUpdatedAt(LocalDateTime.now());
-//		bookings.setUpdatedBy(acceptBookingRequest.getVendorId());
-//		MyBookings updatedBooking = repository.save(bookings);
-//
-//		MyBookingsRequest dto = mapper.toDto(updatedBooking);
-//		acceptBookingResponse.setMybookingsDTO(dto);
-//		logger.info("End : Accept Bookings Service : " + acceptBookingResponse);
-////		return vendorMapper.toVendorBookingDTO(bookings);
-		return acceptBookingResponse;
-	}
-
 	@Override
 	public HouseholdItemsResponse getHouseHoldItems(String estCategory, HouseholdItemsResponse itemResponse,
 			StatusHandler statusHandler) {
-//		logger.info("Start : Get Household Items : "+estCategory);
-//		
-//		List<String> categories = Arrays.asList("ONEBHK", "None");
-//        
-//		
-//		List<HouseholdItems> items =  houseRepository.findByEstCategoryIn(Arrays.asList("ONEBHK", "None"));
-//		System.out.println(items.toString());
-//		
-//		logger.info("END : Get Household Items : "+estCategory);
-//		return customerMapper.toResponse(items, statusHandler);
+
 		return null;
 	}
 
 	@Override
 	public Vendor getvendorProfile(long vendorId) {
-//		Vendor vendor = vendorRepository.findByVendorId(vendorId);
-//		return vendor;
+
 		return null;
-	}
-
-	@Override
-	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request,
-			VendorEstimateResponse vendorEstimatesResponse, StatusHandler statusHandler) {
-		logger.info("Start : Get Estimates Vendors : service : " + request);
-		VendorEstimateResponse response = new VendorEstimateResponse();
-//		try {
-//			if (null == request.getPickupLatitude() || null == request.getPickupLongitude()
-//					|| null == request.getDropLatitude() || null == request.getDropLongitude()) {
-//				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-//			}
-//
-//			CustomerResponse custDetails = customerUtils.getCustomer(request.getCustId());
-//			System.out.println(custDetails.getDetailsDTO());
-//			Optional.ofNullable(custDetails.getDetailsDTO().getCustId()).orElseThrow(() -> new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS));
-//			
-//
-//			response = vendorUtils.getvendorEstimates(request);
-//
-//			StatusHandler status = new StatusHandler();
-//			status.setStatusCode("200");
-//			status.setMessage(AppConstants.SUCCESS);
-//			response.setStatusHandler(status);
-//
-//		} catch (Exception ex) {
-//
-//		}
-		return response;
-
-	}
+	}	
 
 	@Override
 	@Transactional
@@ -519,7 +204,7 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			});
 
 			// Validate CustId in Customer Details
-			CustomerResponse custResponse = customerUtils.findCustomer(mybookingsRequest.getMyBookingsDTO().getCustId(),
+			CustomerDetailsDTOResponse custResponse = customerUtils.findCustomer(mybookingsRequest.getMyBookingsDTO().getCustId(),
 					token);
 			System.out.println(custResponse.getCustomerDetailsDTO());
 
@@ -554,7 +239,13 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			bookingsDTO.setcPickupLongitude(mybookingsRequest.getMyBookingsDTO().getcPickupLatitude());
 			bookingsDTO.setCreatedAt(LocalDateTime.now());
 			bookingsDTO.setCreatedBy(custDetailsDTO != null ? custDetailsDTO.getCustId() : null);
-
+			bookingsDTO.setVehicleType(mybookingsRequest.getMyBookingsDTO().getVehicleType());
+			bookingsDTO.setPickupOtpIsVerified("N");
+			bookingsDTO.setDropOtpIsVerified("N");
+			String pickupOTP = generateOTP();
+			String dropOTP = generateOTP();
+			bookingsDTO.setPickupOTP(pickupOTP);
+			bookingsDTO.setDropOTP(dropOTP);
 			MyBookings bookingsEntity = mapper.toEntity(bookingsDTO);
 
 			MyBookings bookingsSaved = null;
@@ -569,7 +260,7 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 					mybookingsRequest.getMyBookingsDTO().getcPickupLongitude(),
 					mybookingsRequest.getMyBookingsDTO().getcDropLatitude(),
 					mybookingsRequest.getMyBookingsDTO().getcDropLongitude());
-			System.out.println("Distance in KM: "+distanceKm);
+			System.out.println("Distance in KM: " + distanceKm);
 			List<AvailableVehiclesDTO> vehicleDTOList = new ArrayList<>();
 			List<AvailableVehicles> vehiclesList = availableVehicleRepository.findAll();
 			for (int i = 0; i < vehiclesList.size(); i++) {
@@ -606,8 +297,8 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
 					AppConstants.VEHICLE_BOOKING_FORM, AppConstants.SUCCESS, null);
 		} catch (Exception e) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorCode(e.getMessage());
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
 			myBookingsResponse.setStatusHandler(statusHandler);
 			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
 					AppConstants.VEHICLE_BOOKING_FORM, AppConstants.FAILED, e.getMessage());
@@ -618,8 +309,8 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 
 	@Override
 	@Transactional
-	public HouseholdItemsResponse savePandMBookings(MyBookingsRequest mybookingsRequest, HouseholdItemsResponse response, String accessToken, String appId,
-			StatusHandler statusHandler) {
+	public HouseholdItemsResponse savePandMBookings(MyBookingsRequest mybookingsRequest,
+			HouseholdItemsResponse response, String accessToken, String appId, StatusHandler statusHandler) {
 		logger.info("Start : Save booking type Service : " + mybookingsRequest);
 		// Validate AccessToken
 		CustomerTokens custTokens = customerUtils.validateAccessToken(accessToken);
@@ -665,7 +356,7 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			});
 
 			// Validate CustId in Customer Details
-			CustomerResponse custResponse = customerUtils.findCustomer(mybookingsRequest.getMyBookingsDTO().getCustId(),
+			CustomerDetailsDTOResponse custResponse = customerUtils.findCustomer(mybookingsRequest.getMyBookingsDTO().getCustId(),
 					accessToken);
 			System.out.println(custResponse.getCustomerDetailsDTO());
 
@@ -702,7 +393,12 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			bookingsDTO.setcDropLongitude(mybookingsRequest.getMyBookingsDTO().getcDropLongitude());
 			bookingsDTO.setCreatedAt(LocalDateTime.now());
 			bookingsDTO.setCreatedBy(custDetailsDTO != null ? custDetailsDTO.getCustId() : null);
-
+			bookingsDTO.setPickupOtpIsVerified("N");
+			bookingsDTO.setDropOtpIsVerified("N");
+			String pickupOTP = generateOTP();
+			String dropOTP = generateOTP();
+			bookingsDTO.setPickupOTP(pickupOTP);
+			bookingsDTO.setDropOTP(dropOTP);
 			MyBookings bookingsEntity = mapper.toEntity(bookingsDTO);
 
 			MyBookings bookingsSaved = null;
@@ -717,12 +413,12 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 					mybookingsRequest.getMyBookingsDTO().getcPickupLongitude(),
 					mybookingsRequest.getMyBookingsDTO().getcDropLatitude(),
 					mybookingsRequest.getMyBookingsDTO().getcDropLongitude());
-			System.out.println("Distance in KM: "+distanceKm);
-			
-			//Fetch Item details
+			System.out.println("Distance in KM: " + distanceKm);
+
+			// Fetch Item details
 			List<AvailableItems> itemsList = availableItemsRepository.findAll();
 			List<AvailableItemsDTO> itemsDTOList = new ArrayList<>();
-			
+
 			for (int i = 0; i < itemsList.size(); i++) {
 				AvailableItemsDTO item = new AvailableItemsDTO();
 				item.setItemId(itemsList.get(i).getItemId());
@@ -737,8 +433,7 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 				itemsDTOList.add(item);
 
 			}
-			
-			
+
 			MyBookingsDTO newBookingsDTO = mapper.toDTO(bookingsSaved);
 			System.out.println("BookingId: " + newBookingsDTO.getBookingId());
 			response.setCustId(mybookingsRequest.getMyBookingsDTO().getCustId());
@@ -750,18 +445,23 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
 					AppConstants.PANDM_BOOKING_FORM, AppConstants.SUCCESS, null);
 		} catch (Exception e) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorCode(e.getMessage());
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
 			response.setStatusHandler(statusHandler);
 			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
 					AppConstants.PANDM_BOOKING_FORM, AppConstants.FAILED, e.getMessage());
 			return response;
 		}
-		
-		
+
 		logger.info("End : Save booking type Service : " + response);
 		return response;
 
+	}
+	
+	private String generateOTP() {
+		Random random = new Random();
+		int otp = 1000 + random.nextInt(9000); // ensures 4-digit OTP
+		return String.valueOf(otp);
 	}
 	
 	@Override
@@ -797,171 +497,505 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			});
 			Optional.ofNullable(confirmBookingRequest.getAvailableVehiclesDTO().getVehicleName()).orElseThrow(() -> {
 				TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
-						AppConstants.CONFIRM_VEHICLE_BOOKING, AppConstants.FAILED, AppConstants.VEHICLE_NAME_IS_REQUIRED);
+						AppConstants.CONFIRM_VEHICLE_BOOKING, AppConstants.FAILED,
+						AppConstants.VEHICLE_NAME_IS_REQUIRED);
 				return new InvalidRequestException(AppConstants.VEHICLE_NAME_IS_REQUIRED);
 			});
+			// Validate CustId in Customer Details
+			CustomerDetailsDTOResponse custResponse = customerUtils
+					.findCustomer(confirmBookingRequest.getMyBookingsDTO().getCustId(), token);
+			System.out.println(custResponse.getCustomerDetailsDTO());
 			
-			confirmBookingresponse = vendorUtils.findNearestTrucks(confirmBookingRequest.getMyBookingsDTO().getcPickupLatitude(), 
-					confirmBookingRequest.getMyBookingsDTO().getcPickupLongitude(), token, appId);
-			
-			
-			
-		}catch (Exception e) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorCode(e.getMessage());
+			VehicleSearchRequest vehicleSearchRequest = new VehicleSearchRequest();
+			vehicleSearchRequest.setcCity(confirmBookingRequest.getMyBookingsDTO().getcCity());
+			vehicleSearchRequest.setcPickupLatitude(confirmBookingRequest.getMyBookingsDTO().getcPickupLatitude());
+			vehicleSearchRequest.setcPickupLongitude(confirmBookingRequest.getMyBookingsDTO().getcPickupLongitude());
+			vehicleSearchRequest.setVehicleType(confirmBookingRequest.getMyBookingsDTO().getVehicleType());
+			vehicleSearchRequest.setcZipCode(confirmBookingRequest.getMyBookingsDTO().getcZipCode());
+			vehicleSearchRequest.setcState(confirmBookingRequest.getMyBookingsDTO().getcState());
+			confirmBookingresponse = vendorUtils.findNearestTrucks(vehicleSearchRequest, token, appId);
+
+			VehicleDetailsDTO vehicleDetailsDTO = new VehicleDetailsDTO();
+
+		} catch (Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
 			confirmBookingresponse.setStatusHandler(statusHandler);
 			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
 					AppConstants.CONFIRM_VEHICLE_BOOKING, AppConstants.FAILED, e.getMessage());
 			return confirmBookingresponse;
 		}
-		
-		
+
 		logger.info("End : Save booking type Service : " + confirmBookingresponse);
 		return confirmBookingresponse;
 	}
-	
+
 	private double calculateDistance(Double cPickupLatitude, Double cPickupLongitude, Double cDropLatitude,
-			Double cDropLongitude)  {
+			Double cDropLongitude) {
 		String API_KEY = "AIzaSyAQHOAqNwhjEdcMoOMwHRFRkoYh9WUcehk";
 		String BASE_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
 
-	    // Log coordinates for debugging
-	    System.out.printf("Origin: %f,%f | Destination: %f,%f%n",
-	            cPickupLatitude, cPickupLongitude, cDropLatitude, cDropLongitude);
+		// Log coordinates for debugging
+		System.out.printf("Origin: %f,%f | Destination: %f,%f%n", cPickupLatitude, cPickupLongitude, cDropLatitude,
+				cDropLongitude);
 
-	    // Build request URL
-	    String url = String.format("%s?origins=%f,%f&destinations=%f,%f&key=%s",
-	            BASE_URL, cPickupLatitude, cPickupLongitude, cDropLatitude, cDropLongitude, API_KEY);
+		// Build request URL
+		String url = String.format("%s?origins=%f,%f&destinations=%f,%f&key=%s", BASE_URL, cPickupLatitude,
+				cPickupLongitude, cDropLatitude, cDropLongitude, API_KEY);
 
-	    System.out.println("Calling Google API: " + url);
+		System.out.println("Calling Google API: " + url);
 
-	    RestTemplate restTemplate = new RestTemplate();
-	    String response = restTemplate.getForObject(url, String.class);
+		RestTemplate restTemplate = new RestTemplate();
+		String response = restTemplate.getForObject(url, String.class);
 
-	    try {
-	        JSONParser parser = new JSONParser();
-	        JSONObject json = (JSONObject) parser.parse(response);
+		try {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
 
-	        // Get first element in rows -> elements
-	        JSONArray rows = (JSONArray) json.get("rows");
-	        JSONObject row0 = (JSONObject) rows.get(0);
-	        JSONArray elements = (JSONArray) row0.get("elements");
-	        JSONObject element0 = (JSONObject) elements.get(0);
+			// Get first element in rows -> elements
+			JSONArray rows = (JSONArray) json.get("rows");
+			JSONObject row0 = (JSONObject) rows.get(0);
+			JSONArray elements = (JSONArray) row0.get("elements");
+			JSONObject element0 = (JSONObject) elements.get(0);
 
-	        String status = (String) element0.get("status");
-	        if (!"OK".equals(status)) {
-	            throw new RuntimeException("Error fetching distance from Google API: " + status);
-	        }
+			String status = (String) element0.get("status");
+			if (!"OK".equals(status)) {
+				throw new RuntimeException("Error fetching distance from Google API: " + status);
+			}
 
-	        // Extract distance in meters
-	        JSONObject distanceObj = (JSONObject) element0.get("distance");
-	        Number distanceValue = (Number) distanceObj.get("value"); // safer casting
-	        double distanceInKm = distanceValue.doubleValue() / 1000.0;
+			// Extract distance in meters
+			JSONObject distanceObj = (JSONObject) element0.get("distance");
+			Number distanceValue = (Number) distanceObj.get("value"); // safer casting
+			double distanceInKm = distanceValue.doubleValue() / 1000.0;
 
-	        System.out.printf("Distance: %.2f km%n", distanceInKm);
-	        return distanceInKm;
+			System.out.printf("Distance: %.2f km%n", distanceInKm);
+			return distanceInKm;
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error parsing distance response: " + e.getMessage(), e);
-	    }
+		} catch (Exception e) {
+			throw new RuntimeException("Error parsing distance response: " + e.getMessage(), e);
+		}
+	}
+	
+	public SelectPackersAndMoversResponse selectPandMBooking(
+			SelectPackersAndMoversRequest selectPackersAndMoversRequest,
+			SelectPackersAndMoversResponse selectPackersAndMoversResponse, String token, String appId,
+			StatusHandler statusHandler) {
+		logger.info("Start: create pandm bookings service: "+selectPackersAndMoversRequest);
+		//Validate Access token
+		CustomerTokens custTokens = customerUtils.validateAccessToken(token);
+		System.out.println(custTokens);
+		// Validate APPID
+		System.out.println("APPID: " + appId);
+		Applications app = applicationsRepository.findByAppIdAndIsActive(appId, "Y")
+				.orElseThrow(() -> new RuntimeException("Invalid or inactive APPID: " + appId));
+		
+		try {
+			Optional.ofNullable(selectPackersAndMoversRequest.getMyBookingsDTO().getBookingId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
+						AppConstants.CONFIRM_PACKERS_AND_MOVERS_BOOKING, AppConstants.FAILED, AppConstants.BOOKINGID_IS_REQUIRED);
+				return new InvalidRequestException(AppConstants.BOOKINGID_IS_REQUIRED);
+			});
+			Optional.ofNullable(selectPackersAndMoversRequest.getMyBookingsDTO().getCustId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
+						AppConstants.CONFIRM_PACKERS_AND_MOVERS_BOOKING, AppConstants.FAILED, AppConstants.CUSTID_IS_REQUIRED);
+				return new InvalidRequestException(AppConstants.CUSTID_IS_REQUIRED);
+			});
+			
+			// Validate CustId in Customer Details
+			CustomerDetailsDTOResponse custResponse = customerUtils
+					.findCustomer(selectPackersAndMoversRequest.getMyBookingsDTO().getCustId(), token);
+			System.out.println(custResponse.getCustomerDetailsDTO());
+			
+			MyBookings bookings = repository.findByBookingId(selectPackersAndMoversRequest.getMyBookingsDTO().getBookingId());
+			
+			
+			//Fetch Available Packers and Movers in city and isOnline
+			long isOnline = 1;
+			VendorsListResponse vendorsListResponse = vendorUtils
+					.findAvailablePackersAndMovers(selectPackersAndMoversRequest.getMyBookingsDTO().getcCity(), token, isOnline);
+			System.out.println("List: "+vendorsListResponse);
+			
+			// Calculate distance
+			double distanceKm = calculateDistance(selectPackersAndMoversRequest.getMyBookingsDTO().getcPickupLatitude(),
+								selectPackersAndMoversRequest.getMyBookingsDTO().getcPickupLongitude(),
+								selectPackersAndMoversRequest.getMyBookingsDTO().getcDropLatitude(),
+								selectPackersAndMoversRequest.getMyBookingsDTO().getcDropLongitude());
+			
+			
+			
+			//Map to AvailablePandMDTO
+			List<VendorDetailsDTO> vendorsList = vendorsListResponse.getVendorDetailsDTO();
+			List<AvailablePandMDTO> availableList = new ArrayList<>();
+			double fare = 0 ;
+			for(int i = 0 ; i < vendorsList.size() ; i++) {
+				
+				AvailablePandMDTO pandmDTO = new AvailablePandMDTO();
+				pandmDTO.setVendorId(vendorsList.get(i).getVendorId());
+				pandmDTO.setCompanyName(vendorsList.get(i).getCompanyName());
+				pandmDTO.setOwnerName(vendorsList.get(i).getOwnerName());
+				pandmDTO.setVpimageurl(vendorsList.get(i).getvPImageUrl());
+				pandmDTO.setVmobile(vendorsList.get(i).getvMobile());
+				//calculate Fare details
+				double baseFare = vendorsListResponse.getVendorDetailsDTO().get(i).getBaseFare(); // base booking charge
+				double perKgRate = vendorsListResponse.getVendorDetailsDTO().get(i).getPerKgRate(); // per km
+				double perKmRate = vendorsListResponse.getVendorDetailsDTO().get(i).getPerKmRate();  // per kg
+				fare = calculateFare(distanceKm, selectPackersAndMoversRequest.getSelectedItemsDTO(), baseFare, perKgRate, perKmRate);
+				System.out.println("Fare: "+fare);
+				pandmDTO.setFare(fare);
+				pandmDTO.setDiscountType("percentage");
+				pandmDTO.setCompanyDiscount(10l);
+				pandmDTO.setVendorDiscount(10l);
+				availableList.add(pandmDTO);
+			}
+			selectPackersAndMoversResponse.setAvailablePandMDTO(availableList);
+			bookings.setFare(fare);
+			MyBookings savedBookings = repository.save(bookings);
+			System.out.println(savedBookings.getBookingId());
+			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
+					AppConstants.CONFIRM_PACKERS_AND_MOVERS_BOOKING, AppConstants.SUCCESS, null);
+		} catch (Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
+			selectPackersAndMoversResponse.setStatusHandler(statusHandler);
+			TranLogResponse tranlogResponse = transactionUtils.savetruckBookingTranLog(custTokens,
+					AppConstants.CONFIRM_PACKERS_AND_MOVERS_BOOKING, AppConstants.FAILED, e.getMessage());
+			return selectPackersAndMoversResponse;
+		}
+		
+		logger.info("End : Save booking type Service : " + selectPackersAndMoversResponse);
+		return selectPackersAndMoversResponse;
+	}
+
+	private double calculateFare(double distanceKm, List<SelectedItemsDTO> selectedItemsDTO, double baseFare,
+			double perKgRate, double perKmRate) {
+		double fare = baseFare;
+		// 1. Distance charge
+		// 1. Distance charge
+        fare += perKgRate * distanceKm;
+
+        // 2. Weight charge
+        double totalWeight = 0.0;
+        for (SelectedItemsDTO item : selectedItemsDTO) {
+            double itemWeight = item.getItemWeight().doubleValue() * item.getItemQuantity();
+            totalWeight += itemWeight;
+        }
+        fare += perKgRate * totalWeight;
+
+        // 3. Service charge (e.g. 10%)
+//        double serviceCharge = fare * (serviceChargePercent / 100.0);
+//        fare += serviceCharge;
+
+        return fare;
+	}
+
+	@Override
+	@Transactional
+	public VendorBookingResponseDTO updatePickup(Long vendorId, Long bookingId, Long custId, String otp,
+			VendorBookingResponseDTO vendorBooking, StatusHandler statusHandler, String token, String appId) {
+		logger.info("Start : update pickup service : " + vendorId + " : " + bookingId + " : " + custId);
+		VendorTokens vendorTokens = vendorUtils.validateAccessToken(token);
+		VendorBookingResponseDTO vendorBookingResponseDTO = new VendorBookingResponseDTO();
+		// Validate APPID
+		System.out.println("APPID: " + appId);
+		Applications app = applicationsRepository.findByAppIdAndIsActive(appId, "Y")
+				.orElseThrow(() -> new RuntimeException("Invalid or inactive APPID: " + appId));
+		
+		
+		try {
+			//Validate Access token
+			System.out.println(vendorTokens);
+			Optional.ofNullable(vendorTokens.getVendorId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+						AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.FAILED, AppConstants.INVALID_TOKEN);
+				return new TokenPersistenceException(AppConstants.INVALID_TOKEN);
+			});
+			
+			//Validate custId and vendorId
+			MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingId, custId, vendorId)
+				    .orElseThrow(() -> {
+				    	TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+								AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.FAILED, AppConstants.CUSTID_AND_VENDORID_DOES_NOT_EXISTS);
+				    	return	new InvalidRequestException("Booking not found for given customer/vendor");
+			});
+			
+			if(!bookings.getPickupOTP().equalsIgnoreCase(otp)) {
+				throw new InvalidRequestException(AppConstants.INVALID_OTP);
+			}
+			
+			//update Pickup
+			bookings.setBookingStatus(AppConstants.PICKUP_COMPLETED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			bookings.setPickupOtpIsVerified("Y");
+			MyBookings bookingsSaved = null;
+			try {
+				bookingsSaved = repository.save(bookings);
+			} catch (Exception e) {
+				throw new Exception(e.getMessage());
+			}
+			
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.SUCCESS, null);
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(AppConstants.SUCCESS);
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			MyBookingsDTO newBookingsDTO = mapper.toDTO(bookingsSaved);
+			vendorBookingResponseDTO.setMyBookingsDTO(newBookingsDTO);
+		}catch(TokenPersistenceException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(InvalidRequestException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_PICKUP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}	
+		logger.info("End : update pickup service : " + vendorBooking);
+
+		return vendorBookingResponseDTO;
 	}
 	
 	@Override
-	@Transactional
-	public VendorBookingResponseDTO updatePickup(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBooking,
-			StatusHandler statusHandler) {
-		logger.info("Start : update pickup service : " + vendorId);
+	public VendorBookingResponseDTO customerLocated(Long vendorId, Long bookingId, Long custId,
+			VendorBookingResponseDTO vendorBooking, StatusHandler statusHandler, String token, String appId) {
+		logger.info("Start : update pickup service : " + vendorId + " : " + bookingId + " : " + custId);
+		VendorTokens vendorTokens = vendorUtils.validateAccessToken(token);
+		VendorBookingResponseDTO vendorBookingResponseDTO = new VendorBookingResponseDTO();
+		// Validate APPID
+		System.out.println("APPID: " + appId);
+		Applications app = applicationsRepository.findByAppIdAndIsActive(appId, "Y")
+				.orElseThrow(() -> new RuntimeException("Invalid or inactive APPID: " + appId));
+		
+		
+		try {
+			//Validate Access token
+			System.out.println(vendorTokens);
+			Optional.ofNullable(vendorTokens.getVendorId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+						AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.FAILED, AppConstants.INVALID_TOKEN);
+				return new TokenPersistenceException(AppConstants.INVALID_TOKEN);
+			});
+			
+			//Validate custId and vendorId
+			MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingId, custId, vendorId)
+				    .orElseThrow(() -> {
+				    	TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+								AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.FAILED, AppConstants.CUSTID_AND_VENDORID_DOES_NOT_EXISTS);
+				    	return	new InvalidRequestException("Booking not found for given customer/vendor");
+			});
+			
+			//update Pickup
+			bookings.setBookingStatus(AppConstants.CUSTOMER_LOCATED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			
+			MyBookings bookingsSaved = null;
+			try {
+				bookingsSaved = repository.save(bookings);
+			} catch (Exception e) {
+				throw new Exception(e.getMessage());
+			}
+			
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.SUCCESS, null);
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(AppConstants.SUCCESS);
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			MyBookingsDTO newBookingsDTO = mapper.toDTO(bookingsSaved);
+			vendorBookingResponseDTO.setMyBookingsDTO(newBookingsDTO);
+		}catch(TokenPersistenceException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(InvalidRequestException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_CUSTOMER_LOCATED, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}	
+		logger.info("End : update pickup service : " + vendorBooking);
 
-//		try {
-//
-//			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//			System.out.println(vendorDetails.getVendorDTO());
-//			if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			}
-//			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//			if (null == bookingId) {
-//				throw new RuntimeException("VendorId and bookingId is Null : ");
-//			}
-//			CustomerResponse custDetails = customerUtils.getCustomer(bookings.getCustId());
-//			System.out.println(custDetails.getDetailsDTO());
-//			if (null == custDetails.getDetailsDTO().getCustId()) {
-//				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//			}
-//			bookings.setStatus(AppConstants.PICKUP_COMPLETED);
-//			bookings.setBookingStatus(AppConstants.PICKUP_COMPLETED);
-//			bookings.setUpdatedAt(LocalDateTime.now());
-//			bookings.setUpdatedBy(vendorId);
-//			MyBookings saved = repository.save(bookings);
-//			MyBookingsRequest booking = mapper.toDto(saved);
-//			vendorBooking.setRequestDTO(booking);
-//			if (null != saved) {
-//				statusHandler.setErrorCode("200");
-//				statusHandler.setErrorMessage(AppConstants.SUCCESS);
-//				vendorBooking.setStatusHandler(statusHandler);
-//			}
-//
-//		} catch (RuntimeException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			vendorBooking.setStatusHandler(statusHandler);
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			vendorBooking.setStatusHandler(statusHandler);
-//		}
-//
-//		logger.info("End : update pickup service : " + vendorId);
-		return vendorBooking;
+		return vendorBookingResponseDTO;
 	}
-
+	
 	@Override
-	public VendorBookingResponseDTO updateDrop(Long vendorId, Long bookingId, VendorBookingResponseDTO vendorBooking,
-			StatusHandler statusHandler) {
-		logger.info("Start : update drop service : " + vendorId + " " + bookingId);
-//		try {
-//
-//			VendorResponse vendorDetails = vendorUtils.getVendor(vendorId);
-//
-//			System.out.println(vendorDetails.getVendorDTO());
-//			if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//				throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//			}
-//			MyBookings bookings = repository.findByBookingIdAndVendorId(vendorId, bookingId);
-//			if (null == bookingId) {
-//				throw new RuntimeException("VendorId and bookingId is Null : ");
-//			}
-//			CustomerResponse custDetails = customerUtils.getCustomer(bookings.getCustId());
-//
-//			System.out.println(custDetails.getDetailsDTO());
-//			if (null == custDetails.getDetailsDTO().getCustId()) {
-//				throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//			}
-//			bookings.setStatus(AppConstants.DROP_COMPLETED);
-//			bookings.setBookingStatus(AppConstants.DROP_COMPLETED);
-//			bookings.setUpdatedAt(LocalDateTime.now());
-//			bookings.setUpdatedBy(vendorId);
-//			MyBookings saved = repository.save(bookings);
-//			MyBookingsRequest booking = mapper.toDto(saved);
-//			vendorBooking.setRequestDTO(booking);
-//			if (null != saved) {
-//				statusHandler.setErrorCode("200");
-//				statusHandler.setErrorMessage(AppConstants.SUCCESS);
-//				vendorBooking.setStatusHandler(statusHandler);
-//			}
-//
-//		} catch (RuntimeException ex) {
-//			statusHandler.setErrorCode("400");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			vendorBooking.setStatusHandler(statusHandler);
-//		} catch (Exception ex) {
-//			statusHandler.setErrorCode("500");
-//			statusHandler.setErrorMessage(ex.getMessage());
-//			vendorBooking.setStatusHandler(statusHandler);
-//		}
+	public VendorBookingResponseDTO reachedDropLocation(Long vendorId, Long bookingId, Long custId,
+			VendorBookingResponseDTO vendorBooking, StatusHandler statusHandler, String token, String appId) {
+		logger.info("Start : update pickup service : " + vendorId + " : " + bookingId + " : " + custId);
+		VendorTokens vendorTokens = vendorUtils.validateAccessToken(token);
+		VendorBookingResponseDTO vendorBookingResponseDTO = new VendorBookingResponseDTO();
+		// Validate APPID
+		System.out.println("APPID: " + appId);
+		Applications app = applicationsRepository.findByAppIdAndIsActive(appId, "Y")
+				.orElseThrow(() -> new RuntimeException("Invalid or inactive APPID: " + appId));
+		
+		
+		try {
+			//Validate Access token
+			System.out.println(vendorTokens);
+			Optional.ofNullable(vendorTokens.getVendorId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+						AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.FAILED, AppConstants.INVALID_TOKEN);
+				return new TokenPersistenceException(AppConstants.INVALID_TOKEN);
+			});
+			
+			//Validate custId and vendorId
+			MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingId, custId, vendorId)
+				    .orElseThrow(() -> {
+				    	TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+								AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.FAILED, AppConstants.CUSTID_AND_VENDORID_DOES_NOT_EXISTS);
+				    	return	new InvalidRequestException("Booking not found for given customer/vendor");
+			});
+			
+			//update Pickup
+			bookings.setBookingStatus(AppConstants.REACHED_DROP_LOCATION);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			
+			MyBookings bookingsSaved = null;
+			try {
+				bookingsSaved = repository.save(bookings);
+			} catch (Exception e) {
+				throw new Exception(e.getMessage());
+			}
+			
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.SUCCESS, null);
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(AppConstants.SUCCESS);
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			MyBookingsDTO newBookingsDTO = mapper.toDTO(bookingsSaved);
+			vendorBookingResponseDTO.setMyBookingsDTO(newBookingsDTO);
+		}catch(TokenPersistenceException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(InvalidRequestException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_REACHED_DROP_LOCATION, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}	
+		logger.info("End : update pickup service : " + vendorBooking);
 
-		logger.info("End : update drop service : " + vendorId + " " + bookingId);
-		return vendorBooking;
+		return vendorBookingResponseDTO;
+	}
+	
+	@Override
+	public VendorBookingResponseDTO updateDrop(Long vendorId, Long bookingId, Long custId, String otp, VendorBookingResponseDTO vendorBooking,
+			StatusHandler statusHandler, String token, String appId) {
+		logger.info("Start : update drop service : " + vendorId + " : " + bookingId+" : "+custId);
+		
+		VendorTokens vendorTokens = vendorUtils.validateAccessToken(token);
+		VendorBookingResponseDTO vendorBookingResponseDTO = new VendorBookingResponseDTO();
+		// Validate APPID
+		System.out.println("APPID: " + appId);
+		Applications app = applicationsRepository.findByAppIdAndIsActive(appId, "Y")
+				.orElseThrow(() -> new RuntimeException("Invalid or inactive APPID: " + appId));
+		
+		
+		try {
+			//Validate Access token
+			System.out.println(vendorTokens);
+			Optional.ofNullable(vendorTokens.getVendorId()).orElseThrow(() -> {
+				TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+						AppConstants.UPDATE_TRUCK_DROP, AppConstants.FAILED, AppConstants.INVALID_TOKEN);
+				return new TokenPersistenceException(AppConstants.INVALID_TOKEN);
+			});
+			
+			//Validate custId and vendorId
+			MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingId, custId, vendorId)
+				    .orElseThrow(() -> {
+				    	TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+								AppConstants.UPDATE_TRUCK_DROP, AppConstants.FAILED, AppConstants.CUSTID_AND_VENDORID_DOES_NOT_EXISTS);
+				    	return	new InvalidRequestException("Booking not found for given customer/vendor");
+			});
+			
+			if(!bookings.getDropOTP().equalsIgnoreCase(otp)) {
+				throw new InvalidRequestException(AppConstants.INVALID_OTP);
+			}
+			
+			//update Pickup
+			bookings.setBookingStatus(AppConstants.DROP_COMPLETED);
+			bookings.setUpdatedAt(LocalDateTime.now());
+			bookings.setUpdatedBy(vendorId);
+			bookings.setDropOtpIsVerified("Y");
+			MyBookings bookingsSaved = null;
+			try {
+				bookingsSaved = repository.save(bookings);
+			} catch (Exception e) {
+				throw new Exception(e.getMessage());
+			}
+			
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_DROP, AppConstants.SUCCESS, null);
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(AppConstants.SUCCESS);
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			MyBookingsDTO newBookingsDTO = mapper.toDTO(bookingsSaved);
+			vendorBookingResponseDTO.setMyBookingsDTO(newBookingsDTO);
+		}catch(TokenPersistenceException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_DROP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(InvalidRequestException e) {
+			statusHandler.setStatusCode("400");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_DROP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}catch(Exception e) {
+			statusHandler.setStatusCode("500");
+			statusHandler.setError(e.getMessage());
+			TranLogResponse tranlogResponse = transactionUtils.vendorBookingTranLog(vendorTokens,
+					AppConstants.UPDATE_TRUCK_DROP, AppConstants.FAILED, e.getMessage());
+			vendorBookingResponseDTO.setStatusHandler(statusHandler);
+			
+		}	
+		logger.info("End : update drop service : " + vendorBooking);
+
+		return vendorBookingResponseDTO;
 	}
 
 	@Override
@@ -969,42 +1003,6 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 			StatusHandler statusHandler) {
 		logger.info("Start : create transaction service : " + dto);
 
-//		MyBookings booking = repository.findById(dto.getBookingId())
-//				.orElseThrow(() -> new RuntimeException("Booking ID not found: " + dto.getBookingId()));
-//
-//		CustomerResponse custDetails = customerUtils.getCustomer(booking.getCustId());
-//		System.out.println(custDetails.getDetailsDTO());
-//		if (null == custDetails.getDetailsDTO().getCustId()) {
-//			throw new RuntimeException(AppConstants.CUSTID_DOES_NOT_EXISTS);
-//		}
-//
-//		VendorResponse vendorDetails = vendorUtils.getVendor(booking.getVendorId());
-//		System.out.println(vendorDetails.getVendorDTO());
-//		if (null == vendorDetails.getVendorDTO().getVendorId()) {
-//			throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
-//		}
-//
-//		BookingTransaction transaction = new BookingTransaction();
-//		transaction.setBooking(booking); // ✅ Set the actual entity, not just ID
-//		transaction.setTransactionRef(dto.getTransactionRef());
-//		transaction.setTransactionType(dto.getTransactionType());
-//		transaction.setAmount(dto.getAmount());
-//		transaction.setCurrency(dto.getCurrency());
-//		transaction.setStatus(dto.getStatus());
-//		transaction.setPaymentMode(dto.getPaymentMode());
-//		transaction.setResponseMessage(dto.getResponseMessage());
-//		transaction.setCreatedAt(LocalDateTime.now());
-//		transaction.setCreatedBy(dto.getCreatedBy());
-//		BookingTransaction tran = transactionRepository.save(transaction);
-//		BookingTransactionDTO newDto = transactionMapper.toDTO(tran);
-//		newDto.setBookingId(dto.getBookingId());
-//		response.setTransactionDTO(newDto);
-//
-////		BookingTransaction transaction = transactionMapper.toEntity(dto);
-////		System.out.println(transaction.toString());
-////		BookingTransaction  tran = transactionRepository.save(transaction);
-////		BookingTransactionDTO newDto = transactionMapper.toDTO(tran);
-////		response.setTransactionDTO(newDto);
 		logger.info("End : create transaction service : " + dto);
 		return response;
 	}
@@ -1013,13 +1011,26 @@ public class MyBookingsServiceImpl implements MyBookingsService {
 	public MyBookingsResponse getBookingSummary(BookingSummaryRequest bookingSummary, MyBookingsResponse response,
 			StatusHandler statusHandler) {
 		logger.info("Start : bokking summary service : " + bookingSummary);
-//		MyBookings bookings = repository.findByBookingIdAndCustIdAndVendorId(bookingSummary.getBookingId(),
-//				bookingSummary.getCustId(), bookingSummary.getVendorId());
-//		MyBookingsRequest dto = mapper.toDto(bookings);
-//		response.setMyBookingRequestDTO(dto);
+
 		logger.info("End : booking summary service : " + bookingSummary);
 		return response;
 	}
 
+	@Override
+	public VendorBookingResponseDTO getBookingByVendorIdbookingId(Long vendorId, Long bookingId,
+			VendorBookingResponseDTO vendorbooking, StatusHandler statusHandler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public VendorBookingResponseDTO cancelVendorBooking(Long vendorId, Long bookingId,
+			VendorBookingResponseDTO vendorResponse, StatusHandler statusHandler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	
 
 }

@@ -2,7 +2,7 @@ package com.mybookingsservice.domain;
 
 import com.mybookingsservice.exceptions.StatusHandler;
 
-public class CustomerResponse {
+public class CustomerDetailsDTOResponse {
 
 	private CustomerDetailsDTO customerDetailsDTO;
 	private StatusHandler statusHandler;

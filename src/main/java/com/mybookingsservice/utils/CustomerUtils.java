@@ -16,7 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.mybookingsservice.domain.CustomerDetailsDTO;
-import com.mybookingsservice.domain.CustomerResponse;
+import com.mybookingsservice.domain.CustomerDetailsDTOResponse;
 import com.mybookingsservice.domain.TokenID;
 import com.mybookingsservice.entity.CustomerDetails;
 import com.mybookingsservice.entity.CustomerTokens;
@@ -44,7 +44,7 @@ public class CustomerUtils {
 	
 	
 	
-	public  CustomerResponse findCustomer(Long custId, String token) {
+	public  CustomerDetailsDTOResponse findCustomer(Long custId, String token) {
 		logger.info("Start : get customer details by custId : "+custId);
 		
 		String url = customerServiceUrl+"/get/"+custId;
@@ -59,11 +59,11 @@ public class CustomerUtils {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<CustomerResponse> response = restTemplate.exchange(
+            ResponseEntity<CustomerDetailsDTOResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                CustomerResponse.class
+                CustomerDetailsDTOResponse.class
             );
             logger.info("Response: " + response.getBody());
             return response.getBody();
@@ -100,7 +100,7 @@ public class CustomerUtils {
 		
 		return null;
 	}
-	public CustomerResponse updateCustomer(CustomerDetailsDTO detailsDTO) {
+	public CustomerDetailsDTOResponse updateCustomer(CustomerDetailsDTO detailsDTO) {
 		logger.info("Start : create customer utils : "+detailsDTO);
 		
 		String url = customerServiceUrl+"/updateCustomer";
@@ -117,11 +117,11 @@ public class CustomerUtils {
         HttpEntity<CustomerDetailsDTO> entity = new HttpEntity<>(detailsDTO, headers);
 
         try {
-            ResponseEntity<CustomerResponse> response = restTemplate.exchange(
+            ResponseEntity<CustomerDetailsDTOResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 entity,
-                CustomerResponse.class
+                CustomerDetailsDTOResponse.class
             );
             logger.info("Response: " + response.getBody());
             logger.info("End : create vendor utils : ");
@@ -135,7 +135,7 @@ public class CustomerUtils {
             throw e;
         }
 	}
-	public CustomerResponse updateCustomerName(CustomerDetailsDTO detailsDTO) {
+	public CustomerDetailsDTOResponse updateCustomerName(CustomerDetailsDTO detailsDTO) {
 		// TODO Auto-generated method stub
 		return null;
 	}

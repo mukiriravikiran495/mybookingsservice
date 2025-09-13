@@ -7,504 +7,242 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mybookingsservice.constants.AppConstants;
-import com.mybookingsservice.domain.AcceptBookingRequest;
-import com.mybookingsservice.domain.AcceptBookingResponse;
-import com.mybookingsservice.domain.BookingSummaryRequest;
 import com.mybookingsservice.domain.BookingTransactionDTO;
 import com.mybookingsservice.domain.BookingTransactionResponse;
 import com.mybookingsservice.domain.ConfirmBookingRequest;
 import com.mybookingsservice.domain.ConfirmBookingResponse;
-import com.mybookingsservice.domain.CustBookingResponse;
-import com.mybookingsservice.domain.CustomerBookingResponseDTO;
 import com.mybookingsservice.domain.HouseholdItemsResponse;
 import com.mybookingsservice.domain.MyBookingsRequest;
 import com.mybookingsservice.domain.MyBookingsResponse;
+import com.mybookingsservice.domain.SelectPackersAndMoversRequest;
+import com.mybookingsservice.domain.SelectPackersAndMoversResponse;
 import com.mybookingsservice.domain.VendorBookingResponseDTO;
-import com.mybookingsservice.domain.VendorBookingsDTO;
-import com.mybookingsservice.domain.VendorEstimateRequest;
-import com.mybookingsservice.domain.VendorEstimateResponse;
 import com.mybookingsservice.exceptions.InvalidRequestException;
 import com.mybookingsservice.exceptions.StatusHandler;
 import com.mybookingsservice.repository.CustomerRepository;
 import com.mybookingsservice.service.MyBookingsService;
 
 @RestController
-@RequestMapping( path = "/v1/api/bookings")
+@RequestMapping(path = "/v1/api/bookings")
 public class MyBookingsController {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	
-    private final CustomerRepository customerRepository;
+
+	private final CustomerRepository customerRepository;
 	private final MyBookingsService service;
-	
-	
+
 	@Autowired
 	public MyBookingsController(MyBookingsService service, CustomerRepository customerRepository) {
 		this.service = service;
 		this.customerRepository = customerRepository;
 	}
-	
-	@GetMapping( value = "/customer/{custId}/{bookingId}")
-	public ResponseEntity<CustBookingResponse> getBookingsByBookingId(@PathVariable Long custId, 
-																	  @PathVariable Long bookingId) {
-		logger.info("START : Get Bookings By ID Controller : "+custId+" : "+bookingId);
-		StatusHandler statusHandler = new StatusHandler();
-		CustBookingResponse custBookingResponse = new CustBookingResponse();
-		
-		try {
-			if( null == custId || null == bookingId ) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			custBookingResponse = service.getBookingsByBookingId(custId, bookingId, statusHandler, custBookingResponse);
-			
-			logger.info("END : Get Bookings By ID Controller : "+custBookingResponse);
-			statusHandler.setErrorCode("200");
-			statusHandler.setErrorMessage(AppConstants.SUCCESS);
-			custBookingResponse.setStatusHandler(statusHandler);
-			ResponseEntity<CustBookingResponse> response = new ResponseEntity<>(custBookingResponse, HttpStatus.OK);
-			return response;
-			
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(AppConstants.INVALID_REQUEST);
-			custBookingResponse.setStatusHandler(statusHandler);
-			return new ResponseEntity<>(custBookingResponse, HttpStatus.BAD_REQUEST);
-		}catch(Exception e) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(e.getMessage());
-			custBookingResponse.setStatusHandler(statusHandler);
-			return new ResponseEntity<>(custBookingResponse, HttpStatus.BAD_REQUEST);
-		}
-		
-	}
-//	
-	@PostMapping( value = "/customer/cancel/{custId}/{bookingId}")
-	public ResponseEntity<CustBookingResponse> cancelBookingById( @PathVariable Long custId, @PathVariable Long bookingId)  {
-		logger.info("START Cancel Booking By Id Controller : "+custId+" "+bookingId);
-		StatusHandler statusHandler = new StatusHandler();
-		CustBookingResponse cancelResponse = new CustBookingResponse();
-		
-		try {
-			if( null == custId || null == bookingId ) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			cancelResponse = service.cancelBookingById(custId, bookingId,  cancelResponse, statusHandler);
-			statusHandler.setErrorCode("200");
-			statusHandler.setErrorMessage(AppConstants.SUCCESS);
-			cancelResponse.setStatusHandler(statusHandler);
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(AppConstants.INVALID_REQUEST);
-			cancelResponse.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(ex.getMessage());
-			cancelResponse.setStatusHandler(statusHandler);
-		}
-		ResponseEntity<CustBookingResponse> response = new ResponseEntity<>(cancelResponse, HttpStatus.OK);
-		logger.info("End : cancel Booking by Id controller : "+cancelResponse);
-		return response;
-	}
-//	
-	@GetMapping("/customer/{custId}")
-    public ResponseEntity<CustomerBookingResponseDTO> getBookingsByCustomer(@PathVariable Long custId) throws InvalidRequestException {
-		logger.info("START Customer Bookings Controller : ");
-		StatusHandler statusHandler = new StatusHandler();
-		CustomerBookingResponseDTO response = new CustomerBookingResponseDTO();
-		try {
-			if(null == custId) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			response = service.getBookingsByCustomerId(custId, response, statusHandler);
-			statusHandler.setErrorCode("200");
-			statusHandler.setErrorMessage(AppConstants.SUCCESS);
-			response.setStatusHandler(statusHandler);
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(ex.getMessage());
-			response.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(AppConstants.INTERNAL_SERVER_ERROR);
-			response.setStatusHandler(statusHandler);
-		}
-		
-        logger.info("END : Customer Bookings Controller : ");
-        return ResponseEntity.ok(response);
-    }
-	
-	
-	@GetMapping( value = "/customer/cancel/getall")
-	public ResponseEntity<CustomerBookingResponseDTO> getCustCancelledBookings( @RequestParam Long custId, 
-																	 @RequestParam String status) throws InvalidRequestException{
-		logger.info("Start : Get all Cancelled Bookings controller for custId : "+custId);
-		StatusHandler statusHandler = new StatusHandler();
-		CustomerBookingResponseDTO cancelledBookings = new CustomerBookingResponseDTO();
-		try {
-			if( null == custId ||  status.isEmpty() || null == status) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			
-			cancelledBookings = service.getAllCancelledBookings(custId, status, cancelledBookings, statusHandler);
-			statusHandler.setErrorCode("200");
-			statusHandler.setMessage(AppConstants.SUCCESS);
-			cancelledBookings.setStatusHandler(statusHandler);
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(AppConstants.INVALID_REQUEST);
-			cancelledBookings.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(ex.getMessage());
-			cancelledBookings.setStatusHandler(statusHandler);
-		}
-		
-		logger.info("END : Get all Cancelled Bookings controller for custId :"+custId);
-		return ResponseEntity.ok(cancelledBookings);
-	}
-//	
-//	
-//	
-//	
-//	
+
 //	/*
 //	 * Below All API's are related to Customer Bookings
 //	 */
-//	
-	@GetMapping(value = "/vendor/{vendorId}")
-	public ResponseEntity<VendorBookingsDTO> getBookingsByVendorId(@PathVariable Long vendorId) {
-		logger.info("STRAT : Fetch all Vendor Bookings : ");
-		VendorBookingsDTO  vendor = new VendorBookingsDTO();
-		StatusHandler statusHandler = new StatusHandler();
-		try {
-			if(null == vendorId) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			
-			vendor = service.getBookingByVendorId(vendorId, vendor, statusHandler);
-			statusHandler.setErrorCode("200");
-			statusHandler.setMessage(AppConstants.SUCCESS);
-			vendor.setStatusHandler(statusHandler);
-			logger.info("END : Fetch all Vendor Bookings : " + vendor);
-			
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
-			vendor.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setMessage(ex.getMessage());
-			vendor.setStatusHandler(statusHandler);
-		}
-		return ResponseEntity.ok(vendor);
-	}
-	
-	@GetMapping( value = "/vendor/{vendorId}/{bookingId}")
-	public ResponseEntity<VendorBookingResponseDTO> getBookingByVendorIdbookingId(@PathVariable Long vendorId, @PathVariable Long bookingId) throws InvalidRequestException{
-		logger.info("Start : get booking details by vendorId and bookingId controller : "+vendorId+" "+bookingId);
-		StatusHandler statusHandler = new StatusHandler();
-		VendorBookingResponseDTO vendorbooking = new VendorBookingResponseDTO();
-		try {
-			if( null == vendorId || null == bookingId) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			vendorbooking = service.getBookingByVendorIdbookingId(vendorId, bookingId, vendorbooking, statusHandler);
-			statusHandler.setStatusCode("200");
-			statusHandler.setMessage(AppConstants.SUCCESS);
-			vendorbooking.setStatusHandler(statusHandler);
-		}catch(InvalidRequestException ex) {
-			statusHandler.setStatusCode("400");
-			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
-			vendorbooking.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setStatusCode("500");
-			statusHandler.setMessage(ex.getMessage());
-			vendorbooking.setStatusHandler(statusHandler);
-		}
-		
-		ResponseEntity<VendorBookingResponseDTO> response = new ResponseEntity<>(vendorbooking, HttpStatus.OK);
-		
-		logger.info("End : get booking details by vendorId and bookingId controller : "+vendorId+" "+bookingId);
-		return response;
-	}
-//	
-	@PostMapping( value = "/vendor/cancel/{vendorId}/{bookingId}")
-	public ResponseEntity<VendorBookingResponseDTO> cancelVendorBooking(@PathVariable Long vendorId, @PathVariable Long bookingId) throws InvalidRequestException{
-		logger.info("Start : Cancel vendor Booking Controller : "+vendorId+" "+bookingId);
-		StatusHandler statusHandler = new StatusHandler();
-		VendorBookingResponseDTO vendorResponse = new VendorBookingResponseDTO();
-		
-		try {
-			if(null == vendorId || null == bookingId) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			vendorResponse = service.cancelVendorBooking(vendorId, bookingId, vendorResponse, statusHandler);
-			statusHandler.setStatusCode("200");
-			statusHandler.setMessage(AppConstants.SUCCESS);
-			vendorResponse.setStatusHandler(statusHandler);
-			
-		}catch(InvalidRequestException ex) {
-			statusHandler.setStatusCode("400");
-			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
-			vendorResponse.setStatusHandler(statusHandler);
-			return ResponseEntity.ok(vendorResponse);
-		}catch(Exception ex) {
-			statusHandler.setStatusCode("500");
-			statusHandler.setMessage(ex.getMessage());
-			vendorResponse.setStatusHandler(statusHandler);
-			return ResponseEntity.ok(vendorResponse);
-		}
-		
-		logger.info("End : Cancel vendor Booking Controller :  "+vendorId+" "+bookingId);
-		return ResponseEntity.ok(vendorResponse);
-	}
-	
-	@GetMapping( value = "/vendor/cancel/getall")
-	public ResponseEntity<VendorBookingsDTO> getVendorCancelledBookings( @RequestParam Long vendorId, 
-																	 @RequestParam String status){
-		logger.info("Start : Get all Cancelled Bookings controller for custId : "+vendorId);
-		StatusHandler statusHandler = new StatusHandler();
-		VendorBookingsDTO cancelledBookings = new VendorBookingsDTO();
-		try {
-			if( null == vendorId ||  status.isEmpty() || null == status) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			cancelledBookings = service.getVendorCancelledBookings(vendorId, status, cancelledBookings, statusHandler);
-			statusHandler.setStatusCode("200");
-			statusHandler.setMessage(AppConstants.SUCCESS);
-			cancelledBookings.setStatusHandler(statusHandler);
-		}catch(InvalidRequestException ex) {
-			statusHandler.setStatusCode("400");
-			statusHandler.setMessage(AppConstants.INVALID_REQUEST);
-			cancelledBookings.setStatusHandler(statusHandler);
-			return ResponseEntity.ok(cancelledBookings);
-		}catch(Exception ex) {
-			statusHandler.setStatusCode("500");
-			statusHandler.setMessage(ex.getMessage());
-			cancelledBookings.setStatusHandler(statusHandler);
-			return ResponseEntity.ok(cancelledBookings);
-		}
-		
-		logger.info("END : Get all Cancelled Bookings controller for custId :"+vendorId);
-		return ResponseEntity.ok(cancelledBookings);
-	}
-//	
-	@PostMapping( value = "/vendor/accept")
-	public ResponseEntity<AcceptBookingResponse> acceptBooking( @RequestBody AcceptBookingRequest acceptBookingRequest) throws InvalidRequestException{
-		logger.info("Start : Accept booking Controller : "+acceptBookingRequest);
-		StatusHandler statusHandler = new StatusHandler();
-		AcceptBookingResponse acceptBookingresponse = new AcceptBookingResponse();
-		try {
-			if(null == acceptBookingRequest.getBookingId() || null == acceptBookingRequest.getCustId() || null == acceptBookingRequest.getVendorId()) {
-				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			}
-			acceptBookingresponse =  service.acceptBooking(acceptBookingRequest, acceptBookingresponse, statusHandler);
-			
-			statusHandler.setStatusCode("200");
-			statusHandler.setMessage(AppConstants.ACCEPTED);
-			acceptBookingresponse.setStatusHandler(statusHandler);
-			
-			
-		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(ex.getMessage());
-			acceptBookingresponse.setStatusHandler(statusHandler);
-		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(AppConstants.INTERNAL_SERVER_ERROR);
-			acceptBookingresponse.setStatusHandler(statusHandler);
-		}
-		
-		logger.info("End : Accept Booking Controller : ");
-		return new ResponseEntity<>(acceptBookingresponse, HttpStatus.OK);
-	}
-	
-	@PostMapping( value = "/vendor/vendorestimates")
-	public ResponseEntity<VendorEstimateResponse> getVendorEstimates( @RequestBody VendorEstimateRequest request) {
-		logger.info("Start : Get Vendor Estimates : "+request);
-		StatusHandler statusHandler = new StatusHandler();
-		VendorEstimateResponse vendorEstimatesResponse = new VendorEstimateResponse();
-		vendorEstimatesResponse = service.getvendorEstimates(request, vendorEstimatesResponse, statusHandler);
-		ResponseEntity<VendorEstimateResponse> response = new ResponseEntity<>(vendorEstimatesResponse, HttpStatus.OK);
-		logger.info("END : Get Vendor Estimates : ");
-		return response;
-	}
-	
-	@PostMapping( value = "/save/vehicle/bookings")
-	public ResponseEntity<MyBookingsResponse> saveVehicleBookings(@RequestBody MyBookingsRequest mybookingsDTO, 
-														@RequestHeader("Authorization") String accessToken,
-														@RequestHeader("APPID") String appId){
-		logger.info("Start : Create vehicle booking Controller : "+mybookingsDTO);
+
+	@PostMapping(value = "/save/vehicle/bookings")
+	public ResponseEntity<MyBookingsResponse> saveVehicleBookings(@RequestBody MyBookingsRequest mybookingsDTO,
+			@RequestHeader("Authorization") String accessToken, @RequestHeader("APPID") String appId) {
+		logger.info("Start : Create vehicle booking Controller : " + mybookingsDTO);
 		StatusHandler statusHandler = new StatusHandler();
 		MyBookingsResponse myBookingsResponse = new MyBookingsResponse();
 		String token = accessToken.replace("Bearer ", "");
-		myBookingsResponse = service.saveVehicleBookings(mybookingsDTO, myBookingsResponse, token, appId, statusHandler);
-		ResponseEntity<MyBookingsResponse> response = new ResponseEntity<MyBookingsResponse>(myBookingsResponse, HttpStatus.OK);
+		myBookingsResponse = service.saveVehicleBookings(mybookingsDTO, myBookingsResponse, token, appId,
+				statusHandler);
+		ResponseEntity<MyBookingsResponse> response = new ResponseEntity<MyBookingsResponse>(myBookingsResponse,
+				HttpStatus.OK);
 		logger.info("END : Create vehicle booking Controller : ");
 		return response;
 	}
-	
-	@PostMapping( value = "/save/pandm/bookings")
-	public ResponseEntity<HouseholdItemsResponse> savePandMBookings(@RequestBody MyBookingsRequest mybookingsDTO, 
-															@RequestHeader("Authorization") String accessToken,
-															@RequestHeader("APPID") String appId){
-		logger.info(" Start : Save pandm Booking Type Controller : "+mybookingsDTO);
+
+	@PostMapping(value = "/save/pandm/bookings")
+	public ResponseEntity<HouseholdItemsResponse> savePandMBookings(@RequestBody MyBookingsRequest mybookingsDTO,
+			@RequestHeader("Authorization") String accessToken, @RequestHeader("APPID") String appId) {
+		logger.info(" Start : Save pandm Booking Type Controller : " + mybookingsDTO);
 		StatusHandler statusHandler = new StatusHandler();
 		String token = accessToken.replace("Bearer ", "");
 		HouseholdItemsResponse response = new HouseholdItemsResponse();
 		System.out.println(mybookingsDTO.getMyBookingsDTO().getBookingDate());
 		response = service.savePandMBookings(mybookingsDTO, response, token, appId, statusHandler);
 		ResponseEntity<HouseholdItemsResponse> houseHoldResponse = new ResponseEntity<>(response, HttpStatus.OK);
-		
+
 		logger.info("End : Save pandm Booking type Controller ");
 		return houseHoldResponse;
 	}
-	
-	@PostMapping( value = "/truck/bookings/confirm")
-	public ResponseEntity<ConfirmBookingResponse> confirmTruckBooking(@RequestBody ConfirmBookingRequest confirmBookingRequest,
-																		@RequestHeader("Authorization") String accessToken,
-																		@RequestHeader("APPID") String appId){
+
+	@PostMapping(value = "/truck/bookings/confirm")
+	public ResponseEntity<ConfirmBookingResponse> confirmTruckBooking(
+			@RequestBody ConfirmBookingRequest confirmBookingRequest,
+			@RequestHeader("Authorization") String accessToken, @RequestHeader("APPID") String appId) {
 		ConfirmBookingResponse confirmBookingresponse = new ConfirmBookingResponse();
-		logger.info(" Start : confirm Booking Controller : "+confirmBookingRequest);
+		logger.info(" Start : confirm Booking Controller : " + confirmBookingRequest);
 		StatusHandler statusHandler = new StatusHandler();
 		String token = accessToken.replace("Bearer ", "");
-		confirmBookingresponse = service.confirmTruckBooking(confirmBookingRequest, confirmBookingresponse, token, appId, statusHandler);
-		
-		logger.info(" End : confirm Booking Controller : "+confirmBookingresponse);
+		confirmBookingresponse = service.confirmTruckBooking(confirmBookingRequest, confirmBookingresponse, token,
+				appId, statusHandler);
+
+		logger.info(" End : confirm Booking Controller : " + confirmBookingresponse);
 		ResponseEntity<ConfirmBookingResponse> response = new ResponseEntity<>(confirmBookingresponse, HttpStatus.OK);
 		return response;
 	}
 	
-	@PostMapping( value = "/vendor/update/pickup/{vendorId}/{bookingId}")
-	public ResponseEntity<VendorBookingResponseDTO> updatePickup( @PathVariable Long vendorId, @PathVariable Long bookingId){
-		logger.info("Start : Update vendor pickup controller : "+vendorId);
+	@PostMapping(value = "/pandm/bookings/select")
+	public ResponseEntity<SelectPackersAndMoversResponse> selectPandMBooking(
+																@RequestBody SelectPackersAndMoversRequest selectPackersAndMoversRequest,
+																@RequestHeader("Authorization") String accessToken, 
+																@RequestHeader("APPID") String appId) {
+		SelectPackersAndMoversResponse selectPackersAndMoversResponse = new SelectPackersAndMoversResponse();
+		logger.info(" Start : confirm Booking Controller : " + selectPackersAndMoversRequest);
+		StatusHandler statusHandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
+		selectPackersAndMoversResponse = service.selectPandMBooking(selectPackersAndMoversRequest, selectPackersAndMoversResponse, token,
+				appId, statusHandler);
+
+		logger.info(" End : confirm Booking Controller : " + selectPackersAndMoversResponse);
+		ResponseEntity<SelectPackersAndMoversResponse> response = new ResponseEntity<>(selectPackersAndMoversResponse, HttpStatus.OK);
+		return response;
+	}
+
+	@PostMapping(value = "/truck/update/pickup/{vendorId}/{bookingId}/{custId}/{otp}")
+	public ResponseEntity<VendorBookingResponseDTO> updateTruckPickup(@PathVariable Long vendorId,
+			@PathVariable Long bookingId, @PathVariable Long custId, @PathVariable String otp,
+			@RequestHeader("Authorization") String accessToken, @RequestHeader("APPID") String appId) {
+		logger.info("Start : Update vendor pickup controller : " + vendorId + " : " + bookingId + " : " + custId);
 		StatusHandler statushandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
 		VendorBookingResponseDTO vendorBooking = new VendorBookingResponseDTO();
 		try {
-			if( null == vendorId || null == bookingId) {
+			if (null == vendorId || null == bookingId || null == custId) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
-			vendorBooking = service.updatePickup(vendorId, bookingId, vendorBooking, statushandler);
-			
-			
+			vendorBooking = service.updatePickup(vendorId, bookingId, custId, otp, vendorBooking, statushandler, token,
+					appId);
+
 			statushandler.setStatusCode("200");
 			statushandler.setMessage(AppConstants.SUCCESS);
 			vendorBooking.setStatusHandler(statushandler);
-		}catch(InvalidRequestException ex) {
+		} catch (InvalidRequestException ex) {
 			statushandler.setStatusCode("400");
-			statushandler.setMessage(AppConstants.INVALID_REQUEST);
+			statushandler.setError(ex.getMessage());
 			vendorBooking.setStatusHandler(statushandler);
-		}catch(Exception ex) {
+		} catch (Exception ex) {
 			statushandler.setStatusCode("500");
-			statushandler.setMessage(ex.getMessage());
+			statushandler.setError(ex.getMessage());
 			vendorBooking.setStatusHandler(statushandler);
 		}
-		
-		logger.info("End : Update vendor pickup controller : "+vendorId);
+
+		logger.info("End : Update vendor pickup controller : " + vendorId);
 		return ResponseEntity.ok(vendorBooking);
 	}
-	
-	@PostMapping( value = "/vendor/update/drop/{vendorId}/{bookingId}")
-	public ResponseEntity<VendorBookingResponseDTO> updateDrop( @PathVariable Long vendorId, @PathVariable Long bookingId){
-		logger.info("Start : Update vendor pickup controller : "+vendorId);
+
+	@PostMapping(value = "/truck/update/customerlocated/{vendorId}/{bookingId}/{custId}")
+	public ResponseEntity<VendorBookingResponseDTO> customerLocated(@PathVariable Long vendorId,
+			@PathVariable Long bookingId, @PathVariable Long custId, @RequestHeader("Authorization") String accessToken,
+			@RequestHeader("APPID") String appId) {
+		logger.info("Start : Update vendor pickup controller : " + vendorId + " : " + bookingId + " : " + custId);
 		StatusHandler statushandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
 		VendorBookingResponseDTO vendorBooking = new VendorBookingResponseDTO();
 		try {
-			if( null == vendorId || null == bookingId) {
+			if (null == vendorId || null == bookingId || null == custId) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
-			vendorBooking = service.updateDrop(vendorId, bookingId, vendorBooking, statushandler);
-			
-			
+			vendorBooking = service.customerLocated(vendorId, bookingId, custId, vendorBooking, statushandler, token,
+					appId);
+
 			statushandler.setStatusCode("200");
 			statushandler.setMessage(AppConstants.SUCCESS);
 			vendorBooking.setStatusHandler(statushandler);
-		}catch(InvalidRequestException ex) {
+		} catch (InvalidRequestException ex) {
 			statushandler.setStatusCode("400");
-			statushandler.setMessage(AppConstants.INVALID_REQUEST);
+			statushandler.setError(ex.getMessage());
 			vendorBooking.setStatusHandler(statushandler);
-		}catch(Exception ex) {
+		} catch (Exception ex) {
 			statushandler.setStatusCode("500");
-			statushandler.setMessage(ex.getMessage());
+			statushandler.setError(ex.getMessage());
 			vendorBooking.setStatusHandler(statushandler);
 		}
-		
-		logger.info("End : Update vendor pickup controller : "+vendorId);
+
+		logger.info("End : Update vendor pickup controller : " + vendorId);
 		return ResponseEntity.ok(vendorBooking);
 	}
-	
-	 @PostMapping( value = "/transaction/create")
-	    public ResponseEntity<BookingTransactionResponse> createTransaction(@RequestBody BookingTransactionDTO dto) {
-		 logger.info("Start : create booking transaction controller : "+dto);
-		 StatusHandler statusHandler = new StatusHandler();
-		 BookingTransactionResponse response = new BookingTransactionResponse();
-		 System.out.println(dto.getBookingId());
-		 try {
-			 if( null == dto.getBookingId()) {
-				 throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
-			 }
-			 response = service.createTransaction(dto, response, statusHandler);
-			 statusHandler.setStatusCode("200");
-			 statusHandler.setMessage(AppConstants.SUCCESS);
-			 response.setStatusHandler(statusHandler);
-		 }catch(InvalidRequestException ex) {
-			 statusHandler.setStatusCode("400");
-			 statusHandler.setMessage(ex.getMessage());
-			 response.setStatusHandler(statusHandler);
-		 }catch(Exception ex) {
-			 statusHandler.setStatusCode("500");
-			 statusHandler.setMessage(ex.getMessage());
-			 response.setStatusHandler(statusHandler);
-		 }
-		 
-		 
-		 logger.info("End : create booking transaction controller : "+dto);
-	        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	    }
-	 
-	 @GetMapping( value = "/booking/summary")
-	 public ResponseEntity<MyBookingsResponse> getBookingSummary(@RequestBody BookingSummaryRequest bookingSummary){
-		 logger.info("Start : Booking Summary controller : "+bookingSummary);
-		 StatusHandler statusHandler = new StatusHandler();
-		 MyBookingsResponse response = new MyBookingsResponse();
-		 try {
-			 response = service.getBookingSummary(bookingSummary, response, statusHandler);
-			 statusHandler.setStatusCode("200");
-			 statusHandler.setMessage(AppConstants.SUCCESS);
-			 response.setStatusHandler(statusHandler);
-		 }catch(Exception ex) {
-			 statusHandler.setStatusCode("500");
-			 statusHandler.setMessage(ex.getMessage());
-			 response.setStatusHandler(statusHandler);
-		 }
-		 
-		 
-		 logger.info("End : booking Summary controller : "+bookingSummary);
-		 return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	 }
-	
+
+	@PostMapping(value = "/truck/update/reacheddroplocation/{vendorId}/{bookingId}/{custId}")
+	public ResponseEntity<VendorBookingResponseDTO> reachedDropLocation(@PathVariable Long vendorId,
+			@PathVariable Long bookingId, @PathVariable Long custId, @RequestHeader("Authorization") String accessToken,
+			@RequestHeader("APPID") String appId) {
+		logger.info("Start : Update vendor pickup controller : " + vendorId + " : " + bookingId + " : " + custId);
+		StatusHandler statushandler = new StatusHandler();
+		String token = accessToken.replace("Bearer ", "");
+		VendorBookingResponseDTO vendorBooking = new VendorBookingResponseDTO();
+		try {
+			if (null == vendorId || null == bookingId || null == custId) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			vendorBooking = service.reachedDropLocation(vendorId, bookingId, custId, vendorBooking, statushandler,
+					token, appId);
+
+			statushandler.setStatusCode("200");
+			statushandler.setMessage(AppConstants.SUCCESS);
+			vendorBooking.setStatusHandler(statushandler);
+		} catch (InvalidRequestException ex) {
+			statushandler.setStatusCode("400");
+			statushandler.setError(ex.getMessage());
+			vendorBooking.setStatusHandler(statushandler);
+		} catch (Exception ex) {
+			statushandler.setStatusCode("500");
+			statushandler.setError(ex.getMessage());
+			vendorBooking.setStatusHandler(statushandler);
+		}
+
+		logger.info("End : Update vendor pickup controller : " + vendorId);
+		return ResponseEntity.ok(vendorBooking);
+	}
+
+	@PostMapping(value = "/truck/update/drop/{vendorId}/{bookingId}/{custId}/{otp}")
+	public ResponseEntity<VendorBookingResponseDTO> updateTruckDrop(@PathVariable Long vendorId,
+			@PathVariable Long bookingId, @PathVariable Long custId, @PathVariable String otp,
+			@RequestHeader("Authorization") String accessToken, @RequestHeader("APPID") String appId) {
+		logger.info("Start : Update vendor drop controller : " + vendorId + " : " + bookingId + " : " + custId);
+		StatusHandler statushandler = new StatusHandler();
+		VendorBookingResponseDTO vendorBooking = new VendorBookingResponseDTO();
+		String token = accessToken.replace("Bearer ", "");
+		try {
+			if (null == vendorId || null == bookingId || null == custId) {
+				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
+			}
+			vendorBooking = service.updateDrop(vendorId, bookingId, custId, otp, vendorBooking, statushandler, token,
+					appId);
+
+			statushandler.setStatusCode("200");
+			statushandler.setMessage(AppConstants.SUCCESS);
+			vendorBooking.setStatusHandler(statushandler);
+		} catch (InvalidRequestException ex) {
+			statushandler.setStatusCode("400");
+			statushandler.setError(AppConstants.INVALID_REQUEST);
+			vendorBooking.setStatusHandler(statushandler);
+		} catch (Exception ex) {
+			statushandler.setStatusCode("500");
+			statushandler.setError(ex.getMessage());
+			vendorBooking.setStatusHandler(statushandler);
+		}
+
+		logger.info("End : Update vendor drop controller : " + vendorId);
+		return ResponseEntity.ok(vendorBooking);
+	}
+
+	@PostMapping(value = "/transaction/create")
+	public ResponseEntity<BookingTransactionResponse> createTransaction(@RequestBody BookingTransactionDTO dto) {
+
+		return null;
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

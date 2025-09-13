@@ -1,6 +1,7 @@
 package com.mybookingsservice.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,12 +9,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.mybookingsservice.entity.Applications;
 import com.mybookingsservice.entity.MyBookings;
 
 import jakarta.transaction.Transactional;
 
 @Repository
 public interface MyBookingsRepository extends JpaRepository<MyBookings, Long>{
+
+	Optional<MyBookings> findByBookingIdAndCustIdAndVendorId(Long bookingId, Long custId, Long vendorId);
+
+	MyBookings findByBookingId(Long bookingId);
 
 //	MyBookings findAllByBookingId(Long bookingId);
 //

@@ -146,6 +146,25 @@ public class MyBookings implements Serializable{
 
     @Column(name = "UPDATEDBY")
     private Long updatedBy;
+    
+    @Column(name = "VEHICLE_TYPE")
+    private String vehicleType;
+    
+    
+    @Column(name = "PICKUPOTP")
+    private String pickupOTP;
+    
+    @Column(name = "DROPOTP")
+    private String dropOTP;
+    
+    @Column(name = "PICKUP_OTP_ISVERIFIED", length = 1)
+    private String pickupOtpIsVerified;
+    
+    @Column(name = "DROP_OTP_ISVERIFIED", length = 1)
+    private String dropOtpIsVerified;
+    
+    @Column(name = "FARE")
+    private Double fare;
 
 	public Long getBookingId() {
 		return bookingId;
@@ -169,6 +188,14 @@ public class MyBookings implements Serializable{
 
 	public void setVendorId(Long vendorId) {
 		this.vendorId = vendorId;
+	}
+
+	public String getVehicleType() {
+		return vehicleType;
+	}
+
+	public void setVehicleType(String vehicleType) {
+		this.vehicleType = vehicleType;
 	}
 
 	public String getBookingStatus() {
@@ -441,6 +468,46 @@ public class MyBookings implements Serializable{
 
 	public void setUpdatedBy(Long updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public String getPickupOTP() {
+		return pickupOTP;
+	}
+
+	public void setPickupOTP(String pickupOTP) {
+		this.pickupOTP = pickupOTP;
+	}
+
+	public String getDropOTP() {
+		return dropOTP;
+	}
+
+	public void setDropOTP(String dropOTP) {
+		this.dropOTP = dropOTP;
+	}
+
+	public String getPickupOtpIsVerified() {
+		return pickupOtpIsVerified;
+	}
+
+	public void setPickupOtpIsVerified(String pickupOtpIsVerified) {
+		this.pickupOtpIsVerified = pickupOtpIsVerified;
+	}
+
+	public String getDropOtpIsVerified() {
+		return dropOtpIsVerified;
+	}
+
+	public void setDropOtpIsVerified(String dropOtpIsVerified) {
+		this.dropOtpIsVerified = dropOtpIsVerified;
+	}
+
+	public Double getFare() {
+		return fare;
+	}
+
+	public void setFare(Double fare) {
+		this.fare = fare;
 	}
 
 	@Override

@@ -42,3 +42,6 @@ vendor:
 transaction:
   service:
     url: http://localhost:8087/v1/api/transaction/log
+vendorlogin:
+  service:
+    url: http://localhost:8085/v1/api/vendor

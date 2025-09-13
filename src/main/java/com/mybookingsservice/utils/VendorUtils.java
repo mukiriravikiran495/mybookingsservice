@@ -2,10 +2,13 @@ package com.mybookingsservice.utils;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,10 +20,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.mybookingsservice.domain.ConfirmBookingResponse;
-import com.mybookingsservice.domain.TokenID;
-import com.mybookingsservice.domain.VendorEstimateRequest;
-import com.mybookingsservice.domain.VendorEstimateResponse;
-import com.mybookingsservice.domain.VendorResponse;
+import com.mybookingsservice.domain.VehicleSearchRequest;
+import com.mybookingsservice.domain.VendorDetailsDTO;
+import com.mybookingsservice.domain.VendorsListResponse;
+import com.mybookingsservice.entity.VendorTokens;
 
 @Component
 public class VendorUtils {
@@ -30,6 +33,9 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 	
 	@Value("${vendor.service.url}")
     private String vendorServiceUrl;
+	
+	@Value("${vendorlogin.service.url}")
+    private String vendorLoginServiceUrl;
 
 	
 	public VendorUtils() {
@@ -42,98 +48,10 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 	
 	
 	
-	public  VendorResponse getVendor(Long vendorId) {
-		logger.info("Start : get vendor details by custId : "+vendorId);
-		String url = vendorServiceUrl+"/get/"+vendorId;
-		
-		TokenID token = getToken();
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getAccessToken());
-		System.out.println("token : "+token.getAccessToken());
-		System.out.println(" URL : "+url);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        try {
-            ResponseEntity<VendorResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                VendorResponse.class
-            );
-            logger.info("Response: " + response.getBody());
-            return response.getBody();
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
-            System.out.println(ex.getMessage());
-            throw ex;
-        } catch (Exception e) {
-            logger.error("Request failed: ", e);
-            throw e;
-        }
-	}
-	private TokenID getToken() {
-		logger.info("Start get token customer-service : ");
-		String url = vendorServiceUrl+"/auth/token";
-		HttpHeaders headers = new HttpHeaders();
-		System.out.println(" URL : "+url);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<TokenID> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                TokenID.class
-        );
-        
-		logger.info("End : get token customer-service : ");
-		return response.getBody();
-	}
-	public VendorEstimateResponse getvendorEstimates(VendorEstimateRequest request) {
-		logger.info("Start : get vendor estimates utils : "+request);
-		String url = vendorServiceUrl+"/vendor/vendorestimates";
-		
-		TokenID token = getToken();
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getAccessToken());
-		System.out.println("token : "+token.getAccessToken());
-		System.out.println(" URL : "+url);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<VendorEstimateRequest> entity = new HttpEntity<>(request, headers);
-
-        try {
-            ResponseEntity<VendorEstimateResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                VendorEstimateResponse.class
-            );
-            logger.info("Response: " + response.getBody());
-            logger.info("End : get vendor estimates utils : ");
-            return response.getBody();
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
-            System.out.println(ex.getMessage());
-            throw ex;
-        } catch (Exception e) {
-            logger.error("Request failed: ", e);
-            throw e;
-        }
-		
-		
-	}
-	public ConfirmBookingResponse findNearestTrucks(Double cPickupLatitude, Double cPickupLongitude, String token,
+	public ConfirmBookingResponse findNearestTrucks(VehicleSearchRequest vehicleSearchRequest, String token,
 			String appId) {
-		logger.info("Start : call vendorservice ");
-		String url = vendorServiceUrl+"/get/near/trucks/"+cPickupLatitude+"/"+cPickupLongitude;
+		logger.info("Start : call vendorservice "+vehicleSearchRequest);
+		String url = vendorServiceUrl+"/get/nearest/trucks";
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer "+token);
@@ -143,12 +61,12 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        HttpEntity<VehicleSearchRequest> entity = new HttpEntity<>(vehicleSearchRequest, headers);
 
         try {
             ResponseEntity<ConfirmBookingResponse> response = restTemplate.exchange(
                 url,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 entity,
                 ConfirmBookingResponse.class
             );
@@ -165,23 +83,68 @@ private static final Logger logger = LoggerFactory.getLogger(MethodHandles.looku
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public VendorTokens validateAccessToken(String token) {
+		String url = vendorLoginServiceUrl+"/auth/token";
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer "+token);
+		System.out.println("token : "+token);
+		System.out.println(" URL : "+url);
+        
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+        	ResponseEntity<VendorTokens> response = restTemplate.exchange(
+        		    url,
+        		    HttpMethod.GET,
+        		    entity,
+        		    VendorTokens.class
+        	);
+            logger.info("Response: " + response.getBody());
+            logger.info("End : create customer utils : ");
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
+            System.out.println(ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            logger.error("Request failed: ", e);
+            throw e;
+        }
+		
+	}
+	public VendorsListResponse findAvailablePackersAndMovers(String getcCity, String token, long isOnline) {
+		logger.info("Start : call vendorservice "+getcCity);
+		String url = vendorServiceUrl+"/get/packersandmovers/"+getcCity+"/"+isOnline;
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer "+token);
+		
+		System.out.println("token : "+token);
+		System.out.println(" URL : "+url);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<VehicleSearchRequest> entity = new HttpEntity<>( headers);
+
+        try {
+            ResponseEntity<VendorsListResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                VendorsListResponse.class
+            );
+            logger.info("Response: " + response.getBody());
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
+            System.out.println(ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            logger.error("Request failed: ", e);
+            throw e;
+        }
+	}
 	
 }

@@ -13,19 +13,27 @@ import com.mybookingsservice.exceptions.StatusHandler;
 
 public class VendorBookingResponseDTO {
 	
-	private MyBookingsRequest requestDTO;
+	private MyBookingsDTO myBookingsDTO;
 	private StatusHandler statusHandler;
-	public MyBookingsRequest getRequestDTO() {
-		return requestDTO;
+	
+	public MyBookingsDTO getMyBookingsDTO() {
+		return myBookingsDTO;
 	}
-	public void setRequestDTO(MyBookingsRequest requestDTO) {
-		this.requestDTO = requestDTO;
+	public void setMyBookingsDTO(MyBookingsDTO myBookingsDTO) {
+		this.myBookingsDTO = myBookingsDTO;
 	}
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
 	}
 	public void setStatusHandler(StatusHandler statusHandler) {
 		this.statusHandler = statusHandler;
+	}
+	@Override
+	public String toString() {
+		return "VendorBookingResponseDTO [myBookingsDTO=" + myBookingsDTO + ", statusHandler=" + statusHandler
+				+ ", getMyBookingsDTO()=" + getMyBookingsDTO() + ", getStatusHandler()=" + getStatusHandler()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
 	}
 	
 }
